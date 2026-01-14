@@ -1,4 +1,3 @@
-import './App.css'
 import {
   Routes,
   Route,
@@ -7,6 +6,7 @@ import {
 
 import RegisterPage from './pages/Register';
 import Home from './pages/Home';
+import CreatedEvents from './pages/CreatedEvents';
 import NavBar from './components/NavBar';
 import Profile from './pages/Profile';
 
@@ -31,6 +31,10 @@ function App() {
             <Route 
               path="/profile"
               element={<Profile />}
+            />
+              <Route
+              path="/created-events"
+              element={<CreatedEvents />}
             />
           </Routes>
         </div>

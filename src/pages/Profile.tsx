@@ -1,18 +1,26 @@
 import { useState } from 'react';
 import { EyeOff, Eye } from 'lucide-react';
 import NFC from '../assets/icons/NFCIcon.png';
+import NfcPopup from '../components/NfcPopup';
+
+const mockUserData = {
+  firstName: 'Jane',
+  lastName: 'Doe',
+  email: 'jane@gmail.com',
+  password: 'password123'
+};
+
 const Profile = () => {
-  // 1. Initialize state with the values from your image
   const [formData, setFormData] = useState({
-    firstName: 'John',
-    lastName: 'Titor',
-    email: 'john@gmail.com',
-    password: 'password123'
+    firstName: mockUserData.firstName,
+    lastName: mockUserData.lastName,
+    email: mockUserData.email,
+    password: mockUserData.password
   });
 
   const [showPassword, setShowPassword] = useState(false);
+  const [showNfcPopup, setShowNfcPopup] = useState(false);
 
-  // 2. Generic change handler for all inputs
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -27,108 +35,85 @@ const Profile = () => {
     alert('Settings Updated!');
   };
 
-  // UI Styles to match the image exactly
-  const inputStyle = "w-72 px-4 py-2 border-2 border-black rounded-2xl bg-[#f0f2f5] focus:outline-none text-zinc-500 font-semibold tracking-tight";
-  const labelStyle = "text-lg font-bold pr-10 w-32 text-left";
+  const inputStyle = "w-72 px-4 py-2 border-2 border-black rounded-2xl bg-[#f0f2f5] focus:outline-none text-zinc-500 font-semibold tracking-tight relative z-20";
+  const labelStyle = "text-lg font-bold pr-10 w-32 text-left text-black/80";
 
   return (
-    <div className="min-h-screen bg-white flex flex-col items-center pt-20 font-montserrat">
-      <h1 className="text-3xl font-black mb-12 tracking-tight">Account Settings</h1>
+    <div className="min-h-screen bg-white relative overflow-hidden flex flex-col items-center pt-20 font-montserrat pb-40">
+      
+      {/* --- CONTENT CONTAINER (z-10 to sit above waves) --- */}
+      <div className="relative z-10 flex flex-col items-center w-full">
+        <h1 className="text-3xl font-black mb-12 tracking-tight text-black">Account Settings</h1>
 
-      <form onSubmit={handleSubmit} className="space-y-5">
-        {/* Firstname */}
-        <div className="flex items-center">
-          <label htmlFor="firstName" className={labelStyle}>Firstname</label>
-          <input 
-            type="text" 
-            name="firstName"
-            id="firstName" 
-            value={formData.firstName} 
-            onChange={handleChange}
-            className={inputStyle} 
-          />
-        </div>
+        <form onSubmit={handleSubmit} className="space-y-5">
+          {/* Form Fields... */}
+          <div className="flex items-center">
+            <label htmlFor="firstName" className={labelStyle}>Firstname</label>
+            <input type="text" name="firstName" id="firstName" value={formData.firstName} onChange={handleChange} className={inputStyle} />
+          </div>
 
-        {/* Lastname */}
-        <div className="flex items-center">
-          <label htmlFor="lastName" className={labelStyle}>Lastname</label>
-          <input 
-            type="text" 
-            name="lastName"
-            id="lastName" 
-            value={formData.lastName} 
-            onChange={handleChange}
-            className={inputStyle} 
-          />
-        </div>
+          <div className="flex items-center">
+            <label htmlFor="lastName" className={labelStyle}>Lastname</label>
+            <input type="text" name="lastName" id="lastName" value={formData.lastName} onChange={handleChange} className={inputStyle} />
+          </div>
 
-        {/* Email */}
-        <div className="flex items-center">
-          <label htmlFor="email" className={labelStyle}>Email</label>
-          <input 
-            type="email" 
-            name="email"
-            id="email" 
-            value={formData.email} 
-            onChange={handleChange}
-            className={inputStyle} 
-          />
-        </div>
+          <div className="flex items-center">
+            <label htmlFor="email" className={labelStyle}>Email</label>
+            <input type="email" name="email" id="email" value={formData.email} onChange={handleChange} className={inputStyle} />
+          </div>
 
-        {/* Password */}
-        <div className="flex items-center">
-          <label htmlFor="password" className={labelStyle}>Password</label>
-          <div className="relative">
-            <input 
-              type={showPassword ? "text" : "password"} 
-              name="password"
-              id="password" 
-              value={formData.password} 
-              onChange={handleChange}
-              className={inputStyle} 
-            />
-            <button 
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-[#26ba9d] select-none cursor-pointer flex items-center"
-            >
-              {showPassword ? <Eye size={24} /> : <EyeOff size={24} />}
+          <div className="flex items-center">
+            <label htmlFor="password" className={labelStyle}>Password</label>
+            <div className="relative">
+              <input type={showPassword ? "text" : "password"} name="password" id="password" value={formData.password} onChange={handleChange} className={inputStyle} />
+              <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-[#26ba9d] select-none cursor-pointer flex items-center z-30">
+                {showPassword ? <Eye size={24} /> : <EyeOff size={24} />}
+              </button>
+            </div>
+          </div>
+
+          <div className="flex justify-end pt-2">
+            <button type="submit" className="px-10 py-2.5 bg-linear-to-r from-[#20D4A4] to-[#1F7CAE] text-white text-xl font-bold rounded-2xl shadow-[0_4px_0_rgb(0,0,0,0.1)] hover:brightness-105 hover:scale-105 active:scale-95 transition-all cursor-pointer">
+              Done
             </button>
           </div>
-        </div>
+        </form>
 
-        {/* Edit Button */}
-        <div className="flex justify-end pt-2">
-          <button 
-            type="submit" 
-            className="px-10 py-2.5 bg-linear-to-r from-[#20D4A4] to-[#1F7CAE] 
-            text-white text-xl font-bold rounded-2xl shadow-[0_4px_0_rgb(0,0,0,0.1)] 
-            hover:brightness-105 hover:scale-105 active:scale-95 transition-all"
-          >
-            Edit
-          </button>
-        </div>
-      </form>
-      {/*Break*/}
-      <div className="mt-20 w-full max-w-2xl border-t  mb-12 bg-[#9AA9AF]" />
-      {/* --- ADD NFC CARD SECTION --- */}
-      <button 
-        onClick={() => console.log("NFC Pairing Started")}
-        className="group relative w-[450px] h-[200px] flex flex-col items-center justify-center gap-4 rounded-[40px] border-2 border-dashed border-zinc-600 overflow-hidden transition-transform active:scale-[0.98]"
-      >
-        {/* The Gradient Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#bbf7d0] via-[#99f6e4] to-[#7dd3fc] opacity-90 -z-10" />
-        
-        {/* The Icon */}
-        <div className="text-black">
-          <img src={NFC} alt="NFC Icon" className="w-24 h-24" />
-        </div>
+        <div className="mt-15 w-full max-w-2xl border-t mb-12 bg-[#9AA9AF]" />
 
-        {/* The Text */}
-        <span className="text-2xl font-black text-black tracking-tight">
-          Add NFC Card
-        </span>
-      </button>
+        {/* NFC Card Button */}
+        <button 
+          onClick={() => setShowNfcPopup(true)}
+          className="group relative w-[450px] h-[200px] flex flex-col items-center justify-center gap-4
+            rounded-[40px] border-2 border-dashed border-zinc-600 overflow-hidden 
+            transition-transform hover:brightness-105 active:scale-[0.98] bg-linear-to-br from-[#7dffdc] to-[#69cafe] cursor-pointer shadow-lg"
+        >
+          <div className="text-black">
+            <img src={NFC} alt="NFC Icon" className="w-25 h-20 " />
+          </div>
+          <span className="text-2xl font-bold text-black tracking-tight">
+            Add NFC Card
+          </span>
+        </button>
+      </div>
+
+      {/* --- BACKGROUND WAVES (Bottom) --- */}
+      <div className="absolute bottom-0 left-0 w-full pointer-events-none z-0">
+        <svg className="w-full h-auto" viewBox="0 0 1440 320" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="wave-gradient" x1="0" x2="1" y1="0" y2="0">
+              <stop offset="0%" stopColor="#7dffdc" />
+              <stop offset="50%" stopColor="#20D4A4" />
+              <stop offset="100%" stopColor="#1F7CAE" />
+            </linearGradient>
+          </defs>
+          <path fill="url(#wave-gradient)" fillOpacity="0.4" d="M0,96L48,112C96,128,192,160,288,186.7C384,213,480,235,576,213.3C672,192,768,128,864,128C960,128,1056,192,1152,208C1248,224,1344,192,1392,176L1440,160L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+          <path fill="url(#wave-gradient)" fillOpacity="0.8" d="M0,192L48,197.3C96,203,192,213,288,229.3C384,245,480,267,576,250.7C672,235,768,181,864,181.3C960,181,1056,235,1152,234.7C1248,235,1344,181,1392,154.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+        </svg>
+      </div>
+
+      {/* NFC Popup Overlay */}
+      {showNfcPopup && <NfcPopup onClose={() => setShowNfcPopup(false)} />}
     </div>
   );
 }
