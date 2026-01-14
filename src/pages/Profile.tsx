@@ -21,12 +21,19 @@ const Profile = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showNfcPopup, setShowNfcPopup] = useState(false);
 
-  const handleChange = (e) => {
+  interface FormData {
+    firstName: string;
+    lastName: string;
+    email: string;
+    password: string;
+  }
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((prev: FormData) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
     event.preventDefault();
     console.log('Saved Data:', formData);
     alert('Settings Updated!');
