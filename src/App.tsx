@@ -7,6 +7,7 @@ import {
 
 import RegisterPage from './pages/Register';
 import Home from './pages/Home';
+import CreatedEvents from './pages/CreatedEvents';
 import NavBar from './components/NavBar';
 
 function App() {
@@ -26,6 +27,10 @@ function App() {
             <Route 
               path="/register"
               element={<RegisterPage />}
+            />
+            <Route 
+              path="/created-events"
+              element={<CreatedEvents />}
             />
           </Routes>
         </div>
