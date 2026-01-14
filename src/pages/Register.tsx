@@ -22,7 +22,7 @@ const Register = () => {
     password: "",
   });
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prevState) => ({
       ...prevState,
@@ -30,7 +30,7 @@ const Register = () => {
     }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setRegStatus("loading");
 
@@ -55,7 +55,7 @@ const Register = () => {
         alert(data.message || "Something went wrong");
       }
     } catch (error) {
-      setRegStatus("error");
+      setRegStatus(`error: ${error}`);
     }
   };
 
