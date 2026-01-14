@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { Search, User, LogOut } from 'lucide-react';
-import profileIcon from '../assets/icons/profile.png';
-import createdEventIcon from '../assets/icons/createdEvent.png';
-import attEventIcon from '../assets/icons/attEvent.png';
+import profileIcon from '../assets/icons/profile.webp';
+import createdEventIcon from '../assets/icons/createdEvent.webp';
+import attEventIcon from '../assets/icons/attEvent.webp';
 import { useNavigate } from 'react-router-dom';
 
 const NavBar = () => {

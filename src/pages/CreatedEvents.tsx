@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { ArrowLeft, CirclePlus, Home } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import CreatedEventCard, { type CreatedEvent } from '../components/CreatedEventCard';
-import clickToAddNewEvents from '../assets/icons/clicktoaddnewevents.png';
+import clickToAddNewEvents from '../assets/icons/clicktoaddnewevents.webp';
 const MOCK_CREATED_EVENTS: CreatedEvent[] = [
   {
     id: 1,
@@ -13,28 +13,28 @@ const MOCK_CREATED_EVENTS: CreatedEvent[] = [
   },
   {
     id: 2,
-    title: "Hack my ass",
+    title: "Hack my butt",
     date: "5 FEB 2026",
     location: "Male dormitory",
     attendees: 3
   },
   {
-    id: 2,
-    title: "Hack my ass",
+    id: 3,
+    title: "Hack my butt",
     date: "5 FEB 2026",
     location: "Male dormitory",
     attendees: 3
   },
   {
-    id: 2,
-    title: "Hack my ass",
+    id: 4,
+    title: "Hack my butt",
     date: "5 FEB 2026",
     location: "Male dormitory",
     attendees: 3
   },
   {
-    id: 2,
-    title: "Hack my ass",
+    id: 5,
+    title: "Hack my butt",
     date: "5 FEB 2026",
     location: "Male dormitory",
     attendees: 3
