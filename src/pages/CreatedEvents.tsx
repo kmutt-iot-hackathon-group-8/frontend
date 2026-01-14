@@ -9,35 +9,40 @@ const MOCK_CREATED_EVENTS: CreatedEvent[] = [
     title: "2026 IoT Hackaton Challenge",
     date: "9 Jan - 19 Jan 2026",
     location: "Learning Exchange Building 11-2",
-    attendees: 23
+    attendees: 23,
+    image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=2070&auto=format&fit=crop"  
   },
   {
     id: 2,
     title: "Hack my butt",
     date: "5 FEB 2026",
     location: "Male dormitory",
-    attendees: 3
+    attendees: 3,
+    image: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?q=80&w=2070&auto=format&fit=crop"  
   },
   {
     id: 3,
     title: "Hack my butt",
     date: "5 FEB 2026",
     location: "Male dormitory",
-    attendees: 3
+    attendees: 3,
+    image: "https://images.unsplash.com/photo-1561070791-2526d30994b5?q=80&w=2000&auto=format&fit=crop"  
   },
   {
     id: 4,
     title: "Hack my butt",
     date: "5 FEB 2026",
     location: "Male dormitory",
-    attendees: 3
+    attendees: 3,
+    image: "https://images.unsplash.com/photo-1555099962-4199c345e5dd?q=80&w=2070&auto=format&fit=crop"  
   },
   {
     id: 5,
     title: "Hack my butt",
     date: "5 FEB 2026",
     location: "Male dormitory",
-    attendees: 3
+    attendees: 3,
+    image: "https://images.unsplash.com/photo-1579468118864-1b9ea3c0db4a?q=80&w=1997&auto=format&fit=crop"  
   }
 ];
 
