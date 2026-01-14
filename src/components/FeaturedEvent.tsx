@@ -54,5 +54,5 @@ const FeaturedEvent = ({ event }: FeaturedEventProps) => {
     </div>
   );
 };
-
+// e
 export default FeaturedEvent;
