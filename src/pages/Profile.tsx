@@ -21,85 +21,88 @@ const Profile = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showNfcPopup, setShowNfcPopup] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event) => {
     event.preventDefault();
     console.log('Saved Data:', formData);
     alert('Settings Updated!');
   };
 
-  const inputStyle = "w-72 px-4 py-2 border-2 border-black rounded-2xl bg-[#f0f2f5] focus:outline-none text-zinc-500 font-semibold tracking-tight relative z-20";
-  const labelStyle = "text-lg font-bold pr-10 w-32 text-left text-black/80";
+  const inputStyle = "w-full md:w-72 px-4 py-2 border-2 border-black rounded-2xl bg-[#f0f2f5] focus:outline-none text-zinc-500 font-semibold tracking-tight relative z-20";
+  const labelStyle = "text-lg font-bold pr-0 md:pr-10 w-full md:w-32 text-left text-black/80 mb-1 md:mb-0";
 
   return (
-    <div className="min-h-screen bg-white relative overflow-hidden flex flex-col items-center pt-20 font-montserrat pb-40">
+    <div className="min-h-screen bg-white relative overflow-hidden flex flex-col items-center pt-10 md:pt-20 font-montserrat pb-40">
       
-      {/* --- CONTENT CONTAINER (z-10 to sit above waves) --- */}
-      <div className="relative z-10 flex flex-col items-center w-full">
-        <h1 className="text-3xl font-black mb-12 tracking-tight text-black">Account Settings</h1>
+      {/* Content Layer */}
+      <div className="relative z-20 flex flex-col items-center w-full px-6">
+        <h1 className="text-3xl font-black mb-8 md:mb-12 tracking-tight text-black text-center">Account Settings</h1>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Form Fields... */}
-          <div className="flex items-center">
+        <form onSubmit={handleSubmit} className="space-y-5 w-full max-w-md md:max-w-none flex flex-col items-center">
+          
+          <div className="flex flex-col md:flex-row items-start md:items-center w-full md:w-auto">
             <label htmlFor="firstName" className={labelStyle}>Firstname</label>
             <input type="text" name="firstName" id="firstName" value={formData.firstName} onChange={handleChange} className={inputStyle} />
           </div>
 
-          <div className="flex items-center">
+          <div className="flex flex-col md:flex-row items-start md:items-center w-full md:w-auto">
             <label htmlFor="lastName" className={labelStyle}>Lastname</label>
             <input type="text" name="lastName" id="lastName" value={formData.lastName} onChange={handleChange} className={inputStyle} />
           </div>
 
-          <div className="flex items-center">
+          <div className="flex flex-col md:flex-row items-start md:items-center w-full md:w-auto">
             <label htmlFor="email" className={labelStyle}>Email</label>
             <input type="email" name="email" id="email" value={formData.email} onChange={handleChange} className={inputStyle} />
           </div>
 
-          <div className="flex items-center">
+          <div className="flex flex-col md:flex-row items-start md:items-center w-full md:w-auto">
             <label htmlFor="password" className={labelStyle}>Password</label>
-            <div className="relative">
+            <div className="relative w-full md:w-auto">
               <input type={showPassword ? "text" : "password"} name="password" id="password" value={formData.password} onChange={handleChange} className={inputStyle} />
-              <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-[#26ba9d] select-none cursor-pointer flex items-center z-30">
+              <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-[#26ba9d] select-none cursor-pointer hover:scale-105 flex items-center z-30">
                 {showPassword ? <Eye size={24} /> : <EyeOff size={24} />}
               </button>
             </div>
           </div>
 
-          <div className="flex justify-end pt-2">
+          {/* Original Green/Blue Gradient Button */}
+          <div className="flex justify-center md:justify-end w-full md:w-[420px] pt-2">
             <button type="submit" className="px-10 py-2.5 bg-linear-to-r from-[#20D4A4] to-[#1F7CAE] text-white text-xl font-bold rounded-2xl shadow-[0_4px_0_rgb(0,0,0,0.1)] hover:brightness-105 hover:scale-105 active:scale-95 transition-all cursor-pointer">
               Done
             </button>
           </div>
         </form>
 
-        <div className="mt-15 w-full max-w-2xl border-t mb-12 bg-[#9AA9AF]" />
+        <div className="mt-15 w-full max-w-2xl border-t mb-12 border-black/10 md:bg-[#9AA9AF]" />
 
-        {/* NFC Card Button */}
+        {/* Original Cyan/Blue Gradient NFC Card */}
         <button 
           onClick={() => setShowNfcPopup(true)}
-          className="group relative w-[450px] h-[200px] flex flex-col items-center justify-center gap-4
+          className="group relative w-full max-w-[450px] aspect-[2/1] md:h-[200px] flex flex-col items-center justify-center gap-4
             rounded-[40px] border-2 border-dashed border-zinc-600 overflow-hidden 
             transition-transform hover:brightness-105 active:scale-[0.98] bg-linear-to-br from-[#7dffdc] to-[#69cafe] cursor-pointer shadow-lg"
         >
           <div className="text-black">
-            <img src={NFC} alt="NFC Icon" className="w-25 h-20 " />
+            <img src={NFC} alt="NFC Icon" className="w-20 md:w-25 h-auto" />
           </div>
-          <span className="text-2xl font-bold text-black tracking-tight">
+          <span className="text-xl md:text-2xl font-bold text-black tracking-tight">
             Add NFC Card
           </span>
         </button>
       </div>
 
-      {/* --- BACKGROUND WAVES (Bottom) --- */}
-      <div className="absolute bottom-0 left-0 w-full pointer-events-none z-0">
-        <svg className="w-full h-auto" viewBox="0 0 1440 320" xmlns="http://www.w3.org/2000/svg">
+      {/* --- MOBILE BACKGROUND (Original Colors, 50% Height, No Distortion) --- */}
+      <div className="absolute bottom-0 left-0 w-full h-[160vh] z-0 block md:hidden">
+        <svg 
+            className="w-full h-full" 
+            viewBox="-130 0 1340 320" 
+            preserveAspectRatio="xMidYMax slice" 
+            xmlns="http://www.w3.org/2000/svg"
+        >
           <defs>
             <linearGradient id="wave-gradient" x1="0" x2="1" y1="0" y2="0">
               <stop offset="0%" stopColor="#7dffdc" />
@@ -112,10 +115,8 @@ const Profile = () => {
         </svg>
       </div>
 
-      {/* NFC Popup Overlay */}
       {showNfcPopup && <NfcPopup onClose={() => setShowNfcPopup(false)} />}
     </div>
   );
 }
-
 export default Profile;
