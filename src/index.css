@@ -4,3 +4,13 @@
 @theme {
   --font-montserrat: "Montserrat", sans-serif;
 }
+
+/* Global cursor pointer for clickable elements on hover */
+button:hover,
+input[type="button"]:hover,
+input[type="submit"]:hover,
+a:hover,
+[role="button"]:hover,
+[onclick]:hover {
+  cursor: pointer;
+}

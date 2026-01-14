@@ -1,4 +1,5 @@
 import { Calendar, MapPin } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export interface Event {
   id: number;
@@ -15,13 +16,23 @@ interface EventCardProps {
   event: Event;
 }
 
-const EventCard = ({ event }: EventCardProps) => (
-  <div className="group bg-white border border-zinc-200 rounded-xl p-3 md:p-6 flex flex-col sm:flex-row gap-3 sm:gap-6 transition-all hover:shadow-md cursor-pointer relative overflow-hidden items-start">
-    <div className="w-full h-32 sm:w-64 sm:h-44 shrink-0 rounded-lg overflow-hidden bg-zinc-100">
+function EventCard({ event }: EventCardProps) {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate(`/event/${event.id}`);
+  };
+
+  return (
+    <div className="group bg-white border border-zinc-200 rounded-xl p-3 md:p-6 flex flex-col sm:flex-row gap-3 sm:gap-6 transition-all hover:shadow-md cursor-pointer relative overflow-hidden items-start" onClick={handleClick}>
+    <div className="w-full h-32 sm:w-64 sm:h-44 shrink-0 rounded-lg overflow-hidden bg-linear-to-r from-[#AFEEDD] to-[#6CB2D7]">
       <img
         src={event.image}
         alt={event.title}
         className="w-full h-full object-cover"
+        onError={(e) => {
+          e.currentTarget.style.display = 'none';
+        }}
       />
     </div>
 
@@ -51,6 +62,7 @@ const EventCard = ({ event }: EventCardProps) => (
       </div>
     </div>
   </div>
-);
+  );
+}
 
 export default EventCard;

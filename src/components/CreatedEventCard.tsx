@@ -6,6 +6,7 @@ export interface CreatedEvent {
   date: string;
   location: string;
   attendees: number;
+  image?: string;  
 }
 
 interface CreatedEventCardProps {
@@ -15,7 +16,18 @@ interface CreatedEventCardProps {
 const CreatedEventCard = ({ event }: CreatedEventCardProps) => {
   return (
     <div className="bg-white rounded-2xl sm:rounded-[26px] shadow-lg p-4 sm:p-8 flex flex-col sm:flex-row gap-4 sm:gap-8 hover:shadow-xl transition-shadow">
-      <div className="w-full h-30 sm:w-67.5 sm:h-38 bg-linear-to-r from-[#AFEEDD] to-[#6CB2D7] rounded-lg shrink-0" />
+      <div className="w-full h-30 sm:w-67.5 sm:h-38 bg-linear-to-r from-[#AFEEDD] to-[#6CB2D7] rounded-lg shrink-0 relative overflow-hidden">
+        {event.image && (
+          <img
+            src={event.image}
+            alt={event.title}
+            className="w-full h-full object-cover absolute inset-0"
+            onError={(e) => {
+              e.currentTarget.style.display = 'none';
+            }}
+          />
+        )}
+      </div>
       
       <div className="flex-1 flex flex-col justify-center gap-2 sm:gap-4">
         <h3 className="text-xl sm:text-2xl lg:text-[32px] font-bold">{event.title}</h3>

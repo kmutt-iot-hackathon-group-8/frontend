@@ -1,4 +1,5 @@
 import { Calendar, Clock, MapPin, ArrowRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import type { Event } from './EventCard';
 
 interface FeaturedEventProps {
@@ -6,6 +7,8 @@ interface FeaturedEventProps {
 }
 
 const FeaturedEvent = ({ event }: FeaturedEventProps) => {
+  const navigate = useNavigate();
+
   if (!event) {
     return (
       <div className="h-full bg-zinc-50 border border-zinc-200 border-dashed rounded-xl flex items-center justify-center text-zinc-400">
@@ -14,8 +17,12 @@ const FeaturedEvent = ({ event }: FeaturedEventProps) => {
     );
   }
 
+  const handleClick = () => {
+    navigate(`/event/${event.id}`);
+  };
+
   return (
-    <div className="h-full rounded-xl overflow-hidden relative group cursor-pointer text-white flex flex-col" style={{ backgroundColor: '#0D5958' }}>
+    <div className="h-full rounded-xl overflow-hidden relative group cursor-pointer text-white flex flex-col" style={{ backgroundColor: '#0D5958' }} onClick={handleClick}>
       <div className="absolute inset-0">
         <img
           src={event.image}

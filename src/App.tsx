@@ -7,6 +7,7 @@ import {
 import RegisterPage from './pages/Register';
 import Home from './pages/Home';
 import CreatedEvents from './pages/CreatedEvents';
+import EventDetail from './pages/EventDetail';
 import NavBar from './components/NavBar';
 import Profile from './pages/Profile';
 
@@ -35,6 +36,10 @@ function App() {
               <Route
               path="/created-events"
               element={<CreatedEvents />}
+            />
+            <Route 
+              path="/event/:id"
+              element={<EventDetail />}
             />
           </Routes>
         </div>
