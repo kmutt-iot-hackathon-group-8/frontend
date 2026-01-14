@@ -8,6 +8,7 @@ import {
 import RegisterPage from './pages/Register';
 import Home from './pages/Home';
 import NavBar from './components/NavBar';
+import Profile from './pages/Profile';
 
 function App() {
 
@@ -26,6 +27,10 @@ function App() {
             <Route 
               path="/register"
               element={<RegisterPage />}
+            />
+            <Route 
+              path="/profile"
+              element={<Profile />}
             />
           </Routes>
         </div>
