@@ -1,19 +1,16 @@
-import { useState } from 'react';
-import { ArrowLeft, CirclePlus } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import EventCard, { type Event } from '../components/EventCard';
-import clickToAddNewEvents from '../assets/icons/clicktoaddnewevents.webp';
 const MOCK_CREATED_EVENTS: Event[] = [
-    {
+ 
+  {
     id: 1,
-    title: "System Design Architecture Workshop",
-    date: new Date(2025, 0, 24),
-    time: "10:00 AM",
-    location: "Tech Hub, Room 404",
-    image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=2070&auto=format&fit=crop",
-    status: "registered",
-    description: "Scalable system design",
-    attendees: 45
+    title: "Hack my butt",
+    date: "5 FEB 2026",
+    location: "Male dormitory",
+    attendees: 3,
+     status: "present",
+    image: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?q=80&w=2070&auto=format&fit=crop"  
   },
   {
     id: 2,
@@ -21,22 +18,26 @@ const MOCK_CREATED_EVENTS: Event[] = [
     date: "5 FEB 2026",
     location: "Male dormitory",
     attendees: 3,
-    image: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?q=80&w=2070&auto=format&fit=crop"  
-  },
-  {
-    id: 3,
-    title: "Hack my butt",
-    date: "5 FEB 2026",
-    location: "Male dormitory",
-    attendees: 3,
     image: "https://images.unsplash.com/photo-1561070791-2526d30994b5?q=80&w=2000&auto=format&fit=crop"  
   },
+   {
+  id: 3,
+  title: "System Design Architecture Workshop",
+  date: new Date(2025, 0, 24),
+  time: "10:00 AM",
+  location: "Tech Hub, Room 404",
+  image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=2070&auto=format&fit=crop",
+  status: "registered",
+  description: "Scalable system design",
+  attendees: 45
+},
   {
     id: 4,
     title: "Hack my butt",
     date: "5 FEB 2026",
     location: "Male dormitory",
     attendees: 3,
+    status: "absent",
     image: "https://images.unsplash.com/photo-1555099962-4199c345e5dd?q=80&w=2070&auto=format&fit=crop"  
   },
   {
@@ -51,7 +52,6 @@ const MOCK_CREATED_EVENTS: Event[] = [
 
 const AttendedEvents = () => {
   const navigate = useNavigate();
-  const [isHovered, setIsHovered] = useState(false);
 
   return (
     <div className="min-h-screen bg-white px-4 sm:px-8 lg:px-16 py-6 sm:py-12">
@@ -70,24 +70,7 @@ const AttendedEvents = () => {
           <p className="text-xl sm:text-2xl font-bold text-[#6B7C85]">
             {MOCK_CREATED_EVENTS.length} events
           </p>
-          <div className="relative flex flex-col items-center">
-            <img 
-              src={clickToAddNewEvents}
-              alt="Click to Add New Events"
-              className={`absolute -top-15 right-0 sm:mr-11 transition-opacity duration-200 ${
-                isHovered ? 'opacity-100' : 'opacity-0 pointer-events-none'
-              }`}
-              style={{ width: '200px', maxWidth: '200px' }}
-            />
-            <button 
-              className="flex items-center right-0 sm:mr-30 gap-3 hover:opacity-80 transition-opacity"
-              onClick={() => alert('Add new event')}
-              onMouseEnter={() => setIsHovered(true)}
-              onMouseLeave={() => setIsHovered(false)}
-            >
-              <CirclePlus size={45} className="text-[#10726F]" strokeWidth={2.5} />
-            </button>
-          </div>
+        
         </div>
 
         <div className="space-y-4 sm:space-y-8 max-w-375">
