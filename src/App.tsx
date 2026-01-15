@@ -1,4 +1,3 @@
-import './App.css'
 import {
   Routes,
   Route,
@@ -10,6 +9,7 @@ import Home from './pages/Home';
 import CreatedEvents from './pages/CreatedEvents';
 import EventDetail from './pages/EventDetail';
 import NavBar from './components/NavBar';
+import Profile from './pages/Profile';
 
 function App() {
 
@@ -30,6 +30,10 @@ function App() {
               element={<RegisterPage />}
             />
             <Route 
+              path="/profile"
+              element={<Profile />}
+            />
+              <Route
               path="/created-events"
               element={<CreatedEvents />}
             />
