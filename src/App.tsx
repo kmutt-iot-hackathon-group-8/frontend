@@ -1,10 +1,12 @@
 import {
   Routes,
   Route,
-  BrowserRouter as Router
+  BrowserRouter as Router,
+  useLocation
 } from "react-router-dom";
 
 import RegisterPage from './pages/Register';
+import LoginPage from './pages/Login';
 import Home from './pages/Home';
 import CreatedEvents from './pages/CreatedEvents';
 import EventDetail from './pages/EventDetail';
@@ -12,19 +14,28 @@ import NavBar from './components/NavBar';
 import Profile from './pages/Profile';
 import AddEvent from './pages/AddEvent';
 import AttendedEvents from './pages/AttendedEvents';
-function App() {
+
+function AppContent() {
+  const location = useLocation();
+  const hideNavbarPaths = ['/login', '/register'];
+  const shouldShowNavbar = !hideNavbarPaths.includes(location.pathname);
 
   return (
-    <Router>
-      <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col">
+      {shouldShowNavbar && (
         <div className="sticky top-0 z-50">
           <NavBar />
         </div>
-        <div className="flex-1">
-          <Routes>
+      )}
+      <div className="flex-1">
+        <Routes>
             <Route 
               path="/"
               element={<Home />}
+            />
+            <Route 
+              path="/login"
+              element={<LoginPage />}
             />
             <Route 
               path="/register"
@@ -53,8 +64,15 @@ function App() {
           </Routes>
         </div>
       </div>
+  );
+}
+
+function App() {
+  return (
+    <Router>
+      <AppContent />
     </Router>
-  )
+  );
 }
 
 export default App
