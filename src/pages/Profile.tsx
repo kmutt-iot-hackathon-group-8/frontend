@@ -77,7 +77,7 @@ const Profile = () => {
           </div>
 
           {/* Original Green/Blue Gradient Button */}
-          <div className="flex justify-center md:justify-end w-full md:w-[420px] pt-2">
+          <div className="flex justify-center md:justify-end w-full md:w-105 pt-2">
             <button type="submit" className="px-10 py-2.5 bg-linear-to-r from-[#20D4A4] to-[#1F7CAE] text-white text-xl font-bold rounded-2xl shadow-[0_4px_0_rgb(0,0,0,0.1)] hover:brightness-105 hover:scale-105 active:scale-95 transition-all cursor-pointer">
               Done
             </button>
@@ -89,7 +89,7 @@ const Profile = () => {
         {/* Original Cyan/Blue Gradient NFC Card */}
         <button 
           onClick={() => setShowNfcPopup(true)}
-          className="group relative w-full max-w-[450px] aspect-[2/1] md:h-[200px] flex flex-col items-center justify-center gap-4
+          className="group relative w-full max-w-112.5 aspect-2/1 md:h-50 flex flex-col items-center justify-center gap-4
             rounded-[40px] border-2 border-dashed border-zinc-600 overflow-hidden 
             transition-transform hover:brightness-105 active:scale-[0.98] bg-linear-to-br from-[#7dffdc] to-[#69cafe] cursor-pointer shadow-lg"
         >

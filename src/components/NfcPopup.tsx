@@ -31,13 +31,13 @@ const NfcPopup = ({ onClose }: NfcPopupProps) => {
         p-6 sm:p-8 
         transition-all duration-300 
         /* Mobile Sizing */
-        w-[90vw] h-[70vh] max-w-[400px] max-h-[650px]
+        w-[90vw] h-[70vh] max-w-100 max-h-162.5
         /* Tablet Sizing */
-        sm:w-[85vw] sm:h-[65vh] sm:max-w-[500px] sm:max-h-[700px]
+        sm:w-[85vw] sm:h-[65vh] sm:max-w-125 sm:max-h-175
         /* Desktop Sizing */
-        md:w-[800px] md:h-[600px] 
-        lg:w-[1000px] lg:h-[650px] 
-        xl:w-[1157px] xl:h-[705px] 
+        md:w-200 md:h-150 
+        lg:w-250 lg:h-162.5 
+        xl:w-289.25 xl:h-176.25 
         md:max-w-[95vw] md:max-h-[90vh]
         ${isClosing ? 'scale-95 opacity-0' : 'scale-100 opacity-100'}`}
         onClick={(e) => e.stopPropagation()}
@@ -46,7 +46,7 @@ const NfcPopup = ({ onClose }: NfcPopupProps) => {
         <button 
           onClick={handleClose}
           className="absolute top-3 right-3 sm:top-5 sm:right-5 
-          w-[40px] h-[40px] sm:w-[44px] sm:h-[45px] md:w-[54px] md:h-[55px] 
+          w-10 h-10 sm:w-11 sm:h-11.25 md:w-13.5 md:h-13.75
           bg-white/65 rounded-full flex items-center justify-center 
           hover:bg-white/80 transition-all hover:scale-110 active:scale-95 z-20"
         >
@@ -71,16 +71,16 @@ const NfcPopup = ({ onClose }: NfcPopupProps) => {
 
         {/* ----------------- DESKTOP LAYOUT ----------------- */}
         <div className="hidden md:block w-full h-full relative">
-            <div className="absolute top-[40px] lg:top-[60px] left-1/2 -translate-x-1/2 flex items-center gap-2 ">
-                <TriangleAlert className="text-black w-5 h-5 lg:w-[26px] lg:h-[26px] flex-shrink-0" />
+            <div className="absolute top-10 lg:top-15 left-1/2 -translate-x-1/2 flex items-center gap-2 ">
+                <TriangleAlert className="text-black w-5 h-5 lg:w-6.5 lg:h-6.5 shrink-0" />
                 <p className="font-bold text-[16px] lg:text-[20px] leading-5 lg:leading-6 text-black text-center">
                   You need to be on mobile to scan your NFC card.
                 </p>
             </div>
 
             {/* QR Code Container */}
-            <div className="absolute top-[100px] lg:top-[120px] left-1/2 -translate-x-1/2 
-            w-[280px] h-[280px] sm:w-[320px] sm:h-[320px] md:w-[350px] md:h-[330px] lg:w-[350px] lg:h-[350px] xl:w-[419px] xl:h-[419px] 
+            <div className="absolute top-25 lg:top-30 left-1/2 -translate-x-1/2 
+            w-70 h-70 sm:w-[320px] sm:h-80 md:w-87.5 md:h-82.5 lg:w-87.5 lg:h-87.5 xl:w-104.75 xl:h-104.75
             border-[3px] lg:border-[5px] border-dashed border-black 
             rounded-[40px] lg:rounded-[71px] flex items-center justify-center">
                 <QRCodeSVG 
@@ -94,8 +94,8 @@ const NfcPopup = ({ onClose }: NfcPopupProps) => {
             </div>
 
             {/* Link below QR Code */}
-            <div className='absolute top-[390px] sm:top-[450px] lg:top-[510px] xl:top-[555px] left-1/2 -translate-x-1/2 px-4'> 
-                <p className="font-bold text-[10px] lg:text-[12px] leading-[13px] lg:leading-[15px] underline text-black cursor-pointer hover:opacity-80 text-center">
+            <div className='absolute top-97.5 sm:top-112.5 lg:top-127.5 xl:top-138.75 left-1/2 -translate-x-1/2 px-4'> 
+                <p className="font-bold text-[10px] lg:text-[12px] leading-3.25 lg:leading-3.75 underline text-black cursor-pointer hover:opacity-80 text-center">
                    <a href={qrCodeUrl} target="_blank" rel="noopener noreferrer">
                      Alternatively, click here to open the link directly.
                    </a>
@@ -103,8 +103,8 @@ const NfcPopup = ({ onClose }: NfcPopupProps) => {
             </div>
            
             {/* Desktop Bottom Text */}
-            <div className="absolute bottom-[20px] lg:bottom-[29px] left-1/2 -translate-x-1/2 text-center w-full px-4">
-                <p className="font-bold text-[16px] lg:text-[20px] xl:text-[24px] leading-5 lg:leading-6 xl:leading-[29px] text-black">
+            <div className="absolute bottom-5 lg:bottom-7.25 left-1/2 -translate-x-1/2 text-center w-full px-4">
+                <p className="font-bold text-[16px] lg:text-[20px] xl:text-[24px] leading-5 lg:leading-6 xl:leading-7.25 text-black">
                     Scan the QR Code with mobile to continue on your mobile device
                 </p>
             </div>
