@@ -8,7 +8,7 @@ export interface Event {
   time?: string;
   location: string;
   image: string;
-  status?: "present" | "registered";
+  status?: "present" | "registered" | "absent";
   description?: string;
   attendees?: number;
 }
@@ -45,9 +45,17 @@ function EventCard({ event }: EventCardProps) {
             {event.title}
           </h3>
           {event.status && (
-            <div className={`w-25 h-7 sm:w-40.5 sm:h-10 ${event.status === 'present' ? 'bg-[#2DBE8B]' : 'bg-[#FFCC00]'} rounded-[9px] shadow-[0px_4px_4px_rgba(0,0,0,0.25)] flex items-center justify-center shrink-0`}>
-              <span className={`font-montserrat font-bold text-[10px] sm:text-[14px] leading-4.5 ${event.status === 'present' ? 'text-white' : 'text-black'}`}>
-                {event.status === 'present' ? 'Present' : 'Registered'}
+            <div className={`w-25 h-7 sm:w-45.5 sm:h-12 ${
+              event.status === 'present' 
+                ? 'bg-[#2DBE8B]' 
+                : event.status === 'absent'
+                ? 'bg-[#FF383C]'
+                : 'bg-[#FFCC00]'
+            } rounded-[9px] shadow-[0px_4px_4px_rgba(0,0,0,0.25)] flex items-center justify-center shrink-0`}>
+              <span className={`font-montserrat font-bold text-[10px] sm:text-[18px] leading-4.5 ${
+                event.status === 'registered' ? 'text-black' : 'text-white'
+              }`}>
+                {event.status === 'present' ? 'Present' : event.status === 'absent' ? 'Absent' : 'Registered'}
               </span>
             </div>
           )}
