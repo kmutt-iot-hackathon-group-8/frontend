@@ -81,7 +81,7 @@ const CreatedEvents = () => {
             />
             <button 
               className="flex items-center mr-2 sm:mr-30 gap-3 hover:opacity-80 transition-opacity"
-              onClick={() => alert('Add new event')}
+              onClick={() => navigate('/add-event')}
               onMouseEnter={() => setIsHovered(true)}
               onMouseLeave={() => setIsHovered(false)}
             >

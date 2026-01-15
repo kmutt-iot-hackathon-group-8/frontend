@@ -10,7 +10,7 @@ import CreatedEvents from './pages/CreatedEvents';
 import EventDetail from './pages/EventDetail';
 import NavBar from './components/NavBar';
 import Profile from './pages/Profile';
-
+import AddEvent from './pages/AddEvent';
 import AttendedEvents from './pages/AttendedEvents';
 function App() {
 
@@ -45,6 +45,10 @@ function App() {
             <Route 
               path="/event/:id"
               element={<EventDetail />}
+            />
+            <Route 
+              path="/add-event/"
+              element={<AddEvent />}
             />
           </Routes>
         </div>
