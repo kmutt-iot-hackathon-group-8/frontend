@@ -1,9 +1,8 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useLocation } from "react-router-dom";
-import { EyeOff, Eye, Loader2 } from 'lucide-react'; // Added Loader2 for animation
+import { EyeOff, Eye, Loader2 } from 'lucide-react';
 
-const BASE_URL = "https://backend-h6j3.onrender.com";
-
+const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 const Login = () => {
   const location = useLocation();
   const q = new URLSearchParams(location.search);
@@ -29,25 +28,19 @@ const Login = () => {
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setRegStatus("loading");
-
     try {
-      console.log("Submitting:", formData);
-      
       const response = await fetch(`${BASE_URL}/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
-
       if (!response.ok) throw new Error("Registration failed");
-      
       const data = await response.json();
       console.log("Success:", data);
       setRegStatus("success");
-      
     } catch (error) {
       console.error("Error:", error);
       setRegStatus("error");
@@ -59,7 +52,8 @@ const Login = () => {
   };
 
   return (
-    <div className='relative min-h-screen flex flex-col justify-center items-center py-6 sm:py-12 px-4 sm:px-6 lg:px-8 overflow-hidden bg-white' style={{ fontFamily: 'Montserrat, sans-serif' }}>
+    // Main Container: Added consistent padding so it never touches screen edges
+    <div className='relative min-h-screen flex flex-col justify-center items-center p-4 sm:p-6 lg:p-8 overflow-hidden bg-white font-monstserrat'>
       
       {/* --- WAVE BACKGROUND --- */}
       <div className="absolute bottom-0 left-0 w-full h-[160vh] z-0 block">
@@ -82,48 +76,53 @@ const Login = () => {
       </div>
 
       {/* --- CONTENT AREA --- */}
-      <div className="relative z-10 flex flex-col items-center w-full max-w-[689px]">
+
+      <div className="relative z-10 w-full max-w-md md:max-w-lg lg:max-w-2xl flex flex-col items-center">
         
         {/* Header */}
-        <div className="mb-6 sm:mb-8 md:mb-12">
-          <h2 className='text-center font-bold text-[40px] sm:text-[50px] md:text-[60px] lg:text-[64px] leading-tight text-[#1F2D3D]' style={{ fontFamily: 'Montserrat, sans-serif' }}>
+        <div className="mb-6 md:mb-10 text-center">
+          <h2 className="font-bold text-4xl md:text-5xl lg:text-7xl leading-tight text-[#1F2D3D] tracking-tight">
             ModTap
           </h2>
         </div>
 
         {/* Card */}
-        <div className='bg-white w-full py-6 px-6 sm:py-8 sm:px-8 md:py-10 md:px-12 lg:px-16 rounded-[24px] sm:rounded-[32px] lg:rounded-[43px]' style={{ boxShadow: '0px 10px 30px rgba(0, 0, 0, 0.25)' }}>
-            <p className="text-center font-bold text-[28px] sm:text-[32px] md:text-[36px] lg:text-[40px] leading-tight text-[#1F2D3D] mb-2" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-              Welcome back!
-            </p>
-            <p className="text-center font-semibold text-[24px] sm:text-[28px] md:text-[30px] lg:text-[32px] leading-tight text-[#1BB3A9] mb-6 sm:mb-8" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-             Login
-          </p>
-          <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
+        <div 
+          className='bg-white w-full rounded-3xl md:rounded-[40px] shadow-2xl p-6 sm:p-8 md:p-12'
+          style={{ boxShadow: '0px 10px 40px rgba(0, 0, 0, 0.15)' }}
+        >
+            <div className="text-center mb-6 md:mb-8">
+                <p className="font-bold text-2xl md:text-3xl lg:text-4xl text-[#1F2D3D] mb-1">
+                  Welcome back!
+                </p>
+                <p className="font-semibold text-xl md:text-2xl text-[#1BB3A9]">
+                  Login to your account
+                </p>
+            </div>
+
+          <form onSubmit={handleSubmit} className="space-y-5 md:space-y-7">
             
             {/* Email Field */}
-            <div>
-              <label htmlFor='email' className='block font-bold text-[16px] sm:text-[18px] md:text-[20px] leading-6 text-black mb-2' style={{ fontFamily: 'Montserrat, sans-serif' }}>
-                Email
+            <div> 
+              <label htmlFor='email' className='block font-bold text-sm md:text-lg text-black mb-2 ml-1'>
+                Email Address
               </label>
-              <div>
-                <input
-                  id='email'
-                  name='email'
-                  type='email'
-                  autoComplete='email'
-                  required
-                  value={formData.email}
-                  onChange={handleChange}
-                  className='appearance-none block w-full px-3 py-3 sm:px-4 sm:py-4 border-2 sm:border-4 border-black rounded-[12px] sm:rounded-[16px] bg-[#F4F7F8] placeholder-gray-400 font-semibold focus:outline-none focus:ring-0 focus:border-black transition-colors duration-200 text-[14px] sm:text-[16px]'
-                  style={{ minHeight: '48px', height: 'auto' }}
-                />
-              </div>
+              <input
+                id='email'
+                name='email'
+                type='email'
+                autoComplete='email'
+                required
+                value={formData.email}
+                onChange={handleChange}
+                // Updated Inputs: Removed fixed padding, used h-12/h-14 for touch targets. Reduced border to 2px on mobile.
+                className='appearance-none block w-full h-12 md:h-14 px-4 border-2 md:border-[3px] border-black rounded-xl md:rounded-2xl bg-[#F4F7F8] placeholder-gray-400 font-semibold focus:outline-none focus:ring-2 focus:ring-[#1BB3A9] focus:border-transparent transition-all duration-200 text-base md:text-lg'
+              />
             </div>
 
             {/* Password Field */}
             <div>
-              <label htmlFor='password' className='block font-bold text-[16px] sm:text-[18px] md:text-[20px] leading-6 placeholder-gray-400 text-black mb-2' style={{ fontFamily: 'Montserrat, sans-serif' }}>
+              <label htmlFor='password' className='block font-bold text-sm md:text-lg text-black mb-2 ml-1'>
                 Password
               </label>
               <div className="relative">
@@ -135,37 +134,32 @@ const Login = () => {
                   required
                   value={formData.password}
                   onChange={handleChange}
-                  className='appearance-none block w-full px-3 py-3 sm:px-4 sm:py-4 border-2 sm:border-4 border-black rounded-[12px] sm:rounded-2xl bg-[#F4F7F8] font-semibold focus:outline-none focus:ring-0 focus:border-black transition-colors duration-200 text-[14px] sm:text-[16px]'
-                  style={{ minHeight: '48px', height: 'auto' }}
+                  className='appearance-none block w-full h-12 md:h-14 px-4 border-2 md:border-[3px] border-black rounded-xl md:rounded-2xl bg-[#F4F7F8] font-semibold focus:outline-none focus:ring-2 focus:ring-[#1BB3A9] focus:border-transparent transition-all duration-200 text-base md:text-lg pr-12'
                 />
                 <button 
                     type="button" 
                     onClick={() => setShowPassword(!showPassword)} 
-                    className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 px-2 text-[#26ba9d] select-none cursor-pointer hover:scale-110 active:scale-90 transition-transform duration-200 flex items-center z-30"
+                    className="absolute right-0 top-0 h-full px-4 text-[#26ba9d] hover:text-[#1a8f7a] transition-colors flex items-center justify-center rounded-r-xl"
                 >
-                  {showPassword ? <Eye size={20} className="sm:w-6 sm:h-6" /> : <EyeOff size={20} className="sm:w-6 sm:h-6" />}
+                  {showPassword ? <Eye className="w-5 h-5 md:w-6 md:h-6" /> : <EyeOff className="w-5 h-5 md:w-6 md:h-6" />}
                 </button>
               </div>
             </div>
 
             {/* Submit Button */}
-            <div className="mt-5 sm:mt-6">
+            <div className="pt-2">
               <button
                 type='submit'
                 disabled={regStatus === 'loading'}
-                className='w-full flex justify-center items-center font-bold text-[16px] sm:text-[18px] md:text-[20px] leading-6 text-white rounded-[8px] sm:rounded-[10px] 
-                transform transition-all duration-200 hover:scale-[1.02] hover:shadow-lg active:scale-[0.98] active:shadow-sm disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none py-3 sm:py-0'
+                className='w-full h-12 md:h-14 flex justify-center items-center font-bold text-lg md:text-xl text-white rounded-lg md:rounded-xl 
+                transform transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed shadow-md hover:shadow-lg'
                 style={{ 
-                  minHeight: '48px',
-                  height: 'auto',
                   background: 'linear-gradient(90deg, #20D4A4 0%, #1F7CAE 100%)',
-                  boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
-                  fontFamily: 'Montserrat, sans-serif'
                 }}
               >
                 {regStatus === 'loading' ? (
                    <>
-                     <Loader2 className="animate-spin mr-2 sm:mr-3 h-4 w-4 sm:h-5 sm:w-5" /> 
+                     <Loader2 className="animate-spin mr-2 h-5 w-5" /> 
                      Signing in...
                    </>
                 ) : 'Login'}
@@ -174,38 +168,33 @@ const Login = () => {
           </form>
 
           {/* Social Login Divider */}
-          <div className='mt-6 sm:mt-8'>
-            <p className="text-center font-medium text-[14px] sm:text-[16px] md:text-[18px] lg:text-[20px] leading-6 text-[#9AA9AF] mb-1" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+          <div className='mt-6 md:mt-8'>
+            <p className="text-center font-medium text-sm md:text-base text-[#9AA9AF] mb-4">
               Don't have an account? 
-              <button onClick={() => window.location.href = '/register'}>
-                <span className="font-bold text-[#1BB3A9] ml-1 cursor-pointer hover:underline transition-all duration-200 hover:text-[#179a91]">Signup</span>
+              <button onClick={() => window.location.href = '/register'} className="ml-1">
+                <span className="font-bold text-[#1BB3A9] hover:underline hover:text-[#179a91]">Signup</span>
               </button>
             </p>
             
-            <div className='relative mt-6 sm:mt-8 mb-5 sm:mb-6'>
-              <div className='flex items-center'>
-                <div className='flex-grow border-t border-black' />
-                <span className='px-3 sm:px-4 font-bold text-[18px] sm:text-[20px] md:text-[24px] leading-tight text-[#1F2D3D] opacity-50' style={{ fontFamily: 'Montserrat, sans-serif' }}>
-                  or
-                </span>
-                <div className='flex-grow border-t border-black' />
-              </div>
+            <div className='relative flex py-2 items-center'>
+              <div className='grow border-t border-gray-300'></div>
+              <span className='shrink-0 mx-4 text-gray-400 font-medium'>or</span>
+              <div className='grow border-t border-gray-300'></div>
             </div>
 
-            {/* Single Google Button */}
-            <div className="pb-2">
+            {/* Google Button */}
+            <div className="mt-4">
               <button 
                 onClick={handleGoogleLogin}
-                className='w-full inline-flex justify-center items-center border border-black rounded-[12px] sm:rounded-[16px] bg-white py-3 sm:py-0
-                transform transition-all duration-200 hover:bg-gray-50 hover:shadow-md hover:scale-[1.01] active:scale-[0.98]'
-                style={{ minHeight: '52px', height: 'auto' }}
+                className='w-full h-12 md:h-14 inline-flex justify-center items-center border-2 border-gray-200 rounded-xl bg-white
+                transform transition-all duration-200 hover:bg-gray-50 hover:border-gray-300 active:bg-gray-100'
               >
                 <img 
                   src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" 
                   alt="Google" 
-                  className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8"
+                  className="h-5 w-5 md:h-6 md:w-6"
                 />
-                <p className="ml-3 sm:ml-4 font-bold text-[16px] sm:text-[18px] md:text-[20px] leading-6 text-[#1F2D3D]" style={{ fontFamily: 'Montserrat, sans-serif' }}>Continue with Google</p>
+                <span className="ml-3 font-bold text-base md:text-lg text-[#1F2D3D]">Continue with Google</span>
               </button>
             </div>
           </div>
