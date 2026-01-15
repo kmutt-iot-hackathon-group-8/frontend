@@ -48,7 +48,7 @@ const Profile = () => {
     <div className="min-h-screen bg-white relative overflow-hidden flex flex-col items-center pt-10 md:pt-20 font-montserrat pb-40">
       
       {/* Back Button */}
-      <div className="absolute top-19 left-170 z-30">
+      <div className="absolute -top-1  md:top-19 left-[5%] min-[1519px]:left-[35%]   z-30">
         <button 
           onClick={() => navigate('/')}
           className="flex items-center justify-center hover:bg-gray-100 rounded-lg transition-colors"
@@ -58,7 +58,7 @@ const Profile = () => {
       </div>
 
       {/* Content Layer */}
-      <div className="relative z-20 flex flex-col items-center w-full px-6">
+      <div className="relative top-10 z-20 flex flex-col items-center w-full px-6">
         <h1 className="text-3xl font-black mb-8 md:mb-12 tracking-tight text-black text-center">Account Settings</h1>
 
         <form onSubmit={handleSubmit} className="space-y-5 w-full max-w-md md:max-w-none flex flex-col items-center">

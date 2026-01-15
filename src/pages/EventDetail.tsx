@@ -1,4 +1,5 @@
-import { Calendar, Clock, MapPin, ArrowRight, User, Info, Timer } from 'lucide-react';
+import { Calendar, Clock, MapPin, ArrowRight, User, Info, Timer, ArrowLeft } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import type { Event } from '../components/EventCard';
 // Extended Event Interface for detail view
 interface DetailedEvent extends Event {
@@ -37,14 +38,26 @@ const MOCK_DETAIL_EVENT: DetailedEvent = {
 };
 
 const EventDetail = () => {
+  const navigate = useNavigate();
   const event = MOCK_DETAIL_EVENT;
 
   const formatDate = (date: Date) => date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
   const formatTime = (date: Date) => date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
 
   return (
-    <div className="min-h-screen bg-white text-zinc-900 font-montserrat pb-20">
-      <div className="max-w-7xl mx-auto w-full p-3 sm:p-6">
+    <div className="min-h-screen bg-white text-zinc-900 font-montserrat pb-20 relative">
+      
+      {/* Back Button */}
+      <div className="absolute -top-10  left-4 sm:left-20 md:left-10 lg:left-20 z-30">
+        <button 
+          onClick={() => navigate('/')}
+          className="flex items-center justify-center hover:bg-gray-100 rounded-lg transition-colors"
+        >
+          <ArrowLeft size={43} className="text-black" />
+        </button>
+      </div>
+
+      <div className="max-w-7xl mt-9 mx-auto w-full p-3 sm:p-6">
         
         {/* Featured Header */}
         <div className="w-full h-80 sm:h-96 rounded-xl overflow-hidden relative group text-white flex flex-col shadow-lg mb-6 sm:mb-8" style={{ backgroundColor: '#0D5958' }}>
