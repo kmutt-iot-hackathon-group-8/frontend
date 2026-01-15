@@ -1,6 +1,5 @@
 import { Calendar, Clock, MapPin, ArrowRight, User, Info, Timer } from 'lucide-react';
 import type { Event } from '../components/EventCard';
-
 // Extended Event Interface for detail view
 interface DetailedEvent extends Event {
   fullDescription: string;
@@ -23,7 +22,7 @@ const MOCK_DETAIL_EVENT: DetailedEvent = {
   time: "10:00 AM",
   location: "Tech Hub, Room 404",
   image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=2070&auto=format&fit=crop",
-  registered: true,
+  status: "registered",
   description: "Scalable system design",
   fullDescription: "Join us for an intensive workshop on building scalable, reliable, and maintainable systems. We will cover distributed patterns, database partitioning, and microservices trade-offs. This session is designed for intermediate to senior engineers looking to level up their architectural decision-making skills.",
   eventStart: new Date(2025, 0, 24, 10, 0),
@@ -59,9 +58,9 @@ const EventDetail = () => {
           </div>
 
           <div className="relative z-10 p-6 sm:p-10 flex flex-col h-full justify-end">
-            {event.registered && (
-              <div className="absolute top-6 right-6 bg-[#FFCC00] text-black text-xs font-bold px-3 py-1.5 rounded-lg shadow-md">
-                Registered
+            {event.status && (
+              <div className={`absolute top-6 right-6 ${event.status === 'present' ? 'bg-[#2DBE8B] text-white' : 'bg-[#FFCC00] text-black'} text-xs font-bold px-3 py-1.5 rounded-lg shadow-md`}>
+                {event.status === 'present' ? 'Present' : 'Registered'}
               </div>
             )}
 
@@ -70,7 +69,7 @@ const EventDetail = () => {
             <div className="flex flex-wrap items-center gap-4 sm:gap-8 text-zinc-200 text-sm sm:text-base mb-6">
               <div className="flex items-center gap-2">
                 <Calendar className="w-5 h-5" style={{ color: '#1BB3A0' }} />
-                {event.date.toLocaleDateString('en-US', { weekday: 'short', month: 'long', day: 'numeric' })}
+                {typeof event.date === 'string' ? event.date : event.date.toLocaleDateString('en-US', { weekday: 'short', month: 'long', day: 'numeric' })}
               </div>
               <div className="flex items-center gap-2">
                 <Clock className="w-5 h-5" style={{ color: '#1BB3A0' }} />
@@ -216,6 +215,7 @@ const EventDetail = () => {
         </div>
 
       </div>
+
     </div>
   );
 };

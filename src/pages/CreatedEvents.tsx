@@ -1,17 +1,20 @@
 import { useState } from 'react';
-import { ArrowLeft, CirclePlus, Home } from 'lucide-react';
+import { ArrowLeft, CirclePlus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import CreatedEventCard, { type CreatedEvent } from '../components/CreatedEventCard';
+import EventCard, { type Event } from '../components/EventCard';
 import clickToAddNewEvents from '../assets/icons/clicktoaddnewevents.webp';
-const MOCK_CREATED_EVENTS: CreatedEvent[] = [
-  {
+const MOCK_CREATED_EVENTS: Event[] = [
+   {
     id: 1,
-    title: "2026 IoT Hackaton Challenge",
-    date: "9 Jan - 19 Jan 2026",
-    location: "Learning Exchange Building 11-2",
-    attendees: 23,
-    image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=2070&auto=format&fit=crop"  
-  },
+    title: "System Design Architecture Workshop",
+    date: new Date(2025, 0, 24),
+    time: "10:00 AM",
+    location: "Tech Hub, Room 404",
+    image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=2070&auto=format&fit=crop",
+    status: "registered",
+    description: "Scalable system design",
+    attendees: 45
+  },  
   {
     id: 2,
     title: "Hack my butt",
@@ -89,16 +92,10 @@ const CreatedEvents = () => {
 
         <div className="space-y-4 sm:space-y-8 max-w-375">
           {MOCK_CREATED_EVENTS.map((event) => (
-            <CreatedEventCard key={event.id} event={event} />
+            <EventCard key={event.id} event={event} />
           ))}
         </div>
 
-        <button 
-          className="fixed bottom-6 sm:bottom-12 right-6 sm:right-16 w-25 h-25 sm:w-34.25 sm:h-35 bg-linear-to-r from-[#AFEEDD] to-[#6CB2D7] rounded-full shadow-xl flex items-center justify-center hover:scale-105 transition-transform"
-          onClick={() => navigate('/')}
-        >
-          <Home size={40} className="text-white sm:w-15 sm:h-15" strokeWidth={3} />
-        </button>
       </div>
     </div>
   );

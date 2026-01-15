@@ -12,8 +12,9 @@ const MOCK_EVENTS: Event[] = [
     time: "10:00 AM",
     location: "Tech Hub, Room 404",
     image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=2070&auto=format&fit=crop",
-    registered: true,
-    description: "Scalable system design"
+    status: "registered",
+    description: "Scalable system design",
+    attendees: 45
   },
   {
     id: 2,
@@ -22,8 +23,8 @@ const MOCK_EVENTS: Event[] = [
     time: "2:00 PM",
     location: "Virtual",
     image: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?q=80&w=2070&auto=format&fit=crop",
-    registered: false,
-    description: "RSC and new rendering patterns"
+    description: "RSC and new rendering patterns",
+    attendees: 32
   },
   {
     id: 3,
@@ -32,8 +33,9 @@ const MOCK_EVENTS: Event[] = [
     time: "11:00 AM",
     location: "Creative Loft B",
     image: "https://images.unsplash.com/photo-1561070791-2526d30994b5?q=80&w=2000&auto=format&fit=crop",
-    registered: true,
-    description: "Minimalist design approach"
+    status: "registered",
+    description: "Minimalist design approach",
+    attendees: 28
   },
   {
     id: 4,
@@ -42,8 +44,8 @@ const MOCK_EVENTS: Event[] = [
     time: "9:00 AM",
     location: "Main Hall",
     image: "https://images.unsplash.com/photo-1555099962-4199c345e5dd?q=80&w=2070&auto=format&fit=crop",
-    registered: false,
-    description: "Refactoring techniques"
+    description: "Refactoring techniques",
+    attendees: 67
   },
   {
     id: 5,
@@ -52,8 +54,8 @@ const MOCK_EVENTS: Event[] = [
     time: "4:30 PM",
     location: "Dev Den",
     image: "https://images.unsplash.com/photo-1579468118864-1b9ea3c0db4a?q=80&w=1997&auto=format&fit=crop",
-    registered: false,
-    description: "Async/await patterns"
+    description: "Async/await patterns",
+    attendees: 19
   },
   {
     id: 6,
@@ -62,8 +64,9 @@ const MOCK_EVENTS: Event[] = [
     time: "6:00 PM",
     location: "Online",
     image: "https://images.unsplash.com/photo-1516116216624-53e697fedbea?q=80&w=2128&auto=format&fit=crop",
-    registered: true,
-    description: "Advanced TypeScript"
+    status: "registered",
+    description: "Advanced TypeScript",
+    attendees: 89
   },
 ];
 
@@ -72,14 +75,15 @@ const Home = () => {
 
   const filteredEvents = useMemo(() => {
     if (!selectedDate) return MOCK_EVENTS;
-    return MOCK_EVENTS.filter(e =>
-      e.date.getDate() === selectedDate.getDate() &&
-      e.date.getMonth() === selectedDate.getMonth() &&
-      e.date.getFullYear() === selectedDate.getFullYear()
-    );
+    return MOCK_EVENTS.filter(e => {
+      if (typeof e.date !== 'object') return false;
+      return e.date.getDate() === selectedDate.getDate() &&
+        e.date.getMonth() === selectedDate.getMonth() &&
+        e.date.getFullYear() === selectedDate.getFullYear();
+    });
   }, [selectedDate]);
 
-  const upcomingEvent = MOCK_EVENTS.find(e => e.registered) || MOCK_EVENTS[0];
+  const upcomingEvent = MOCK_EVENTS.find(e => e.status === "registered") || MOCK_EVENTS[0];
 
   return (
     <div className="min-h-screen text-zinc-900 flex flex-col font-montserrat">

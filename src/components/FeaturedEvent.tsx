@@ -12,7 +12,7 @@ const FeaturedEvent = ({ event }: FeaturedEventProps) => {
   if (!event) {
     return (
       <div className="h-full bg-zinc-50 border border-zinc-200 border-dashed rounded-xl flex items-center justify-center text-zinc-400">
-        No upcoming registered events
+        No upcoming events
       </div>
     );
   }
@@ -38,7 +38,7 @@ const FeaturedEvent = ({ event }: FeaturedEventProps) => {
         <div className="flex items-center gap-4 text-zinc-300 text-sm mb-4">
           <div className="flex items-center gap-1.5">
             <Calendar className="w-4 h-4" style={{ color: '#1BB3A0' }} />
-            {event.date.toLocaleDateString('en-US', { weekday: 'short', month: 'long', day: 'numeric' })}
+            {typeof event.date === 'string' ? event.date : event.date.toLocaleDateString('en-US', { weekday: 'short', month: 'long', day: 'numeric' })}
           </div>
           <div className="flex items-center gap-1.5">
             <Clock className="w-4 h-4" style={{ color: '#1BB3A0' }} />
