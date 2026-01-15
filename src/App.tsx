@@ -14,10 +14,11 @@ import NavBar from './components/NavBar';
 import Profile from './pages/Profile';
 import AddEvent from './pages/AddEvent';
 import AttendedEvents from './pages/AttendedEvents';
+import SetUpNFC from "./pages/setUpNFC";
 
 function AppContent() {
   const location = useLocation();
-  const hideNavbarPaths = ['/login', '/register'];
+  const hideNavbarPaths = ['/login', '/register', '/set-up-nfc'];
   const shouldShowNavbar = !hideNavbarPaths.includes(location.pathname);
 
   return (
@@ -44,6 +45,10 @@ function AppContent() {
             <Route 
               path="/profile"
               element={<Profile />}
+            />
+            <Route 
+              path="/set-up-nfc"
+              element={<SetUpNFC />}
             />
               <Route
               path="/created-events"
