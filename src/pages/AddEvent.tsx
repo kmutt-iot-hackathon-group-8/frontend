@@ -33,7 +33,7 @@ const AddEvent = () => {
                     <div className="shrink-0">
                         {/* Gradient Box */}
                         {/* Desktop: 460x390, Mobile: ~363x308 */}
-                        <div className="relative w-4/5 aspect-[1.18]  sm:w-115 sm:h-97.5 rounded-[32px] shadow-[0px_4px_4px_rgba(0,0,0,0.25)] bg-linear-to-b from-[#AFEEDD] to-[#6CB2D7] flex items-center justify-center group cursor-pointer hover:opacity-95 transition-opacity mx-auto xl:mx-0">
+                        <div className="relative w-4/5 aspect-[1.18]  sm:w-115 sm:h-97.5 rounded-4xl shadow-[0px_4px_4px_rgba(0,0,0,0.25)] bg-linear-to-b from-[#AFEEDD] to-[#6CB2D7] flex items-center justify-center group cursor-pointer hover:opacity-95 transition-opacity mx-auto xl:mx-0">
                             
                            
 
@@ -154,7 +154,7 @@ const InputWithIcon = ({ label, icon }: { label: string, icon: React.ReactNode }
             <div className="relative">
                 <input 
                     type="text" 
-                    className="w-full h-13 sm:h-16 bg-[#F4F7F8] border-[4px] border-black rounded-2xl pl-3 sm:pl-4 pr-10 sm:pr-12 text-base sm:text-lg focus:outline-none focus:border-[#10726F] transition-colors"
+                    className="w-full h-13 sm:h-16 bg-[#F4F7F8] border-4 border-black rounded-2xl pl-3 sm:pl-4 pr-10 sm:pr-12 text-base sm:text-lg focus:outline-none focus:border-[#10726F] transition-colors"
                 />
                 <div className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 pointer-events-none">
                     {icon}

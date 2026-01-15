@@ -3,7 +3,7 @@ import NFC from '../assets/icons/NFCIcon.png';
 const setUpNFC = () => {
 
   return (
-    <div className="relative min-h-screen w-full bg-white font-['Montserrat'] overflow-x-hidden">
+    <div className="relative w-480 h-270 bg-white font-['Montserrat']">
       {/* --- WAVE BACKGROUND --- */}
       <div className="absolute bottom-0 left-0 w-full h-[160vh] z-0 block">
         <svg 
@@ -25,72 +25,42 @@ const setUpNFC = () => {
       </div>
 
       {/* ModTap */}
-      <h1 className="relative left-[142px] top-[89px] w-[202px] font-['Montserrat'] font-bold text-5xl leading-[59px] text-black z-10
-                     md:absolute md:left-1/2 md:-translate-x-1/2 md:w-auto md:text-[64px] md:leading-[78px] md:top-[109px]">
+      <h1 className="absolute w-67.25 h-19.5 left-213 top-27.25 font-['Montserrat'] font-bold text-[64px] leading-19.5 text-black z-10">
         ModTap
       </h1>
 
-      {/* Profile Icon - Mobile Only */}
-      <div className="absolute right-[40px] top-[62px] w-[96px] h-[97px] bg-[#8A8989] rounded-full flex items-center justify-center z-10
-                      md:hidden">
-        <svg className="w-[60px] h-[60px]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <g>
-            <circle cx="12" cy="8" r="3.5" stroke="#000000" strokeWidth="1.5"/>
-            <path d="M6.5 19.5C6.5 17 9 15 12 15C15 15 17.5 17 17.5 19.5" stroke="#000000" strokeWidth="1.5" strokeLinecap="round"/>
-          </g>
-        </svg>
-      </div>
+      {/* Set up NFC scanning now? */}
+      <h2 className="absolute w-169.25 h-14.75 left-103.5 top-89 font-['Montserrat'] font-bold text-[48px] leading-14.75 text-black z-10">
+        Set up NFC scanning now?
+      </h2>
 
-      {/* NFC Symbol Container - Mobile positioned */}
-      <div className="box-border relative mx-auto mt-[200px] w-[393px] h-[268px] 
-                      bg-gradient-to-b from-[#AFEEDD] to-[#6CB2D7] 
-                      border border-dashed border-black rounded-[20px] z-10 
-                      flex items-center justify-center
-                      md:absolute md:left-[1277px] md:top-[355px] md:mt-0">
+      {/* Description Text */}
+      <p className="absolute w-183 h-21.75 left-103.5 top-110 font-['Montserrat'] font-bold text-2xl leading-7.25 text-black z-10">
+        You'll need an NFC-enabled phone and a card to continue. Not ready? You can do this later from your profile.
+      </p>
+
+      {/* Scan Now Button */}
+      <button className="absolute w-48.75 h-13 left-103.5 top-149.25 bg-linear-to-r from-[#20D4A4] to-[#1F7CAE] shadow-[0px_4px_4px_rgba(0,0,0,0.25)] rounded-[10px] border-none cursor-pointer z-10">
+        <span className="font-['Montserrat'] font-bold text-xl leading-6 text-white">
+          Scan Now
+        </span>
+      </button>
+
+      {/* Maybe Later Button */}
+      <button className="absolute w-48.75 h-13 left-158.5 top-149.25 bg-[#A8BFC6] shadow-[0px_4px_4px_rgba(0,0,0,0.25)] rounded-[10px] border-none cursor-pointer z-10">
+        <span className="font-['Montserrat'] font-bold text-xl leading-6 text-white">
+          Maybe Later
+        </span>
+      </button>
+
+      {/* NFC Symbol Container */}
+      <div className="box-border absolute w-98.25 h-67 left-319.25 top-88.75 hover:brightness-105 bg-linear-to-br from-[#7dffdc] to-[#69cafe] border border-dashed border-black rounded-[20px] z-10 flex items-center justify-center">
         {/* NFC Icon */}
         <img 
           src={NFC} 
           alt="NFC Symbol"
-          className="w-[127.12px] h-[113px]"
+          className="w-[127.12px] h-28.25"
         />
-      </div>
-
-      {/* Content Container - Desktop positioned */}
-      <div className="relative mt-12 px-6 z-10
-                      md:absolute md:left-[414px] md:top-[356px] md:px-0">
-        {/* Set up NFC scanning now? */}
-        <h2 className="w-full font-['Montserrat'] font-bold text-3xl leading-tight text-black mb-4
-                       md:w-[677px] md:text-[48px] md:leading-[59px]">
-          Set up NFC scanning now?
-        </h2>
-
-        {/* Description Text */}
-        <p className="w-full font-['Montserrat'] font-bold text-lg leading-relaxed text-black mb-8
-                      md:w-[732px] md:text-2xl md:leading-[29px]">
-          You'll need an NFC-enabled phone and a card to continue. Not ready? You can do this later from your profile.
-        </p>
-
-        {/* Buttons Container */}
-        <div className="flex flex-col gap-4 w-full
-                        md:flex-row md:gap-5 md:w-auto">
-          {/* Scan Now Button */}
-          <button className="w-full h-[52px] bg-gradient-to-r from-[#20D4A4] to-[#1F7CAE] 
-                             shadow-[0px_4px_4px_rgba(0,0,0,0.25)] rounded-[10px] border-none cursor-pointer
-                             md:w-[195px]">
-            <span className="font-['Montserrat'] font-bold text-xl leading-6 text-white">
-              Scan Now
-            </span>
-          </button>
-
-          {/* Maybe Later Button */}
-          <button className="w-full h-[52px] bg-[#A8BFC6] 
-                             shadow-[0px_4px_4px_rgba(0,0,0,0.25)] rounded-[10px] border-none cursor-pointer
-                             md:w-[195px]">
-            <span className="font-['Montserrat'] font-bold text-xl leading-6 text-white">
-              Maybe Later
-            </span>
-          </button>
-        </div>
       </div>
     </div>
   );
