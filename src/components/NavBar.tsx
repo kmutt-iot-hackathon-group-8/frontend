@@ -20,7 +20,7 @@ const NavBar = () => {
                 </span>
             </div>
 
-            <div className="flex items-center gap-4 md:gap-8 mr-6">
+            <div className="flex items-center gap-4 md:gap-8 mr-0">
                 <div className="relative hidden md:block w-95.5 h-16">
                     <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
                         <Search className="w-8 h-8 ml-1" strokeWidth={3} />

@@ -74,10 +74,10 @@ const CreatedEvents = () => {
             <img 
               src={clickToAddNewEvents}
               alt="Click to Add New Events"
-              className={`absolute -top-15 mr-2 sm:mr-30 transition-opacity duration-200 ${
+              className={`absolute -top-15 right-0 sm:mr-11 transition-opacity duration-200 ${
                 isHovered ? 'opacity-100' : 'opacity-0 pointer-events-none'
               }`}
-              style={{ width: '250px', minWidth: '250px' }}
+              style={{ width: '200px', maxWidth: '200px' }}
             />
             <button 
               className="flex items-center mr-2 sm:mr-30 gap-3 hover:opacity-80 transition-opacity"
