@@ -50,8 +50,8 @@ const NavBar = () => {
 
                     {isProfileOpen && (
                         <div className="absolute right-0 -mt-3 w-52 flex flex-col z-50 font-montserrat" style={{ filter: 'drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))' }}>
-                            <button className="flex items-center gap-3 pl-6 pr-4 h-11.75 bg-[#F4F7F8] rounded-t-md hover:bg-[#A8BFC6] transition-colors cursor-pointer">
-                                <div className="w-6 h-6 flex items-center justify-center shrink-0">
+                            <button onClick={() => navigate('/profile')} className="flex items-center gap-3 pl-6 pr-4 h-11.75 bg-[#F4F7F8] rounded-t-md hover:bg-[#A8BFC6] transition-colors cursor-pointer">
+                                <div  className="w-6 h-6 flex items-center justify-center shrink-0">
                                     <img src={profileIcon} alt="Profile" className="max-w-full max-h-full object-contain" />
                                 </div>
                                 <span className="font-bold text-[14px] leading-4.25 text-[#1E1E1E]">View Profile</span>
