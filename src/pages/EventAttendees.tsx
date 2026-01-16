@@ -49,7 +49,7 @@ const EventAttendees = () => {
             "bg-red-400",
           ];
           return {
-            id: a.uid,
+            id: a.userId,
             name: `${a.fname} ${a.lname}`,
             email: a.email,
             status: (a.status === "present"
@@ -83,7 +83,7 @@ const EventAttendees = () => {
   });
 
   const handleStatusChange = async (
-    uid: number,
+    userId: number,
     newStatus: "Present" | "Absent" | "No Status",
   ) => {
     try {
@@ -94,11 +94,11 @@ const EventAttendees = () => {
       };
       await API.attendees.updateStatus(
         parseInt(id!),
-        uid,
+        userId,
         statusMap[newStatus] as any,
       );
       setAttendees(
-        attendees.map((a) => (a.id === uid ? { ...a, status: newStatus } : a)),
+        attendees.map((a) => (a.id === userId ? { ...a, status: newStatus } : a)),
       );
       setActiveDropdown(null);
     } catch (error) {
@@ -106,10 +106,10 @@ const EventAttendees = () => {
     }
   };
 
-  const handleDelete = async (uid: number) => {
+  const handleDelete = async (userId: number) => {
     try {
-      await API.attendees.remove(parseInt(id!), uid);
-      setAttendees(attendees.filter((a) => a.id !== uid));
+      await API.attendees.remove(parseInt(id!), userId);
+      setAttendees(attendees.filter((a) => a.id !== userId));
     } catch (error) {
       alert(
         error instanceof Error ? error.message : "Failed to remove attendee",

@@ -22,7 +22,7 @@ const Profile = () => {
     const fetchProfile = async () => {
       try {
         if (!user) return;
-        const profile = await API.users.getProfile(user.uid);
+        const profile = await API.users.getProfile(user.id);
         setFormData({
           firstName: profile.fname,
           lastName: profile.lname,
@@ -50,7 +50,7 @@ const Profile = () => {
     if (!user) return;
 
     try {
-      await API.users.updateProfile(user.uid, {
+      await API.users.updateProfile(user.id, {
         fname: formData.firstName,
         lname: formData.lastName,
         email: formData.email,

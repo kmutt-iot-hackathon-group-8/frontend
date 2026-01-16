@@ -18,7 +18,7 @@ const CreatedEvents = () => {
       try {
         if (!user) return;
         setIsLoading(true);
-        const data = await API.events.getAll(undefined, user.uid);
+        const data = await API.events.getAll(undefined, user.id);
         const mappedEvents = data.map((e: any) => ({
           id: e.eventId,
           title: e.eventDetail || "Event",

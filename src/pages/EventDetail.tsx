@@ -43,7 +43,7 @@ const EventDetail = () => {
     }
 
     try {
-      await API.attendees.register(parseInt(id!), user.uid);
+      await API.attendees.register(parseInt(id!), user.id);
       alert("Successfully registered for event!");
     } catch (error) {
       alert(error instanceof Error ? error.message : "Failed to register");

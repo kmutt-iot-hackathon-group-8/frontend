@@ -10,7 +10,7 @@ export const API = {
       if (ownerId) params.append("ownerId", ownerId.toString());
 
       const response = await fetch(
-        `${BASE_URL}/api/v1/events?${params.toString()}`,
+        `${BASE_URL}/api/v1/events?${params.toString()}`
       );
       if (!response.ok) throw new Error("Failed to fetch events");
       return response.json();
@@ -58,33 +58,33 @@ export const API = {
       if (status) params.append("status", status);
 
       const response = await fetch(
-        `${BASE_URL}/api/v1/events/${eventId}/attendees?${params.toString()}`,
+        `${BASE_URL}/api/v1/events/${eventId}/attendees?${params.toString()}`
       );
       if (!response.ok) throw new Error("Failed to fetch attendees");
       return response.json();
     },
 
-    register: async (eventId: number, uid: number) => {
+    register: async (eventId: number, userId: number) => {
       const response = await fetch(
         `${BASE_URL}/api/v1/events/${eventId}/register`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ uid }),
-        },
+          body: JSON.stringify({ userId }),
+        }
       );
       if (!response.ok) throw new Error("Failed to register for event");
       return response.json();
     },
 
-    add: async (eventId: number, uid: number, status?: string) => {
+    add: async (eventId: number, userId: number, status?: string) => {
       const response = await fetch(
         `${BASE_URL}/api/v1/events/${eventId}/attendees`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ uid, status }),
-        },
+          body: JSON.stringify({ userId, status }),
+        }
       );
       if (!response.ok) throw new Error("Failed to add attendee");
       return response.json();
@@ -92,27 +92,27 @@ export const API = {
 
     updateStatus: async (
       eventId: number,
-      uid: number,
-      status: "present" | "absent" | "registered",
+      userId: number,
+      status: "present" | "absent" | "registered"
     ) => {
       const response = await fetch(
-        `${BASE_URL}/api/v1/attendees/${eventId}/${uid}/status`,
+        `${BASE_URL}/api/v1/attendees/${eventId}/${userId}/status`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ status }),
-        },
+        }
       );
       if (!response.ok) throw new Error("Failed to update attendee status");
       return response.json();
     },
 
-    remove: async (eventId: number, uid: number) => {
+    remove: async (eventId: number, userId: number) => {
       const response = await fetch(
-        `${BASE_URL}/api/v1/events/${eventId}/attendees/${uid}`,
+        `${BASE_URL}/api/v1/events/${eventId}/attendees/${userId}`,
         {
           method: "DELETE",
-        },
+        }
       );
       if (!response.ok) throw new Error("Failed to remove attendee");
       return response.json();
@@ -121,14 +121,14 @@ export const API = {
 
   // ===== USERS =====
   users: {
-    getProfile: async (uid: number) => {
-      const response = await fetch(`${BASE_URL}/api/v1/users/profile/${uid}`);
+    getProfile: async (id: number) => {
+      const response = await fetch(`${BASE_URL}/api/v1/users/profile/${id}`);
       if (!response.ok) throw new Error("Failed to fetch profile");
       return response.json();
     },
 
-    updateProfile: async (uid: number, updates: any) => {
-      const response = await fetch(`${BASE_URL}/api/v1/users/profile/${uid}`, {
+    updateProfile: async (id: number, updates: any) => {
+      const response = await fetch(`${BASE_URL}/api/v1/users/profile/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updates),
@@ -137,11 +137,11 @@ export const API = {
       return response.json();
     },
 
-    linkCard: async (uid: number, cardId: string) => {
+    linkCard: async (id: number, cardId: string) => {
       const response = await fetch(`${BASE_URL}/api/v1/users/card`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ uid, cardId }),
+        body: JSON.stringify({ id, cardId }),
       });
       if (!response.ok) throw new Error("Failed to link card");
       return response.json();
@@ -150,11 +150,11 @@ export const API = {
 
   // ===== AUTHENTICATION =====
   auth: {
-    registerCard: async (cardId: string, uid: number, eventId?: number) => {
+    registerCard: async (cardId: string, userId: number, eventId?: number) => {
       const response = await fetch(`${BASE_URL}/api/v1/register-user`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ cardId, uid, eventId }),
+        body: JSON.stringify({ cardId, userId, eventId }),
       });
       if (!response.ok) throw new Error("Failed to register card");
       return response.json();
@@ -164,7 +164,7 @@ export const API = {
       const params = new URLSearchParams();
       if (eventId) params.append("eventId", eventId.toString());
       const response = await fetch(
-        `${BASE_URL}/api/v1/scan-card/${cardId}?${params.toString()}`,
+        `${BASE_URL}/api/v1/scan-card/${cardId}?${params.toString()}`
       );
       if (!response.ok) throw new Error("Card scan failed");
       return response.text();
