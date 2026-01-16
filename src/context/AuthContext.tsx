@@ -2,7 +2,7 @@ import React, { createContext, useState, useContext, useEffect } from "react";
 import { createAuthClient } from "better-auth/react";
 
 interface User {
-  uid: number;
+  id: number;
   fname: string;
   lname: string;
   email: string;
@@ -37,7 +37,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         if (session.data?.user) {
           const nameparts = (session.data.user.name || "").split(" ");
           setUser({
-            uid: parseInt(session.data.user.id) || 0,
+            id: parseInt(session.data.user.id) || 0,
             fname: nameparts[0] || "",
             lname: nameparts[1] || "",
             email: session.data.user.email,

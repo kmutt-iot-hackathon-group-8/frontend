@@ -97,7 +97,7 @@ const Register = () => {
         const user = (response.data as any).user;
         const nameparts = (user.name || "").split(" ");
         setUser({
-          uid: parseInt(user.id) || 0,
+          id: parseInt(user.id) || 0,
           fname: nameparts[0] || "",
           lname: nameparts[1] || "",
           email: user.email,
@@ -122,7 +122,7 @@ const Register = () => {
         const user = (response.data as any).user;
         const nameparts = (user.name || "").split(" ");
         setUser({
-          uid: parseInt(user.id) || 0,
+          id: parseInt(user.id) || 0,
           fname: nameparts[0] || "",
           lname: nameparts[1] || "",
           email: user.email,
@@ -144,7 +144,7 @@ const Register = () => {
         const user = (response.data as any).user;
         const nameparts = (user.name || "").split(" ");
         setUser({
-          uid: parseInt(user.id) || 0,
+          id: parseInt(user.id) || 0,
           fname: nameparts[0] || "",
           lname: nameparts[1] || "",
           email: user.email,

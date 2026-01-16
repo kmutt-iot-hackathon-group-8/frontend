@@ -33,7 +33,7 @@ const AddEvent = () => {
     setIsLoading(true);
     try {
       await API.events.create({
-        eventOwner: user.uid,
+        eventOwner: user.id,
         eventDetail: formData.title,
         eventIMG: null,
         eventStartDate: formData.eventStartDate.toISOString().split("T")[0],
