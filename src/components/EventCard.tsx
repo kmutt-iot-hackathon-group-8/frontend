@@ -22,7 +22,10 @@ function EventCard({ event, showActions = false }: EventCardProps) {
   const formattedDate = typeof event.date === 'string' ? event.date : event.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   const eventId = event.id || 1;
   return (
-    <div className="bg-white rounded-2xl sm:rounded-[26px] shadow-lg p-4 sm:p-8 flex flex-col sm:flex-row gap-4 sm:gap-8 relative">
+    <div 
+      className="bg-white rounded-2xl sm:rounded-[26px] shadow-lg p-4 sm:p-8 flex flex-col sm:flex-row gap-4 sm:gap-8 relative cursor-pointer hover:shadow-xl transition-shadow"
+      onClick={() => navigate(`/event/${eventId}`)}
+    >
       <div className="w-full h-40 sm:w-72 sm:h-48 bg-linear-to-r from-[#AFEEDD] to-[#6CB2D7] rounded-lg shrink-0 relative overflow-hidden">
         <img
           src={event.image}
@@ -74,10 +77,19 @@ function EventCard({ event, showActions = false }: EventCardProps) {
       
       {showActions && (
         <div className="absolute top-4 right-4 flex gap-2">
-          <button onClick={() => navigate(`/event/edit/${eventId}`)} className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+          <button 
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate(`/event/edit/${eventId}`);
+            }} 
+            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+          >
             <Edit className="w-7 h-7 text-gray-600 hover:text-blue-600" />
           </button>
-          <button className="p-2 hover:bg-gray-100 rounded-lg transit ion-colors">
+          <button 
+            onClick={(e) => e.stopPropagation()} 
+            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+          >
             <Trash2 className="w-7 h-7 text-gray-600 hover:text-red-600" />
           </button>
         </div>
