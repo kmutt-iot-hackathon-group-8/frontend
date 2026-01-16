@@ -1,13 +1,14 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Plus, ArrowLeft } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import EventCard from '../components/EventCard';
+import { useNavigate, useParams } from "react-router-dom";
+import EventHeader from "../components/EventHeader";
 import SearchAndFilter from "../components/SearchAndFilter";
 import AttendeeCard from "../components/AttendeeCard";
 import AddMemberModal from "../components/AddMemberModal";
+import { API } from "../utils/api";
 
 interface Attendee {
-  id: number;
+  id: string;
   name: string;
   email: string;
   status: "Present" | "Absent" | "No Status";
@@ -15,82 +16,57 @@ interface Attendee {
   initials: string;
   bgColor: string;
 }
-const MOCK_ATTENDEES: Attendee[] = [
-  {
-    id: 1,
-    name: "Sarah Connor",
-    email: "sarah.c@skynet.com",
-    status: "Present",
-    initials: "SC",
-    avatar: "",
-    bgColor: "bg-blue-400",
-  },
-  {
-    id: 2,
-    name: "John Doe",
-    email: "john.doe@example.com",
-    status: "Absent",
-    initials: "JD",
-    avatar: "",
-    bgColor: "bg-purple-400",
-  },
-  {
-    id: 3,
-    name: "Emily Blunt",
-    email: "emily.b@hollywood.com",
-    status: "No Status",
-    initials: "EB",
-    avatar: "",
-    bgColor: "bg-pink-400",
-  },
-  {
-    id: 4,
-    name: "Michael Scott",
-    email: "m.scott@dunder.com",
-    status: "Present",
-    initials: "MS",
-    avatar: "",
-    bgColor: "bg-orange-400",
-  },
-  {
-    id: 5,
-    name: "Dwight Schrute",
-    email: "beets@farms.com",
-    status: "Present",
-    initials: "DS",
-    avatar: "",
-    bgColor: "bg-green-400",
-  },
-  {
-    id: 6,
-    name: "Jim Halpert",
-    email: "jim.h@dunder.com",
-    status: "Absent",
-    initials: "JH",
-    avatar: "",
-    bgColor: "bg-red-400",
-  },
-];
-
-const EVENT_DATA =  {
-    id: 1,
-    title: "System Design Architecture Workshop",
-    date: new Date(2025, 0, 24),
-    time: "10:00 AM",
-    location: "Tech Hub, Room 404",
-    image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=2070&auto=format&fit=crop",
-    description: "Scalable system design",
-    attendees: 45
-  }
 
 const EventAttendees = () => {
   const navigate = useNavigate();
-  const [attendees, setAttendees] = useState<Attendee[]>(MOCK_ATTENDEES);
+  const { id } = useParams<{ id: string }>();
+  const [attendees, setAttendees] = useState<Attendee[]>([]);
+  const [event, setEvent] = useState<any>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState("All Statuses");
-  const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
+  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [formData, setFormData] = useState({ name: "", email: "" });
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        if (!id) return;
+        const eventData = await API.events.getById(parseInt(id));
+        setEvent(eventData);
+
+        const attendeesData = await API.attendees.getByEventId(parseInt(id));
+        const mappedAttendees = attendeesData.map((a: any, idx: number) => {
+          const initials = `${a.fname?.[0] || ""}${a.lname?.[0] || ""}`.toUpperCase();
+          const colors = [
+            "bg-blue-400", "bg-purple-400", "bg-pink-400", 
+            "bg-orange-400", "bg-green-400", "bg-red-400",
+          ];
+          return {
+            id: a.userId,
+            name: `${a.fname} ${a.lname}`,
+            email: a.email,
+            status: (a.status === "present"
+              ? "Present"
+              : a.status === "absent"
+                ? "Absent"
+                : "No Status") as "Present" | "Absent" | "No Status",
+            initials,
+            avatar: "",
+            bgColor: colors[idx % colors.length],
+          };
+        });
+        setAttendees(mappedAttendees);
+      } catch (err) {
+        console.error("Failed to fetch data:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [id]);
 
   const filteredAttendees = attendees.filter((attendee) => {
     const matchesSearch =
@@ -101,70 +77,69 @@ const EventAttendees = () => {
     return matchesSearch && matchesFilter;
   });
 
-  const handleStatusChange = (
-    id: number,
-    newStatus: "Present" | "Absent" | "No Status",
-  ) => {
-    setAttendees(
-      attendees.map((a) => (a.id === id ? { ...a, status: newStatus } : a)),
-    );
-    setActiveDropdown(null);
-  };
-
-  const handleDelete = (id: number) => {
-    setAttendees(attendees.filter((a) => a.id !== id));
-  };
-
-  const handleAddMember = () => {
-    if (formData.name.trim() && formData.email.trim()) {
-      const initials = formData.name
-        .split(" ")
-        .map((n) => n[0])
-        .join("")
-        .toUpperCase()
-        .slice(0, 2);
-      const colors = [
-        "bg-blue-400",
-        "bg-purple-400",
-        "bg-pink-400",
-        "bg-orange-400",
-        "bg-green-400",
-        "bg-red-400",
-      ];
-      const bgColor = colors[attendees.length % colors.length];
-
-      const newAttendee: Attendee = {
-        id: Math.max(...attendees.map((a) => a.id), 0) + 1,
-        name: formData.name,
-        email: formData.email,
-        status: "No Status",
-        initials,
-        avatar: "",
-        bgColor,
+  const handleStatusChange = async (userId: string, newStatus: "Present" | "Absent" | "No Status") => {
+    try {
+      const statusMap: Record<string, string> = {
+        Present: "present",
+        Absent: "absent",
+        "No Status": "registered",
       };
+      await API.attendees.updateStatus(
+        parseInt(id!),
+        userId,
+        statusMap[newStatus] as any,
+      );
+      setAttendees(
+        attendees.map((a) => (a.id === userId ? { ...a, status: newStatus } : a)),
+      );
+      setActiveDropdown(null);
+    } catch (error) {
+      alert(error instanceof Error ? error.message : "Failed to update status");
+    }
+  };
 
-      setAttendees([...attendees, newAttendee]);
-      setFormData({ name: "", email: "" });
-      setShowAddModal(false);
+  const handleDelete = async (userId: string) => {
+    try {
+      await API.attendees.remove(parseInt(id!), userId);
+      setAttendees(attendees.filter((a) => a.id !== userId));
+    } catch (error) {
+      alert(error instanceof Error ? error.message : "Failed to remove attendee");
+    }
+  };
+
+  const handleAddMember = async () => {
+    if (formData.name.trim() && formData.email.trim()) {
+      try {
+        await API.attendees.add(parseInt(id!), "0", "registered");
+        setFormData({ name: "", email: "" });
+        setShowAddModal(false);
+      } catch (error) {
+        alert(error instanceof Error ? error.message : "Failed to add member");
+      }
     }
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "Present":
-        return "bg-[#2DBE8B] text-white";
-      case "Absent":
-        return "bg-[#E5484D] text-white";
+      case "Present": return "bg-[#2DBE8B] text-white";
+      case "Absent": return "bg-[#E5484D] text-white";
       case "No Status":
-      default:
-        return "bg-[#FFCC00] text-black";
+      default: return "bg-[#FFCC00] text-black";
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-gray-500 font-semibold text-lg">Loading attendees...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white font-montserrat">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-12 pb-20">
-        {/* Back Button */}
+        {/* Navigation */}
         <button
           onClick={() => navigate("/created-events")}
           className="flex items-center gap-2 text-black hover:opacity-70 transition-opacity mb-8"
@@ -173,8 +148,19 @@ const EventAttendees = () => {
           <span className="font-semibold text-2xl">Back</span>
         </button>
 
-        {/* Event Header Component */}
-         <EventCard key={EVENT_DATA.id} event={EVENT_DATA} showActions={true} />
+        {/* Dynamic Event Header */}
+        {event && (
+          <EventHeader
+            title={event.eventDetail || "Event"}
+            date={new Date(event.eventStartDate).toLocaleDateString()}
+            location={event.contact || "TBA"}
+            attendeeCount={attendees.length}
+            image={
+              event.eventIMG ||
+              "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=2070&auto=format&fit=crop"
+            }
+          />
+        )}
 
         {/* Attendees Section */}
         <div className="mb-8 mt-10">
@@ -191,20 +177,19 @@ const EventAttendees = () => {
             </button>
           </div>
 
-          {/* Search and Filter Component */}
           <SearchAndFilter
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
             filterStatus={filterStatus}
             onFilterChange={setFilterStatus}
-            isFilterOpen={activeDropdown === 0}
+            isFilterOpen={activeDropdown === "filter"}
             onFilterToggle={() =>
-              setActiveDropdown(activeDropdown === 0 ? null : 0)
+              setActiveDropdown(activeDropdown === "filter" ? null : "filter")
             }
           />
 
-          {/* Attendee Cards Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-24">
+          {/* Attendee Cards Grid with padding from 'main' and spacing from 'feat/api' */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6 pb-24">
             {filteredAttendees.map((attendee) => (
               <AttendeeCard
                 key={attendee.id}
@@ -226,7 +211,6 @@ const EventAttendees = () => {
         </div>
       </div>
 
-      {/* Add Member Modal Component */}
       <AddMemberModal
         isOpen={showAddModal}
         onClose={() => setShowAddModal(false)}

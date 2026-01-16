@@ -2,7 +2,7 @@ import { Mail, Edit, Trash2, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { CircleAlert, CircleCheck, CircleX } from "lucide-react";
 interface Attendee {
-  id: number;
+  id: string;
   name: string;
   email: string;
   status: "Present" | "Absent" | "No Status";
