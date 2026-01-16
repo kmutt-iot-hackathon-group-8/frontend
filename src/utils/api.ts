@@ -4,7 +4,7 @@ const BASE_URL =
 export const API = {
   // ===== EVENTS =====
   events: {
-    getAll: async (date?: string, ownerId?: number) => {
+    getAll: async (date?: string, ownerId?: string) => {
       const params = new URLSearchParams();
       if (date) params.append("date", date);
       if (ownerId) params.append("ownerId", ownerId.toString());
@@ -64,7 +64,7 @@ export const API = {
       return response.json();
     },
 
-    register: async (eventId: number, userId: number) => {
+    register: async (eventId: number, userId: string) => {
       const response = await fetch(
         `${BASE_URL}/api/v1/events/${eventId}/register`,
         {
@@ -77,7 +77,7 @@ export const API = {
       return response.json();
     },
 
-    add: async (eventId: number, userId: number, status?: string) => {
+    add: async (eventId: number, userId: string, status?: string) => {
       const response = await fetch(
         `${BASE_URL}/api/v1/events/${eventId}/attendees`,
         {
@@ -92,7 +92,7 @@ export const API = {
 
     updateStatus: async (
       eventId: number,
-      userId: number,
+      userId: string,
       status: "present" | "absent" | "registered"
     ) => {
       const response = await fetch(
@@ -107,7 +107,7 @@ export const API = {
       return response.json();
     },
 
-    remove: async (eventId: number, userId: number) => {
+    remove: async (eventId: number, userId: string) => {
       const response = await fetch(
         `${BASE_URL}/api/v1/events/${eventId}/attendees/${userId}`,
         {
@@ -121,13 +121,13 @@ export const API = {
 
   // ===== USERS =====
   users: {
-    getProfile: async (id: number) => {
+    getProfile: async (id: string) => {
       const response = await fetch(`${BASE_URL}/api/v1/users/profile/${id}`);
       if (!response.ok) throw new Error("Failed to fetch profile");
       return response.json();
     },
 
-    updateProfile: async (id: number, updates: any) => {
+    updateProfile: async (id: string, updates: any) => {
       const response = await fetch(`${BASE_URL}/api/v1/users/profile/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -150,7 +150,7 @@ export const API = {
 
   // ===== AUTHENTICATION =====
   auth: {
-    registerCard: async (cardId: string, userId: number, eventId?: number) => {
+    registerCard: async (cardId: string, userId: string, eventId?: number) => {
       const response = await fetch(`${BASE_URL}/api/v1/register-user`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

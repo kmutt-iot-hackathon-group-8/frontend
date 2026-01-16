@@ -8,7 +8,7 @@ import AddMemberModal from "../components/AddMemberModal";
 import { API } from "../utils/api";
 
 interface Attendee {
-  id: number;
+  id: string;
   name: string;
   email: string;
   status: "Present" | "Absent" | "No Status";
@@ -24,7 +24,7 @@ const EventAttendees = () => {
   const [event, setEvent] = useState<any>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState("All Statuses");
-  const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
+  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [formData, setFormData] = useState({ name: "", email: "" });
   const [isLoading, setIsLoading] = useState(true);
@@ -83,7 +83,7 @@ const EventAttendees = () => {
   });
 
   const handleStatusChange = async (
-    userId: number,
+    userId: string,
     newStatus: "Present" | "Absent" | "No Status",
   ) => {
     try {
@@ -106,7 +106,7 @@ const EventAttendees = () => {
     }
   };
 
-  const handleDelete = async (userId: number) => {
+  const handleDelete = async (userId: string) => {
     try {
       await API.attendees.remove(parseInt(id!), userId);
       setAttendees(attendees.filter((a) => a.id !== userId));
@@ -120,7 +120,7 @@ const EventAttendees = () => {
   const handleAddMember = async () => {
     if (formData.name.trim() && formData.email.trim()) {
       try {
-        await API.attendees.add(parseInt(id!), 0, "registered");
+        await API.attendees.add(parseInt(id!), "0", "registered");
         setFormData({ name: "", email: "" });
         setShowAddModal(false);
       } catch (error) {
@@ -192,9 +192,9 @@ const EventAttendees = () => {
             onSearchChange={setSearchQuery}
             filterStatus={filterStatus}
             onFilterChange={setFilterStatus}
-            isFilterOpen={activeDropdown === 0}
+            isFilterOpen={activeDropdown === "filter"}
             onFilterToggle={() =>
-              setActiveDropdown(activeDropdown === 0 ? null : 0)
+              setActiveDropdown(activeDropdown === "filter" ? null : "filter")
             }
           />
 
