@@ -16,6 +16,7 @@ import AddEvent from './pages/AddEvent';
 import AttendedEvents from './pages/AttendedEvents';
 import SetUpNFC from "./pages/setUpNFC";
 import RegisterWithCard from "./pages/RegisCardU";
+import EventAttendees from "./pages/EventAttendees";
 
 function AppContent() {
   const location = useLocation();
@@ -71,6 +72,7 @@ function AppContent() {
               path="/add-event/"
               element={<AddEvent />}
             />
+            <Route path="/event/:id/attendees" element={<EventAttendees />} />
           </Routes>
         </div>
       </div>

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Plus, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import EventHeader from "../components/EventHeader";
+import EventCard from '../components/EventCard';
 import SearchAndFilter from "../components/SearchAndFilter";
 import AttendeeCard from "../components/AttendeeCard";
 import AddMemberModal from "../components/AddMemberModal";
@@ -15,7 +15,6 @@ interface Attendee {
   initials: string;
   bgColor: string;
 }
-
 const MOCK_ATTENDEES: Attendee[] = [
   {
     id: 1,
@@ -73,14 +72,16 @@ const MOCK_ATTENDEES: Attendee[] = [
   },
 ];
 
-const EVENT_DATA = {
-  title: "2026 IoT Hackaton Challenge",
-  date: "24 JAN 2026",
-  location: "Tech Hub, Room 404",
-  attendeeCount: 8,
-  image:
-    "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=2070&auto=format&fit=crop",
-};
+const EVENT_DATA =  {
+    id: 1,
+    title: "System Design Architecture Workshop",
+    date: new Date(2025, 0, 24),
+    time: "10:00 AM",
+    location: "Tech Hub, Room 404",
+    image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=2070&auto=format&fit=crop",
+    description: "Scalable system design",
+    attendees: 45
+  }
 
 const EventAttendees = () => {
   const navigate = useNavigate();
@@ -151,45 +152,39 @@ const EventAttendees = () => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "Present":
-        return "bg-green-500 text-white";
+        return "bg-[#2DBE8B] text-white";
       case "Absent":
-        return "bg-red-500 text-white";
+        return "bg-[#E5484D] text-white";
       case "No Status":
       default:
-        return "bg-yellow-400 text-black";
+        return "bg-[#FFCC00] text-black";
     }
   };
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-12">
+    <div className="min-h-screen bg-white font-montserrat">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-12 pb-20">
         {/* Back Button */}
         <button
           onClick={() => navigate("/created-events")}
           className="flex items-center gap-2 text-black hover:opacity-70 transition-opacity mb-8"
         >
           <ArrowLeft size={24} />
-          <span className="font-semibold">Back</span>
+          <span className="font-semibold text-2xl">Back</span>
         </button>
 
         {/* Event Header Component */}
-        <EventHeader
-          title={EVENT_DATA.title}
-          date={EVENT_DATA.date}
-          location={EVENT_DATA.location}
-          attendeeCount={EVENT_DATA.attendeeCount}
-          image={EVENT_DATA.image}
-        />
+         <EventCard key={EVENT_DATA.id} event={EVENT_DATA} showActions={true} />
 
         {/* Attendees Section */}
-        <div className="mb-8">
+        <div className="mb-8 mt-10">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
             <h3 className="text-2xl sm:text-3xl font-bold text-black">
               {filteredAttendees.length} Attendees
             </h3>
             <button
               onClick={() => setShowAddModal(true)}
-              className="flex items-center justify-center gap-2 bg-black text-white px-6 py-3 rounded-lg hover:opacity-90 transition-opacity font-semibold w-full sm:w-auto"
+              className="flex items-center justify-center gap-2 bg-[#10726F] text-white px-6 py-3 rounded-lg hover:opacity-90 transition-opacity font-semibold w-full sm:w-auto"
             >
               <Plus size={20} />
               Add Member
@@ -209,7 +204,7 @@ const EventAttendees = () => {
           />
 
           {/* Attendee Cards Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-24">
             {filteredAttendees.map((attendee) => (
               <AttendeeCard
                 key={attendee.id}

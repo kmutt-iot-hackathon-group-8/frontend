@@ -1,5 +1,4 @@
-import { Calendar, MapPin, User } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { Calendar, MapPin, User, Edit, Trash2 } from 'lucide-react';
 
 export interface Event {
   id: number;
@@ -15,19 +14,14 @@ export interface Event {
 
 interface EventCardProps {
   event: Event;
+  showActions?: boolean;
 }
 
-function EventCard({ event }: EventCardProps) {
-  const navigate = useNavigate();
-
-  const handleClick = () => {
-    navigate(`/event/${event.id}`);
-  };
-
+function EventCard({ event, showActions = false }: EventCardProps) {
   const formattedDate = typeof event.date === 'string' ? event.date : event.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 
   return (
-    <div className="bg-white rounded-2xl sm:rounded-[26px] shadow-lg p-4 sm:p-8 flex flex-col sm:flex-row gap-4 sm:gap-8 hover:shadow-xl transition-shadow cursor-pointer" onClick={handleClick}>
+    <div className="bg-white rounded-2xl sm:rounded-[26px] shadow-lg p-4 sm:p-8 flex flex-col sm:flex-row gap-4 sm:gap-8 relative">
       <div className="w-full h-40 sm:w-72 sm:h-48 bg-linear-to-r from-[#AFEEDD] to-[#6CB2D7] rounded-lg shrink-0 relative overflow-hidden">
         <img
           src={event.image}
@@ -76,6 +70,17 @@ function EventCard({ event }: EventCardProps) {
           </div>
         )}
       </div>
+      
+      {showActions && (
+        <div className="absolute top-4 right-4 flex gap-2">
+          <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+            <Edit className="w-7 h-7 text-gray-600 hover:text-blue-600" />
+          </button>
+          <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+            <Trash2 className="w-7 h-7 text-gray-600 hover:text-red-600" />
+          </button>
+        </div>
+      )}
     </div>
   );
 }
