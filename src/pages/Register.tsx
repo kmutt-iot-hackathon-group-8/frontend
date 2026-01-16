@@ -11,6 +11,17 @@ const authClient = createAuthClient({
   baseURL: BASE_URL,
 });
 
+interface SignUpEmailOptions {
+  email: string;
+  password: string;
+  name: string;
+  image?: string;
+  callbackURL?: string;
+  fname?: string;
+  lname?: string;
+  [key: string]: unknown;
+}
+
 const Register = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -80,7 +91,7 @@ const Register = () => {
         name: `${formData.firstName} ${formData.lastName}`,
         fname: formData.firstName,
         lname: formData.lastName,
-      });
+      } as SignUpEmailOptions);
 
       if (response.data && 'user' in response.data) {
         const user = (response.data as any).user;
