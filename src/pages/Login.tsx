@@ -32,7 +32,7 @@ const Login = () => {
     e.preventDefault();
     setRegStatus("loading");
     try {
-      const response = await fetch(`${BASE_URL}/register`, {
+      const response = await fetch(`${BASE_URL}/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -53,7 +53,7 @@ const Login = () => {
 
   return (
     // Main Container: Added consistent padding so it never touches screen edges
-    <div className='relative min-h-screen flex flex-col justify-center items-center p-4 sm:p-6 lg:p-8 overflow-hidden bg-white font-monstserrat'>
+    <div className='relative min-h-screen flex flex-col justify-center items-center p-4 sm:p-6 lg:p-8 overflow-hidden bg-white font-montserrat'>
       
       {/* --- WAVE BACKGROUND --- */}
       <div className="absolute bottom-0 left-0 w-full h-[160vh] z-0 block">
