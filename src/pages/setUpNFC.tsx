@@ -1,6 +1,19 @@
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import NFC from '../assets/icons/NFCIcon.png';
+import NfcPopup from '../components/NfcPopup';
 
-const setUpNFC = () => {
+const SetUpNFC = () => {
+  const navigate = useNavigate();
+  const [showNfcPopup, setShowNfcPopup] = useState(false);
+
+  const handleScanNow = () => {
+    setShowNfcPopup(true);
+  };
+
+  const handleMaybeLater = () => {
+    navigate('/profile');
+  };
 
   return (
     <div className="relative w-480 h-270 bg-white font-['Montserrat']">
@@ -40,14 +53,18 @@ const setUpNFC = () => {
       </p>
 
       {/* Scan Now Button */}
-      <button className="absolute w-48.75 h-13 left-103.5 top-149.25 bg-linear-to-r from-[#20D4A4] to-[#1F7CAE] shadow-[0px_4px_4px_rgba(0,0,0,0.25)] rounded-[10px] border-none cursor-pointer z-10">
+      <button 
+        onClick={handleScanNow}
+        className="absolute w-48.75 h-13 left-103.5 top-149.25 bg-linear-to-r from-[#20D4A4] to-[#1F7CAE] shadow-[0px_4px_4px_rgba(0,0,0,0.25)] rounded-[10px] border-none cursor-pointer z-10 hover:brightness-110 active:scale-95 transition-all">
         <span className="font-['Montserrat'] font-bold text-xl leading-6 text-white">
           Scan Now
         </span>
       </button>
 
       {/* Maybe Later Button */}
-      <button className="absolute w-48.75 h-13 left-158.5 top-149.25 bg-[#A8BFC6] shadow-[0px_4px_4px_rgba(0,0,0,0.25)] rounded-[10px] border-none cursor-pointer z-10">
+      <button 
+        onClick={handleMaybeLater}
+        className="absolute w-48.75 h-13 left-158.5 top-149.25 bg-[#A8BFC6] shadow-[0px_4px_4px_rgba(0,0,0,0.25)] rounded-[10px] border-none cursor-pointer z-10 hover:brightness-110 active:scale-95 transition-all">
         <span className="font-['Montserrat'] font-bold text-xl leading-6 text-white">
           Maybe Later
         </span>
@@ -62,8 +79,11 @@ const setUpNFC = () => {
           className="w-[127.12px] h-28.25"
         />
       </div>
+
+      {/* NFC Popup Modal */}
+      {showNfcPopup && <NfcPopup onClose={() => setShowNfcPopup(false)} />}
     </div>
   );
 };
 
-export default setUpNFC;
+export default SetUpNFC;
