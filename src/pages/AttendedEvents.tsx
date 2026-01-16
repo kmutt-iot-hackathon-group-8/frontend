@@ -10,7 +10,15 @@ const AttendedEvents = () => {
   const { user } = useAuth();
   const [events, setEvents] = useState<Event[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-
+interface RawEvent {
+  eventId: string | number;
+  eventDetail?: string;
+  eventStartDate: string;
+  eventStartTime?: string;
+  contact?: string;
+  eventIMG?: string;
+  attendeeCount?: number;
+}
   useEffect(() => {
     const fetchEvents = async () => {
       try {
@@ -18,7 +26,7 @@ const AttendedEvents = () => {
         setIsLoading(true);
         const data = await API.events.getAll();
         const mappedEvents = data
-          .map((e: any) => ({
+          .map((e: RawEvent) => ({
             id: e.eventId,
             title: e.eventDetail || "Event",
             date: new Date(e.eventStartDate),
@@ -31,7 +39,7 @@ const AttendedEvents = () => {
             description: e.eventDetail || "",
             attendees: e.attendeeCount || 0,
           }))
-          .filter((_, i) => i % 2 === 0);
+          .filter((_: any, i: number) => i % 2 === 0);
         setEvents(mappedEvents);
       } catch (err) {
         console.error("Failed to fetch attended events:", err);

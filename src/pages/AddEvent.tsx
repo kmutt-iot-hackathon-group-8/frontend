@@ -131,7 +131,7 @@ const AddEvent = () => {
                   </label>
                   <DatePicker
                     selected={formData.eventStartDate}
-                    onChange={(date) =>
+                    onChange={(date: Date | null) =>
                       setFormData({
                         ...formData,
                         eventStartDate: date || new Date(),
@@ -147,7 +147,7 @@ const AddEvent = () => {
                   </label>
                   <DatePicker
                     selected={formData.eventEndDate}
-                    onChange={(date) =>
+                    onChange={(date: Date | null) =>
                       setFormData({
                         ...formData,
                         eventEndDate: date || new Date(),
@@ -196,7 +196,7 @@ const AddEvent = () => {
                 </label>
                 <DatePicker
                   selected={formData.regisStart}
-                  onChange={(date) =>
+                  onChange={(date: Date | null) =>
                     setFormData({ ...formData, regisStart: date || new Date() })
                   }
                   dateFormat="MMMM d, yyyy"
@@ -209,7 +209,7 @@ const AddEvent = () => {
                 </label>
                 <DatePicker
                   selected={formData.regisEnd}
-                  onChange={(date) =>
+                  onChange={(date: Date | null) =>
                     setFormData({ ...formData, regisEnd: date || new Date() })
                   }
                   dateFormat="MMMM d, yyyy"
