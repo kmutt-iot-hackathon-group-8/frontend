@@ -10,7 +10,7 @@ const Login = () => {
   const cardId = q.get("cardId");
   const eventId = q.get("eventId");
 
-  const [regStatus, setRegStatus] = useState("idle");
+  const [loginStatus, setLoginStatus] = useState("idle");
   const [showPassword, setShowPassword] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -30,7 +30,7 @@ const Login = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setRegStatus("loading");
+    setLoginStatus("loading");
     try {
       const response = await fetch(`${BASE_URL}/login`, {
         method: "POST",
@@ -40,10 +40,10 @@ const Login = () => {
       if (!response.ok) throw new Error("Registration failed");
       const data = await response.json();
       console.log("Success:", data);
-      setRegStatus("success");
+      setLoginStatus("success");
     } catch (error) {
       console.error("Error:", error);
-      setRegStatus("error");
+      setLoginStatus("error");
     }
   };
 
@@ -150,14 +150,14 @@ const Login = () => {
             <div className="pt-2">
               <button
                 type='submit'
-                disabled={regStatus === 'loading'}
+                disabled={loginStatus === 'loading'}
                 className='w-full h-12 md:h-14 flex justify-center items-center font-bold text-lg md:text-xl text-white rounded-lg md:rounded-xl 
                 transform transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed shadow-md hover:shadow-lg'
                 style={{ 
                   background: 'linear-gradient(90deg, #20D4A4 0%, #1F7CAE 100%)',
                 }}
               >
-                {regStatus === 'loading' ? (
+                {loginStatus === 'loading' ? (
                    <>
                      <Loader2 className="animate-spin mr-2 h-5 w-5" /> 
                      Signing in...
