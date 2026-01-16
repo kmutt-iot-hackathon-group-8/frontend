@@ -4,6 +4,7 @@ import { EyeOff, Eye, Loader2 } from "lucide-react";
 import WaveBackground from "../components/WaveBackground";
 import { createAuthClient } from "better-auth/react";
 import { useAuth } from "../context/AuthContext";
+import { API } from "../utils/api";
 
 const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
@@ -30,6 +31,9 @@ const Register = () => {
 
   const firstName = q.get("firstName");
   const lastName = q.get("lastName");
+  const cardId = q.get("cardId");
+  const eventId = q.get("eventId");
+  const isMobile = q.get("mobile") === "true";
 
   const [regStatus, setRegStatus] = useState("idle");
   const [showPassword, setShowPassword] = useState(false);
@@ -102,6 +106,17 @@ const Register = () => {
           lname: nameparts[1] || "",
           email: user.email,
         });
+
+        // Register NFC card if cardId is provided
+        if (cardId && user.id) {
+          try {
+            await API.auth.registerCard(cardId, user.id, eventId ? parseInt(eventId) : undefined);
+            alert("Account created and NFC card registered successfully!");
+          } catch (cardError) {
+            console.error("Card registration failed:", cardError);
+            alert("Account created but NFC card registration failed. You can register your card later in your profile.");
+          }
+        }
       }
 
       setRegStatus("success");
@@ -127,6 +142,18 @@ const Register = () => {
           lname: nameparts[1] || "",
           email: user.email,
         });
+
+        // Register NFC card if cardId is provided
+        if (cardId && user.id) {
+          try {
+            await API.auth.registerCard(cardId, user.id, eventId ? parseInt(eventId) : undefined);
+            alert("Logged in and NFC card registered successfully!");
+          } catch (cardError) {
+            console.error("Card registration failed:", cardError);
+            alert("Logged in but NFC card registration failed. You can register your card later in your profile.");
+          }
+        }
+
         navigate("/");
       }
     } catch (error) {
@@ -149,6 +176,18 @@ const Register = () => {
           lname: nameparts[1] || "",
           email: user.email,
         });
+
+        // Register NFC card if cardId is provided
+        if (cardId && user.id) {
+          try {
+            await API.auth.registerCard(cardId, user.id, eventId ? parseInt(eventId) : undefined);
+            alert("Logged in and NFC card registered successfully!");
+          } catch (cardError) {
+            console.error("Card registration failed:", cardError);
+            alert("Logged in but NFC card registration failed. You can register your card later in your profile.");
+          }
+        }
+
         navigate("/");
       }
     } catch (error) {
@@ -180,10 +219,10 @@ const Register = () => {
         >
           <div className="text-center mb-6 md:mb-8">
             <p className="font-bold text-2xl md:text-3xl lg:text-4xl text-[#1F2D3D] mb-1">
-              Welcome!
+              {cardId ? "Register Your NFC Card" : isMobile ? "Register Your NFC Card" : "Welcome!"}
             </p>
             <p className="font-semibold text-xl md:text-2xl text-[#1BB3A9]">
-              Create your account
+              {cardId ? "Create account to link your card" : isMobile ? "Scan your NFC card at the IoT device to register it" : "Create your account"}
             </p>
           </div>
 

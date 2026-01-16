@@ -2,12 +2,15 @@ import { X, TriangleAlert } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { useState } from 'react';
 import NFC from '../assets/icons/NFCIcon.png';
+import { useAuth } from '../context/AuthContext';
+
 interface NfcPopupProps {
   onClose: () => void;
 }
 
 const NfcPopup = ({ onClose }: NfcPopupProps) => {
-  const qrCodeUrl = 'https://website.com/profile?mobilenfc=true';
+  const { user } = useAuth();
+  const qrCodeUrl = user ? `${window.location.origin}/register?userId=${user.id}&mobile=true` : 'https://website.com/profile?mobilenfc=true';
   const [isClosing, setIsClosing] = useState(false);
 
   const handleClose = () => {
