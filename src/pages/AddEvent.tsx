@@ -283,7 +283,7 @@ const InputWithIcon = ({ label, icon }: InputProps) => {
             <label className="block text-sm sm:text-base font-semibold mb-1.5 text-gray-600 truncate transition-colors">{label}</label>
             <DatePicker 
                 selected={startDate} 
-                onChange={(date) => setStartDate(date)}
+                onChange={(date: Date | null) => setStartDate(date)}
                 dateFormat="MMMM d, yyyy"
                 customInput={<CustomInput icon={icon} />}
                 calendarClassName="bg-white border-0 shadow-2xl rounded-2xl font-sans overflow-hidden"
