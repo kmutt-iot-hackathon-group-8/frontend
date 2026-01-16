@@ -37,7 +37,7 @@ const Login = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
-      if (!response.ok) throw new Error("Registration failed");
+      if (!response.ok) throw new Error("Login failed");
       const data = await response.json();
       console.log("Success:", data);
       setLoginStatus("success");
