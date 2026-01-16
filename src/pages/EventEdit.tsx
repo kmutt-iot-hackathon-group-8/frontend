@@ -6,7 +6,7 @@ import {
   Clock, 
   ChevronDown 
 } from 'lucide-react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
@@ -54,7 +54,7 @@ const MOCK_DETAIL_EVENT: DetailedEvent = {
 
 const EventEdit = () => {
     const navigate = useNavigate();
-    const { id } = useParams<{ id: string }>();
+    //const { id } = useParams<{ id: string }>();
     
     // Use the mock event data
     const eventData = MOCK_DETAIL_EVENT;

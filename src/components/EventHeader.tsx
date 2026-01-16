@@ -18,7 +18,7 @@ const EventHeader = ({
   return (
     <div className="bg-gray-100 rounded-lg p-6 sm:p-8 mb-8 flex flex-col sm:flex-row gap-6 relative">
       {/* Event Image */}
-      <div className="w-full sm:w-64 h-48 sm:h-56 rounded-lg overflow-hidden flex-shrink-0">
+      <div className="w-full sm:w-64 h-48 sm:h-56 rounded-lg overflow-hidden shrink-0">
         <img src={image} alt={title} className="w-full h-full object-cover" />
       </div>
 
