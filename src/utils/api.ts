@@ -64,13 +64,13 @@ export const API = {
       return response.json();
     },
 
-    register: async (eventId: number, userId: string) => {
+    register: async (eventId: number) => {
       const response = await fetch(
-        `${BASE_URL}/api/v1/events/${eventId}/register`,
+        `${BASE_URL}/api/v1/events/${eventId}/attendees/register`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ userId }),
+          credentials: "include", // Include cookies for session
         }
       );
       if (!response.ok) throw new Error("Failed to register for event");
