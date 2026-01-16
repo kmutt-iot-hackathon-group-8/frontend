@@ -65,6 +65,11 @@ const Register = () => {
       return;
     }
 
+    if (formData.password.length < 3) {
+      alert("Password must be at least 6 characters long");
+      return;
+    }
+
     setRegStatus("loading");
 
     try {
@@ -73,6 +78,8 @@ const Register = () => {
         email: formData.email,
         password: formData.password,
         name: `${formData.firstName} ${formData.lastName}`,
+        fname: formData.firstName,
+        lname: formData.lastName,
       });
 
       if (response.data && 'user' in response.data) {
