@@ -122,7 +122,7 @@ const Register = () => {
                 First Name
               </label>
               <input
-                id='firstName'
+                id='fname'
                 name='firstName'
                 type='text'
                 autoComplete='given-name'
@@ -139,7 +139,7 @@ const Register = () => {
                 Last Name
               </label>
               <input
-                id='lastName'
+                id='lname'
                 name='lastName'
                 type='text'
                 autoComplete='family-name'
@@ -169,12 +169,12 @@ const Register = () => {
 
             {/* Password */}
             <div>
-              <label htmlFor='password' className='block font-bold text-sm md:text-lg text-black mb-2 ml-1'>
+              <label htmlFor='Password' className='block font-bold text-sm md:text-lg text-black mb-2 ml-1'>
                 Password
               </label>
               <div className="relative">
                 <input
-                  id='password'
+                  id='userPassword'
                   name='password'
                   type={showPassword ? 'text' : 'password'}
                   autoComplete='new-password'

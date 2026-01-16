@@ -103,7 +103,7 @@ const Login = () => {
               </label>
               <div className="relative">
                 <input
-                  id='password'
+                  id='userPassword'
                   name='password'
                   type={showPassword ? 'text' : 'password'}
                   autoComplete='current-password'
