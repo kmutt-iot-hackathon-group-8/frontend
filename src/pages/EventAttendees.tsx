@@ -38,15 +38,10 @@ const EventAttendees = () => {
 
         const attendeesData = await API.attendees.getByEventId(parseInt(id));
         const mappedAttendees = attendeesData.map((a: any, idx: number) => {
-          const initials =
-            `${a.fname?.[0] || ""}${a.lname?.[0] || ""}`.toUpperCase();
+          const initials = `${a.fname?.[0] || ""}${a.lname?.[0] || ""}`.toUpperCase();
           const colors = [
-            "bg-blue-400",
-            "bg-purple-400",
-            "bg-pink-400",
-            "bg-orange-400",
-            "bg-green-400",
-            "bg-red-400",
+            "bg-blue-400", "bg-purple-400", "bg-pink-400", 
+            "bg-orange-400", "bg-green-400", "bg-red-400",
           ];
           return {
             id: a.userId,
@@ -82,10 +77,7 @@ const EventAttendees = () => {
     return matchesSearch && matchesFilter;
   });
 
-  const handleStatusChange = async (
-    userId: string,
-    newStatus: "Present" | "Absent" | "No Status",
-  ) => {
+  const handleStatusChange = async (userId: string, newStatus: "Present" | "Absent" | "No Status") => {
     try {
       const statusMap: Record<string, string> = {
         Present: "present",
@@ -111,9 +103,7 @@ const EventAttendees = () => {
       await API.attendees.remove(parseInt(id!), userId);
       setAttendees(attendees.filter((a) => a.id !== userId));
     } catch (error) {
-      alert(
-        error instanceof Error ? error.message : "Failed to remove attendee",
-      );
+      alert(error instanceof Error ? error.message : "Failed to remove attendee");
     }
   };
 
@@ -131,35 +121,34 @@ const EventAttendees = () => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "Present":
-        return "bg-green-500 text-white";
-      case "Absent":
-        return "bg-red-500 text-white";
+      case "Present": return "bg-[#2DBE8B] text-white";
+      case "Absent": return "bg-[#E5484D] text-white";
       case "No Status":
-      default:
-        return "bg-yellow-400 text-black";
+      default: return "bg-[#FFCC00] text-black";
     }
   };
 
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-gray-500">Loading...</p>
+        <p className="text-gray-500 font-semibold text-lg">Loading attendees...</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-12">
+    <div className="min-h-screen bg-white font-montserrat">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-12 pb-20">
+        {/* Navigation */}
         <button
           onClick={() => navigate("/created-events")}
           className="flex items-center gap-2 text-black hover:opacity-70 transition-opacity mb-8"
         >
           <ArrowLeft size={24} />
-          <span className="font-semibold">Back</span>
+          <span className="font-semibold text-2xl">Back</span>
         </button>
 
+        {/* Dynamic Event Header */}
         {event && (
           <EventHeader
             title={event.eventDetail || "Event"}
@@ -173,14 +162,15 @@ const EventAttendees = () => {
           />
         )}
 
-        <div className="mb-8">
+        {/* Attendees Section */}
+        <div className="mb-8 mt-10">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
             <h3 className="text-2xl sm:text-3xl font-bold text-black">
               {filteredAttendees.length} Attendees
             </h3>
             <button
               onClick={() => setShowAddModal(true)}
-              className="flex items-center justify-center gap-2 bg-black text-white px-6 py-3 rounded-lg hover:opacity-90 transition-opacity font-semibold w-full sm:w-auto"
+              className="flex items-center justify-center gap-2 bg-[#10726F] text-white px-6 py-3 rounded-lg hover:opacity-90 transition-opacity font-semibold w-full sm:w-auto"
             >
               <Plus size={20} />
               Add Member
@@ -198,7 +188,8 @@ const EventAttendees = () => {
             }
           />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+          {/* Attendee Cards Grid with padding from 'main' and spacing from 'feat/api' */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6 pb-24">
             {filteredAttendees.map((attendee) => (
               <AttendeeCard
                 key={attendee.id}
