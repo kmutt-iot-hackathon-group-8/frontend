@@ -24,6 +24,16 @@ function AppContent() {
   const hideNavbarPaths = ['/login', '/register', '/set-up-nfc', '/regis-card-u'];
   const shouldShowNavbar = !hideNavbarPaths.includes(location.pathname);
 
+import RegisterPage from "./pages/Register";
+import Home from "./pages/Home";
+import CreatedEvents from "./pages/CreatedEvents";
+import EventDetail from "./pages/EventDetail";
+import NavBar from "./components/NavBar";
+import Profile from "./pages/Profile";
+import AddEvent from "./pages/AddEvent";
+import AttendedEvents from "./pages/AttendedEvents";
+import EventAttendees from "./pages/EventAttendees";
+function App() {
   return (
     <div className="min-h-screen flex flex-col">
       {shouldShowNavbar && (
