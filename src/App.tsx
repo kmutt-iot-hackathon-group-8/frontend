@@ -11,8 +11,8 @@ import AttendedEvents from "./pages/AttendedEvents";
 import EventAttendees from "./pages/EventAttendees";
 function App() {
   return (
-    <Router>
-      <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col">
+      {shouldShowNavbar && (
         <div className="sticky top-0 z-50">
           <NavBar />
         </div>
@@ -29,6 +29,13 @@ function App() {
           </Routes>
         </div>
       </div>
+  );
+}
+
+function App() {
+  return (
+    <Router>
+      <AppContent />
     </Router>
   );
 }

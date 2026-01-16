@@ -3,73 +3,44 @@ import { useLocation } from "react-router-dom";
 import { EyeOff, Eye, Loader2 } from 'lucide-react';
 
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
-
-const Register = () => {
+const Login = () => {
   const location = useLocation();
   const q = new URLSearchParams(location.search);
   
-  const firstName = q.get("firstName");
-  const lastName = q.get("lastName");
+  const cardId = q.get("cardId");
+  const eventId = q.get("eventId");
 
   const [regStatus, setRegStatus] = useState("idle");
   const [showPassword, setShowPassword] = useState(false);
-  const [passwordsMatch, setPasswordsMatch] = useState(true);
 
   const [formData, setFormData] = useState({
-    firstName: firstName || "",
-    lastName: lastName || "",
+    cardId: cardId || "",
+    eventId: eventId || "",
     email: "",
     password: "",
-    confirmPassword: "",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData((prevState) => {
-      const newFormData = {
-        ...prevState,
-        [name]: value,
-      };
- 
-      if (name === 'password' || name === 'confirmPassword') {
-        const passwordValue = name === 'password' ? value : newFormData.password;
-        const confirmPasswordValue = name === 'confirmPassword' ? value : newFormData.confirmPassword;
-        
-        if (confirmPasswordValue) {
-          setPasswordsMatch(passwordValue === confirmPasswordValue);
-        } else {
-          setPasswordsMatch(true);
-        }
-      }
-      
-      return newFormData;
-    });
+    setFormData((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
-    if (formData.password !== formData.confirmPassword) {
-      setPasswordsMatch(false);
-      return;
-    }
-    
     setRegStatus("loading");
-
     try {
-      console.log("Submitting:", formData);
       const response = await fetch(`${BASE_URL}/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
-
       if (!response.ok) throw new Error("Registration failed");
-      
       const data = await response.json();
       console.log("Success:", data);
       setRegStatus("success");
-      
     } catch (error) {
       console.error("Error:", error);
       setRegStatus("error");
@@ -80,10 +51,9 @@ const Register = () => {
     console.log("Redirecting to Google login...");
   };
 
-  const inputClasses = "appearance-none block w-full h-12 md:h-14 px-4 border-2 md:border-[3px] border-black rounded-xl md:rounded-2xl bg-[#F4F7F8] placeholder-gray-400 font-semibold focus:outline-none focus:ring-2 focus:ring-[#1BB3A9] focus:border-transparent transition-all duration-200 text-base md:text-lg";
-
   return (
-    <div className='relative min-h-screen flex flex-col justify-center items-center p-4 sm:p-6 lg:p-8 overflow-hidden bg-white font-sans'>
+    // Main Container: Added consistent padding so it never touches screen edges
+    <div className='relative min-h-screen flex flex-col justify-center items-center p-4 sm:p-6 lg:p-8 overflow-hidden bg-white font-monstserrat'>
       
       {/* --- WAVE BACKGROUND --- */}
       <div className="absolute bottom-0 left-0 w-full h-[160vh] z-0 block">
@@ -106,11 +76,12 @@ const Register = () => {
       </div>
 
       {/* --- CONTENT AREA --- */}
+
       <div className="relative z-10 w-full max-w-md md:max-w-lg lg:max-w-2xl flex flex-col items-center">
         
         {/* Header */}
         <div className="mb-6 md:mb-10 text-center">
-          <h2 className='font-bold text-4xl md:text-5xl lg:text-7xl leading-tight text-[#1F2D3D] tracking-tight'>
+          <h2 className="font-bold text-4xl md:text-5xl lg:text-7xl leading-tight text-[#1F2D3D] tracking-tight">
             ModTap
           </h2>
         </div>
@@ -122,51 +93,17 @@ const Register = () => {
         >
             <div className="text-center mb-6 md:mb-8">
                 <p className="font-bold text-2xl md:text-3xl lg:text-4xl text-[#1F2D3D] mb-1">
-                  Welcome!
+                  Welcome back!
                 </p>
                 <p className="font-semibold text-xl md:text-2xl text-[#1BB3A9]">
-                  Create your account
+                  Login to your account
                 </p>
             </div>
 
-          <form onSubmit={handleSubmit} className="space-y-5 md:space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-5 md:space-y-7">
             
-            {/* First Name */}
-            <div>
-              <label htmlFor='firstName' className='block font-bold text-sm md:text-lg text-black mb-2 ml-1'>
-                First Name
-              </label>
-              <input
-                id='firstName'
-                name='firstName'
-                type='text'
-                autoComplete='given-name'
-                required
-                value={formData.firstName}
-                onChange={handleChange}
-                className={inputClasses}
-              />
-            </div>
-
-            {/* Last Name */}
-            <div>
-              <label htmlFor='lastName' className='block font-bold text-sm md:text-lg text-black mb-2 ml-1'>
-                Last Name
-              </label>
-              <input
-                id='lastName'
-                name='lastName'
-                type='text'
-                autoComplete='family-name'
-                required
-                value={formData.lastName}
-                onChange={handleChange}
-                className={inputClasses}
-              />
-            </div>
-
-            {/* Email */}
-            <div>
+            {/* Email Field */}
+            <div> 
               <label htmlFor='email' className='block font-bold text-sm md:text-lg text-black mb-2 ml-1'>
                 Email Address
               </label>
@@ -178,11 +115,12 @@ const Register = () => {
                 required
                 value={formData.email}
                 onChange={handleChange}
-                className={inputClasses}
+                // Updated Inputs: Removed fixed padding, used h-12/h-14 for touch targets. Reduced border to 2px on mobile.
+                className='appearance-none block w-full h-12 md:h-14 px-4 border-2 md:border-[3px] border-black rounded-xl md:rounded-2xl bg-[#F4F7F8] placeholder-gray-400 font-semibold focus:outline-none focus:ring-2 focus:ring-[#1BB3A9] focus:border-transparent transition-all duration-200 text-base md:text-lg'
               />
             </div>
 
-            {/* Password */}
+            {/* Password Field */}
             <div>
               <label htmlFor='password' className='block font-bold text-sm md:text-lg text-black mb-2 ml-1'>
                 Password
@@ -192,11 +130,11 @@ const Register = () => {
                   id='password'
                   name='password'
                   type={showPassword ? 'text' : 'password'}
-                  autoComplete='new-password'
+                  autoComplete='current-password'
                   required
                   value={formData.password}
                   onChange={handleChange}
-                  className={`${inputClasses} pr-12`}
+                  className='appearance-none block w-full h-12 md:h-14 px-4 border-2 md:border-[3px] border-black rounded-xl md:rounded-2xl bg-[#F4F7F8] font-semibold focus:outline-none focus:ring-2 focus:ring-[#1BB3A9] focus:border-transparent transition-all duration-200 text-base md:text-lg pr-12'
                 />
                 <button 
                     type="button" 
@@ -206,48 +144,13 @@ const Register = () => {
                   {showPassword ? <Eye className="w-5 h-5 md:w-6 md:h-6" /> : <EyeOff className="w-5 h-5 md:w-6 md:h-6" />}
                 </button>
               </div>
-            </div>
-
-            {/* Confirm Password */}
-            <div>
-              <label htmlFor='confirmPassword' className='block font-bold text-sm md:text-lg text-black mb-2 ml-1'>
-                Confirm Password
-              </label>
-              <div className="relative">
-                <input
-                  id='confirmPassword'
-                  name='confirmPassword'
-                  type={showPassword ? 'text' : 'password'}
-                  autoComplete='new-password'
-                  required
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  className={`appearance-none block w-full h-12 md:h-14 px-4 border-2 md:border-[3px] rounded-xl md:rounded-2xl bg-[#F4F7F8] font-semibold focus:outline-none focus:ring-2 transition-all duration-200 text-base md:text-lg pr-12 ${
-                    !passwordsMatch && formData.confirmPassword 
-                    ? 'border-red-500 focus:border-red-500 focus:ring-red-200' 
-                    : 'border-black focus:ring-[#1BB3A9] focus:border-transparent'
-                  }`}
-                />
-                <button 
-                    type="button" 
-                    onClick={() => setShowPassword(!showPassword)} 
-                    className="absolute right-0 top-0 h-full px-4 text-[#26ba9d] hover:text-[#1a8f7a] transition-colors flex items-center justify-center rounded-r-xl"
-                >
-                  {showPassword ? <Eye className="w-5 h-5 md:w-6 md:h-6" /> : <EyeOff className="w-5 h-5 md:w-6 md:h-6" />}
-                </button>
-              </div>
-              {!passwordsMatch && formData.confirmPassword && (
-                <p className="mt-2 text-sm md:text-base font-semibold text-red-500 ml-1">
-                  Passwords do not match
-                </p>
-              )}
             </div>
 
             {/* Submit Button */}
             <div className="pt-2">
               <button
                 type='submit'
-                disabled={regStatus === 'loading' || !passwordsMatch}
+                disabled={regStatus === 'loading'}
                 className='w-full h-12 md:h-14 flex justify-center items-center font-bold text-lg md:text-xl text-white rounded-lg md:rounded-xl 
                 transform transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed shadow-md hover:shadow-lg'
                 style={{ 
@@ -257,9 +160,9 @@ const Register = () => {
                 {regStatus === 'loading' ? (
                    <>
                      <Loader2 className="animate-spin mr-2 h-5 w-5" /> 
-                     Signing up...
+                     Signing in...
                    </>
-                ) : 'Sign Up'}
+                ) : 'Login'}
               </button>
             </div>
           </form>
@@ -267,9 +170,9 @@ const Register = () => {
           {/* Social Login Divider */}
           <div className='mt-6 md:mt-8'>
             <p className="text-center font-medium text-sm md:text-base text-[#9AA9AF] mb-4">
-              Already have an account? 
-              <button onClick={() => window.location.href = '/login'} className="ml-1">
-                <span className="font-bold text-[#1BB3A9] hover:underline hover:text-[#179a91]">Login</span>
+              Don't have an account? 
+              <button onClick={() => window.location.href = '/register'} className="ml-1">
+                <span className="font-bold text-[#1BB3A9] hover:underline hover:text-[#179a91]">Signup</span>
               </button>
             </p>
             
@@ -283,7 +186,7 @@ const Register = () => {
             <div className="mt-4">
               <button 
                 onClick={handleGoogleLogin}
-                className='w-full h-12 md:h-14 inline-flex justify-center items-center border-2 border-gray-200 rounded-xl bg-white 
+                className='w-full h-12 md:h-14 inline-flex justify-center items-center border-2 border-gray-200 rounded-xl bg-white
                 transform transition-all duration-200 hover:bg-gray-50 hover:border-gray-300 active:bg-gray-100'
               >
                 <img 
@@ -291,7 +194,7 @@ const Register = () => {
                   alt="Google" 
                   className="h-5 w-5 md:h-6 md:w-6"
                 />
-                <span className="ml-3 font-bold text-base md:text-lg text-[#1F2D3D]">Sign up with Google</span>
+                <span className="ml-3 font-bold text-base md:text-lg text-[#1F2D3D]">Continue with Google</span>
               </button>
             </div>
           </div>
@@ -301,4 +204,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default Login;
