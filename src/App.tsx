@@ -10,6 +10,7 @@ import AddEvent from "./pages/AddEvent";
 import AttendedEvents from "./pages/AttendedEvents";
 import EventAttendees from "./pages/EventAttendees";
 import { AuthProvider } from "./context/AuthContext";
+import { ProtectedRoute } from "./components/ProtectedRoute";
 
 function App() {
   return (
@@ -23,12 +24,54 @@ function App() {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/register" element={<RegisterPage />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/created-events" element={<CreatedEvents />} />
-              <Route path="/attended-events" element={<AttendedEvents />} />
-              <Route path="/event/:id" element={<EventDetail />} />
-              <Route path="/add-event/" element={<AddEvent />} />
-              <Route path="/event/:id/attendees" element={<EventAttendees />} />
+              <Route
+                path="/profile"
+                element={
+                  <ProtectedRoute>
+                    <Profile />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/created-events"
+                element={
+                  <ProtectedRoute>
+                    <CreatedEvents />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/attended-events"
+                element={
+                  <ProtectedRoute>
+                    <AttendedEvents />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/event/:id"
+                element={
+                  <ProtectedRoute>
+                    <EventDetail />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/add-event/"
+                element={
+                  <ProtectedRoute>
+                    <AddEvent />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/event/:id/attendees"
+                element={
+                  <ProtectedRoute>
+                    <EventAttendees />
+                  </ProtectedRoute>
+                }
+              />
             </Routes>
           </div>
         </div>

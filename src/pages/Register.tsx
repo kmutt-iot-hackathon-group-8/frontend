@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { EyeOff, Eye, Loader2 } from "lucide-react";
 import WaveBackground from "../components/WaveBackground";
 import { createAuthClient } from "better-auth/react";
+import { useAuth } from "../context/AuthContext";
 
 const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
@@ -13,6 +14,7 @@ const authClient = createAuthClient({
 const Register = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { setUser } = useAuth();
   const q = new URLSearchParams(location.search);
 
   const firstName = q.get("firstName");
@@ -67,13 +69,25 @@ const Register = () => {
 
     try {
       console.log("Submitting:", formData);
-      await authClient.signUp.email({
+      const response = await authClient.signUp.email({
         email: formData.email,
         password: formData.password,
         name: `${formData.firstName} ${formData.lastName}`,
       });
+
+      if (response.data && 'user' in response.data) {
+        const user = (response.data as any).user;
+        const nameparts = (user.name || "").split(" ");
+        setUser({
+          uid: parseInt(user.id) || 0,
+          fname: nameparts[0] || "",
+          lname: nameparts[1] || "",
+          email: user.email,
+        });
+      }
+
       setRegStatus("success");
-      navigate("/login");
+      navigate("/");
     } catch (error) {
       console.error("Error:", error);
       setRegStatus("error");
@@ -82,9 +96,21 @@ const Register = () => {
 
   const handleGoogleLogin = async () => {
     try {
-      await authClient.signIn.social({
+      const response = await authClient.signIn.social({
         provider: "google",
       });
+
+      if (response.data && 'user' in response.data) {
+        const user = (response.data as any).user;
+        const nameparts = (user.name || "").split(" ");
+        setUser({
+          uid: parseInt(user.id) || 0,
+          fname: nameparts[0] || "",
+          lname: nameparts[1] || "",
+          email: user.email,
+        });
+        navigate("/");
+      }
     } catch (error) {
       console.error("Google login error:", error);
     }
@@ -92,9 +118,21 @@ const Register = () => {
 
   const handleMicrosoftLogin = async () => {
     try {
-      await authClient.signIn.social({
+      const response = await authClient.signIn.social({
         provider: "microsoft",
       });
+
+      if (response.data && 'user' in response.data) {
+        const user = (response.data as any).user;
+        const nameparts = (user.name || "").split(" ");
+        setUser({
+          uid: parseInt(user.id) || 0,
+          fname: nameparts[0] || "",
+          lname: nameparts[1] || "",
+          email: user.email,
+        });
+        navigate("/");
+      }
     } catch (error) {
       console.error("Microsoft login error:", error);
     }
