@@ -5,11 +5,11 @@ import WaveBackground from '../components/WaveBackground';
 
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
-const Register = () => {
+const RegisterWithCard = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const q = new URLSearchParams(location.search);
-  
+  const cardId = q.get("cardId");
   const firstName = q.get("firstName");
   const lastName = q.get("lastName");
 
@@ -21,6 +21,7 @@ const Register = () => {
     firstName: firstName || "",
     lastName: lastName || "",
     email: "",
+    cardId: cardId || "",
     password: "",
     confirmPassword: "",
   });
@@ -286,4 +287,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default RegisterWithCard;
