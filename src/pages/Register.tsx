@@ -1,170 +1,353 @@
-import React, { useState } from "react";
-import { useLocation } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
-import { API } from "../utils/api";
+import { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { EyeOff, Eye, Loader2 } from "lucide-react";
+import WaveBackground from "../components/WaveBackground";
+import { createAuthClient } from "better-auth/react";
+
+const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+
+const authClient = createAuthClient({
+  baseURL: BASE_URL,
+});
 
 const Register = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const q = new URLSearchParams(location.search);
-  const cardId = q.get("cardId");
-  const eventId = q.get("eventId");
 
-  const { user, loginWithGoogle, loginWithMicrosoft } = useAuth();
+  const firstName = q.get("firstName");
+  const lastName = q.get("lastName");
+
   const [regStatus, setRegStatus] = useState("idle");
+  const [showPassword, setShowPassword] = useState(false);
+  const [passwordsMatch, setPasswordsMatch] = useState(true);
 
-  const handleRegisterCard = async () => {
-    if (!user) return;
+  const [formData, setFormData] = useState({
+    firstName: firstName || "",
+    lastName: lastName || "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prevState) => {
+      const newFormData = {
+        ...prevState,
+        [name]: value,
+      };
+
+      if (name === "password" || name === "confirmPassword") {
+        const passwordValue =
+          name === "password" ? value : newFormData.password;
+        const confirmPasswordValue =
+          name === "confirmPassword" ? value : newFormData.confirmPassword;
+
+        if (confirmPasswordValue) {
+          setPasswordsMatch(passwordValue === confirmPasswordValue);
+        } else {
+          setPasswordsMatch(true);
+        }
+      }
+
+      return newFormData;
+    });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (formData.password !== formData.confirmPassword) {
+      setPasswordsMatch(false);
+      return;
+    }
+
     setRegStatus("loading");
 
     try {
-      const response = await API.auth.registerCard(
-        cardId || "",
-        user.uid,
-        eventId ? parseInt(eventId) : undefined,
-      );
-
-      if (response.success) {
-        setRegStatus("success");
-      } else {
-        setRegStatus("error");
-        alert(response.message || "Failed to register card");
-      }
+      console.log("Submitting:", formData);
+      await authClient.signUp.email({
+        email: formData.email,
+        password: formData.password,
+        name: `${formData.firstName} ${formData.lastName}`,
+      });
+      setRegStatus("success");
+      navigate("/login");
     } catch (error) {
+      console.error("Error:", error);
       setRegStatus("error");
-      alert(error instanceof Error ? error.message : "An error occurred");
     }
   };
 
-  // If user not logged in yet, show OAuth options
-  if (!user) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-        <div className="sm:mx-auto sm:w-full sm:max-w-md">
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Sign In to Link Your Card
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            Use your social account to get started
-          </p>
-        </div>
+  const handleGoogleLogin = async () => {
+    try {
+      await authClient.signIn.social({
+        provider: "google",
+      });
+    } catch (error) {
+      console.error("Google login error:", error);
+    }
+  };
 
-        <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-          <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10 space-y-6">
-            <button
-              onClick={loginWithGoogle}
-              className="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-            >
-              <svg className="w-5 h-5" viewBox="0 0 24 24">
-                <path
-                  fill="#EA4335"
-                  d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                />
-                <path
-                  fill="#34A853"
-                  d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                />
-                <path
-                  fill="#4A90E2"
-                  d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-                />
-                <path
-                  fill="#FBBC05"
-                  d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                />
-              </svg>
-              <span className="ml-2">Sign in with Google</span>
-            </button>
+  const handleMicrosoftLogin = async () => {
+    try {
+      await authClient.signIn.social({
+        provider: "microsoft",
+      });
+    } catch (error) {
+      console.error("Microsoft login error:", error);
+    }
+  };
 
-            <button
-              onClick={loginWithMicrosoft}
-              className="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-            >
-              <svg className="w-5 h-5" viewBox="0 0 24 24">
-                <path fill="#00A4EF" d="M11.4 24H0V12.6h11.4V24z" />
-                <path fill="#7FBA00" d="M24 24H12.6V12.6H24V24z" />
-                <path fill="#00A4EF" d="M11.4 11.4H0V0h11.4v11.4z" />
-                <path fill="#FFB900" d="M24 11.4H12.6V0H24v11.4z" />
-              </svg>
-              <span className="ml-2">Sign in with Microsoft</span>
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-  if (regStatus === "loading") {
-    return (
-      <div className="min-h-screen flex flex-col justify-center items-center bg-gray-50">
-        <h1 className="text-2xl font-bold text-gray-700">Linking card...</h1>
-      </div>
-    );
-  }
+  const inputClasses =
+    "appearance-none block w-full h-12 md:h-14 px-4 border-2 md:border-[3px] border-black rounded-xl md:rounded-2xl bg-[#F4F7F8] placeholder-gray-400 font-semibold focus:outline-none focus:ring-2 focus:ring-[#1BB3A9] focus:border-transparent transition-all duration-200 text-base md:text-lg";
 
-  if (regStatus === "success") {
-    return (
-      <div className="min-h-screen flex flex-col justify-center items-center bg-gray-50">
-        <h1 className="text-3xl font-bold text-green-600">
-          Welcome, {user.fname}!
-        </h1>
-        <p className="mt-4 text-gray-600">
-          Your card is now linked to your account.
-        </p>
-      </div>
-    );
-  }
-
-  if (regStatus === "error") {
-    return (
-      <div className="min-h-screen flex flex-col justify-center items-center bg-gray-50 text-center px-4">
-        <div className="bg-white p-8 rounded-lg shadow-md max-w-md">
-          <h1 className="text-3xl font-bold text-red-500">Error</h1>
-          <p className="mt-4 text-gray-600">
-            Failed to link your card. Please try again.
-          </p>
-          <button
-            onClick={() => setRegStatus("idle")}
-            className="mt-6 text-indigo-600 font-medium hover:underline"
-          >
-            Try again
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  // Show card registration confirmation
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-          Link Your NFC Card
-        </h2>
-        <p className="mt-2 text-center text-sm text-gray-600">
-          {user.fname}, you're logged in. Ready to link your card?
-        </p>
-      </div>
+    <div className="relative min-h-screen flex flex-col justify-center items-center p-4 sm:p-6 lg:p-8 overflow-hidden bg-white font-sans">
+      {/* --- WAVE BACKGROUND --- */}
+      <WaveBackground />
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-          <div className="space-y-4 mb-6">
-            <div>
-              <p className="text-sm font-medium text-gray-700">Email</p>
-              <p className="mt-1 text-gray-900">{user.email}</p>
-            </div>
-            {cardId && (
-              <div>
-                <p className="text-sm font-medium text-gray-700">Card ID</p>
-                <p className="mt-1 text-gray-900 font-mono">{cardId}</p>
-              </div>
-            )}
+      {/* --- CONTENT AREA --- */}
+      <div className="relative z-10 w-full max-w-md md:max-w-lg lg:max-w-2xl flex flex-col items-center">
+        {/* Header */}
+        <div className="mb-6 md:mb-10 text-center">
+          <h2 className="font-bold text-4xl md:text-5xl lg:text-7xl leading-tight text-[#1F2D3D] tracking-tight">
+            ModTap
+          </h2>
+        </div>
+
+        {/* Card */}
+        <div
+          className="bg-white w-full rounded-3xl md:rounded-[40px] shadow-2xl p-6 sm:p-8 md:p-12"
+          style={{ boxShadow: "0px 10px 40px rgba(0, 0, 0, 0.15)" }}
+        >
+          <div className="text-center mb-6 md:mb-8">
+            <p className="font-bold text-2xl md:text-3xl lg:text-4xl text-[#1F2D3D] mb-1">
+              Welcome!
+            </p>
+            <p className="font-semibold text-xl md:text-2xl text-[#1BB3A9]">
+              Create your account
+            </p>
           </div>
 
-          <button
-            onClick={handleRegisterCard}
-            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out"
-          >
-            Link Card
-          </button>
+          <form onSubmit={handleSubmit} className="space-y-5 md:space-y-6">
+            {/* First Name */}
+            <div>
+              <label
+                htmlFor="firstName"
+                className="block font-bold text-sm md:text-lg text-black mb-2 ml-1"
+              >
+                First Name
+              </label>
+              <input
+                id="firstName"
+                name="firstName"
+                type="text"
+                autoComplete="given-name"
+                required
+                value={formData.firstName}
+                onChange={handleChange}
+                className={inputClasses}
+              />
+            </div>
+
+            {/* Last Name */}
+            <div>
+              <label
+                htmlFor="lastName"
+                className="block font-bold text-sm md:text-lg text-black mb-2 ml-1"
+              >
+                Last Name
+              </label>
+              <input
+                id="lastName"
+                name="lastName"
+                type="text"
+                autoComplete="family-name"
+                required
+                value={formData.lastName}
+                onChange={handleChange}
+                className={inputClasses}
+              />
+            </div>
+
+            {/* Email */}
+            <div>
+              <label
+                htmlFor="email"
+                className="block font-bold text-sm md:text-lg text-black mb-2 ml-1"
+              >
+                Email Address
+              </label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                autoComplete="email"
+                required
+                value={formData.email}
+                onChange={handleChange}
+                className={inputClasses}
+              />
+            </div>
+
+            {/* Password */}
+            <div>
+              <label
+                htmlFor="password"
+                className="block font-bold text-sm md:text-lg text-black mb-2 ml-1"
+              >
+                Password
+              </label>
+              <div className="relative">
+                <input
+                  id="password"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  autoComplete="new-password"
+                  required
+                  value={formData.password}
+                  onChange={handleChange}
+                  className={`${inputClasses} pr-12`}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-0 top-0 h-full px-4 text-[#26ba9d] hover:text-[#1a8f7a] transition-colors flex items-center justify-center rounded-r-xl"
+                >
+                  {showPassword ? (
+                    <Eye className="w-5 h-5 md:w-6 md:h-6" />
+                  ) : (
+                    <EyeOff className="w-5 h-5 md:w-6 md:h-6" />
+                  )}
+                </button>
+              </div>
+            </div>
+
+            {/* Confirm Password */}
+            <div>
+              <label
+                htmlFor="confirmPassword"
+                className="block font-bold text-sm md:text-lg text-black mb-2 ml-1"
+              >
+                Confirm Password
+              </label>
+              <div className="relative">
+                <input
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  type={showPassword ? "text" : "password"}
+                  autoComplete="new-password"
+                  required
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  className={`appearance-none block w-full h-12 md:h-14 px-4 border-2 md:border-[3px] rounded-xl md:rounded-2xl bg-[#F4F7F8] font-semibold focus:outline-none focus:ring-2 transition-all duration-200 text-base md:text-lg pr-12 ${
+                    !passwordsMatch && formData.confirmPassword
+                      ? "border-red-500 focus:border-red-500 focus:ring-red-200"
+                      : "border-black focus:ring-[#1BB3A9] focus:border-transparent"
+                  }`}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-0 top-0 h-full px-4 text-[#26ba9d] hover:text-[#1a8f7a] transition-colors flex items-center justify-center rounded-r-xl"
+                >
+                  {showPassword ? (
+                    <Eye className="w-5 h-5 md:w-6 md:h-6" />
+                  ) : (
+                    <EyeOff className="w-5 h-5 md:w-6 md:h-6" />
+                  )}
+                </button>
+              </div>
+              {!passwordsMatch && formData.confirmPassword && (
+                <p className="mt-2 text-sm md:text-base font-semibold text-red-500 ml-1">
+                  Passwords do not match
+                </p>
+              )}
+            </div>
+
+            {/* Submit Button */}
+            <div className="pt-2">
+              <button
+                type="submit"
+                disabled={regStatus === "loading" || !passwordsMatch}
+                className="w-full h-12 md:h-14 flex justify-center items-center font-bold text-lg md:text-xl text-white rounded-lg md:rounded-xl 
+                transform transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed shadow-md hover:shadow-lg"
+                style={{
+                  background:
+                    "linear-gradient(90deg, #20D4A4 0%, #1F7CAE 100%)",
+                }}
+              >
+                {regStatus === "loading" ? (
+                  <>
+                    <Loader2 className="animate-spin mr-2 h-5 w-5" />
+                    Signing up...
+                  </>
+                ) : (
+                  "Sign Up"
+                )}
+              </button>
+            </div>
+          </form>
+
+          {/* Social Login Divider */}
+          <div className="mt-6 md:mt-8">
+            <p className="text-center font-medium text-sm md:text-base text-[#9AA9AF] mb-4">
+              Already have an account?
+              <button onClick={() => navigate("/login")} className="ml-1">
+                <span className="font-bold text-[#1BB3A9] hover:underline hover:text-[#179a91]">
+                  Login
+                </span>
+              </button>
+            </p>
+
+            <div className="relative flex py-2 items-center">
+              <div className="grow border-t border-gray-300"></div>
+              <span className="shrink-0 mx-4 text-gray-400 font-medium">
+                or
+              </span>
+              <div className="grow border-t border-gray-300"></div>
+            </div>
+
+            {/* Google Button */}
+            <div className="mt-4">
+              <button
+                onClick={handleGoogleLogin}
+                className="w-full h-12 md:h-14 inline-flex justify-center items-center border-2 border-gray-200 rounded-xl bg-white 
+                transform transition-all duration-200 hover:bg-gray-50 hover:border-gray-300 active:bg-gray-100"
+              >
+                <img
+                  src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+                  alt="Google"
+                  className="h-5 w-5 md:h-6 md:w-6"
+                />
+                <span className="ml-3 font-bold text-base md:text-lg text-[#1F2D3D]">
+                  Sign up with Google
+                </span>
+              </button>
+            </div>
+
+            {/* Microsoft Button */}
+            <div className="mt-3">
+              <button
+                onClick={handleMicrosoftLogin}
+                className="w-full h-12 md:h-14 inline-flex justify-center items-center border-2 border-gray-200 rounded-xl bg-white 
+                transform transition-all duration-200 hover:bg-gray-50 hover:border-gray-300 active:bg-gray-100"
+              >
+                <svg
+                  className="h-5 w-5 md:h-6 md:w-6"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path d="M11.4 24H0V12.6h11.4V24zM24 24H12.6V12.6H24V24zM11.4 11.4H0V0h11.4v11.4zm12.6 0H12.6V0H24v11.4z" />
+                </svg>
+                <span className="ml-3 font-bold text-base md:text-lg text-[#1F2D3D]">
+                  Sign up with Microsoft
+                </span>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
