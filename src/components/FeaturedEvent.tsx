@@ -21,8 +21,8 @@ const FeaturedEvent = ({ event }: FeaturedEventProps) => {
     navigate(`/event/${event.eventid}`);
   };
 
-  const formattedDate = new Date(event.startDate).toLocaleDateString('en-US', { weekday: 'short', month: 'long', day: 'numeric' });
-  const formattedTime = new Date(event.startTime).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+  const formattedDate = new Date(event.eventstartdate).toLocaleDateString('en-US', { weekday: 'short', month: 'long', day: 'numeric' });
+  const formattedTime = new Date(event.eventstarttime).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
 
   return (
     <div className="h-full rounded-xl overflow-hidden relative group cursor-pointer text-white flex flex-col" style={{ backgroundColor: '#0D5958' }} onClick={handleClick}>

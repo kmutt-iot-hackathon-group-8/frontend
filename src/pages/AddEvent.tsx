@@ -65,16 +65,16 @@ const AddEvent = () => {
 
             // Prepare event data matching backend expectations
             const eventData = {
-                eventOwner: userId,
+                eventowner: userId,
                 eventtitle: title,
-                eventDetail: details,
-                eventImg: '', // Will be updated via image upload
-                eventStartDate: startDateTime.toISOString(),
-                eventEndDate: endDateTime.toISOString(),
-                eventStartTime: startDateTime.toISOString(),
-                eventEndTime: endDateTime.toISOString(),
-                regisStart: regisStart.toISOString(),
-                regisEnd: regisEnd.toISOString(),
+                eventdetail: details,
+                eventimg: '', // Will be updated via image upload
+                eventstartdate: startDateTime.toISOString(),
+                eventenddate: endDateTime.toISOString(),
+                eventstarttime: startDateTime.toISOString(),
+                eventendtime: endDateTime.toISOString(),
+                regisstart: regisStart.toISOString(),
+                regisend: regisEnd.toISOString(),
                 contact: contact,
                 eventlocation: eventlocation,
             };
@@ -142,7 +142,7 @@ const AddEvent = () => {
                             console.error('Image upload failed:', uploadData);
                             toast.warning('Event created but image upload failed. You can edit the event to add an image later.');
                         } else {
-                            console.log('Image uploaded successfully:', uploadData.image?.eventIMG);
+                            console.log('Image uploaded successfully:', uploadData.image?.eventimg);
                         }
                     } catch (uploadError) {
                         console.error('Error uploading image:', uploadError);

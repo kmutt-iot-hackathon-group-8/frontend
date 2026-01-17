@@ -146,7 +146,8 @@ const EditEvent = () => {
   if (!event) {
     return <div className="min-h-screen flex items-center justify-center">Event not found</div>;
   }
-    const userId = JSON.parse(localStorage.getItem('user') || '{}');
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    const userId = user.uid;
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -182,16 +183,16 @@ const EditEvent = () => {
             // Prepare event data matching backend expectations
             // Use current values if changed, otherwise keep original values
             const eventData = {
-                eventOwner: userId,
+                eventowner: userId,
                 eventtitle: title || event.eventtitle || '',
-                eventDetail: details || event.eventdetail || '',
-                eventImg: event.eventimg, // Keep exact original image value (null or URL)
-                eventStartDate: startDateTime.toISOString(),
-                eventEndDate: endDateTime.toISOString(),
-                eventStartTime: startDateTime.toISOString(),
-                eventEndTime: endDateTime.toISOString(),
-                regisStart: regisStart.toISOString(),
-                regisEnd: regisEnd.toISOString(),
+                eventdetail: details || event.eventdetail || '',
+                eventimg: event.eventimg, // Keep exact original image value (null or URL)
+                eventstartdate: startDateTime.toISOString(),
+                eventenddate: endDateTime.toISOString(),
+                eventstarttime: startDateTime.toISOString(),
+                eventendtime: endDateTime.toISOString(),
+                regisstart: regisStart.toISOString(),
+                regisend: regisEnd.toISOString(),
                 contact: contact || event.contact || '',
                 eventlocation: eventlocation || event.eventlocation || '',
             };
@@ -257,7 +258,7 @@ const EditEvent = () => {
                             console.error('Image upload failed:', uploadData);
                             alert('Event updated but image upload failed. You can edit the event to add an image later.');
                         } else {
-                            console.log('Image uploaded successfully:', uploadData.image?.eventIMG);
+                            console.log('Image uploaded successfully:', uploadData.image?.eventimg);
                         }
                     } catch (uploadError) {
                         console.error('Error uploading image:', uploadError);

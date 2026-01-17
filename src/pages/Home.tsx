@@ -30,7 +30,7 @@ const Home = () => {
   const filteredEvents = useMemo(() => {
     if (!selectedDate) return events;
     return events.filter(e => {
-      const eventDate = new Date(e.startDate);
+      const eventDate = new Date(e.eventstartdate);
       return eventDate.getDate() === selectedDate.getDate() &&
         eventDate.getMonth() === selectedDate.getMonth() &&
         eventDate.getFullYear() === selectedDate.getFullYear();

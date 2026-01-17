@@ -4,17 +4,18 @@ export interface Event {
   eventid: number;
   title: string;
   description?: string;
-  startDate: string;
-  endDate: string;
-  startTime: string;
-  endTime: string;
+  eventstartdate: string;
+  eventenddate: string;
+  eventstarttime: string;
+  eventendtime: string;
   image: string;
-  attendeeCount: number;
+  attendeecount: number;
   status?: string;
-  regisStart?: string;
-  regisEnd?: string;
+  regisstart?: string;
+  regisend?: string;
   contact?: string;
-  regisURL?: string;
+  regisurl?: string;
+  eventlocation?: string;
 }
 
 interface EventCardProps {
@@ -24,8 +25,8 @@ interface EventCardProps {
 
 function EventCard({ event, showActions = false }: EventCardProps) {
   const navigate = useNavigate();
-  const formattedDate = event.startDate 
-    ? new Date(event.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+  const formattedDate = event.eventstartdate 
+    ? new Date(event.eventstartdate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
     : 'Date TBD';
   const eventid = event.eventid;
   return (
@@ -69,11 +70,11 @@ function EventCard({ event, showActions = false }: EventCardProps) {
         </div>
         <div className="flex items-center gap-2 sm:gap-3 text-base sm:text-lg lg:text-xl font-bold">
           <MapPin className="w-4 h-4" style={{ color: '#1BB3A0' }} />
-          <span className="truncate max-w-62.5">{event.organizer}</span>
+          <span className="truncate max-w-62.5">{event.eventlocation}</span>
         </div>
         <div className="flex items-center gap-2 sm:gap-3 text-base sm:text-lg lg:text-xl font-bold">
           <User className="w-4 h-4" style={{ color: '#1BB3A9' }} />
-          <span>{event.attendeeCount} {event.attendeeCount === 1 ? 'attendee' : 'attendees'}</span>
+          <span>{event.attendeecount} {event.attendeecount === 1 ? 'attendee' : 'attendees'}</span>
         </div>
       </div>
       
