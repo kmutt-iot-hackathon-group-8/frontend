@@ -48,8 +48,8 @@ const EventDetail = () => {
       try {
         const response = await fetch(`http://localhost:3000/api/v1/events/${id}/attendees`);
         if (response.ok) {
-          const attendees = await response.json();
-          const userAttendee = attendees.find((a: any) => a.uid === user.uid);
+          const attendees: { uid: number; status: string }[] = await response.json();
+          const userAttendee = attendees.find((a) => a.uid === user.uid);
           setUserStatus(userAttendee ? userAttendee.status : null);
         }
       } catch (error) {

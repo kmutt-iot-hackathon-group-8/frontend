@@ -6,13 +6,25 @@ import {
   Clock, 
   ChevronDown 
 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+interface DetailedEvent {
+  eventtitle?: string;
+  eventImg?: string;
+  description?: string;
+  eventStart?: Date;
+  eventEnd?: Date;
+  registrationStart?: Date;
+  registrationEnd?: Date;
+  contact?: string;
+  regisURL?: string;
+  eventlocation?: string;
+}
 
-const AddEvent = () => {
+const EditEvent = () => {
     const navigate = useNavigate();
-
+    const { eventId } = useParams();
     // State for all form fields
     const [title, setTitle] = useState('');
     const [eventImage, setEventImage] = useState<File | null>(null);
@@ -27,10 +39,40 @@ const AddEvent = () => {
     const [details, setDetails] = useState('');
     const [contact, setContact] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [event, setEvent] = useState<DetailedEvent | null>(null);
+    const [loading, setLoading] = useState(true);
 
-    // Get userId from localStorage (adjust based on your auth implementation)
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
-    const userId = user.uid;
+    useEffect(() => {
+    const fetchEventDetail = async () => {
+      try {
+        const response = await fetch(`http://localhost:3000/api/event/${eventId}`);
+        if (response.ok) {
+          const data = await response.json();
+          setEvent(data);
+        } else {
+          console.error('Failed to fetch event');
+        }
+      } catch (error) {
+        console.error('Error fetching event:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (eventId) {
+      fetchEventDetail();
+    }
+  }, [eventId]);
+
+  if (loading) {
+    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+  }
+
+  if (!event) {
+    return <div className="min-h-screen flex items-center justify-center">Event not found</div>;
+  }
+    const userId = localStorage.getItem('userId') || '1';
+
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
@@ -80,11 +122,11 @@ const AddEvent = () => {
 
             console.log('Sending event data:', eventData);
 
-            // Step 1: Create the event
+            // Step 1: Update the event
             let response;
             try {
                 response = await fetch('http://localhost:3000/api/event', {
-                    method: 'POST',
+                    method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
                     },
@@ -110,7 +152,7 @@ const AddEvent = () => {
             }
 
             if (response.ok && data.success) {
-                const eventid = data.event.eventid; // Get the created event ID
+                const eventid = data.event.eventid; // Get the updated event ID
                 
                 // Step 2: Upload image if one was selected
                 if (eventImage && eventid) {
@@ -132,31 +174,31 @@ const AddEvent = () => {
                         try {
                             uploadData = JSON.parse(uploadText);
                             console.log('Parsed upload response:', uploadData);
-                        } catch {
+                        } catch (e) {
                             console.error('Failed to parse upload response:', uploadText.substring(0, 200));
                             throw new Error('Invalid JSON response from image upload');
                         }
                         
                         if (!uploadResponse.ok || !uploadData.success) {
                             console.error('Image upload failed:', uploadData);
-                            alert('Event created but image upload failed. You can edit the event to add an image later.');
+                            alert('Event updated but image upload failed. You can edit the event to add an image later.');
                         } else {
                             console.log('Image uploaded successfully:', uploadData.image?.eventIMG);
                         }
                     } catch (uploadError) {
                         console.error('Error uploading image:', uploadError);
-                        alert('Event created but image upload failed. You can edit the event to add an image later.');
+                        alert('Event updated but image upload failed. You can edit the event to add an image later.');
                     }
                 }
 
-                alert('Event created successfully!');
+                alert('Event updated successfully!');
                 navigate('/created-events');
             } else {
-                alert(`Failed to create event: ${data.error || 'Unknown error'}`);
+                alert(`Failed to update event: ${data.error || 'Unknown error'}`);
             }
         } catch (error) {
-            console.error('Error creating event:', error);
-            alert('Error creating event. Please try again.');
+            console.error('Error updating event:', error);
+            alert('Error updating event. Please try again.');
         } finally {
             setIsSubmitting(false);
         }
@@ -178,7 +220,7 @@ const AddEvent = () => {
                         <ArrowLeft size={36} className="text-gray-800" />
                     </button>
                     <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight text-gray-900">
-                        Add Your Event
+                        Edit Your Event
                     </h1>
                 </div>
 
@@ -338,7 +380,7 @@ const InfiniteTimePicker = ({ label, timeValue, setTimeValue }: InfiniteTimePick
             // Set 1 has length 60. Middle set starts at index 60.
             minuteRef.current.scrollTop = (60 + mIndex) * ITEM_HEIGHT;
         }
-    }, [isOpen, timeValue]);
+    }, [isOpen]);
 
     const handleScroll = (e: React.UIEvent<HTMLDivElement>, type: 'hour' | 'minute') => {
         const el = e.currentTarget;
@@ -498,4 +540,4 @@ const InputWithIcon = ({ label, icon, selectedDate, onDateChange }: InputProps) 
     );
 };
 
-export default AddEvent;
+export default EditEvent;

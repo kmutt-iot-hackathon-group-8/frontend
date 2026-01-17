@@ -69,8 +69,8 @@ const Register = () => {
         lastName: formData.lastName,
         email: formData.email,
         password: formData.password,
-        ...(cardId && { cardId }),
-        ...(eventId && { eventId }),
+        ...(cardId && { cardid: cardId }),
+        ...(eventId && { eventid: eventId }),
       };
 
       const response = await fetch(BASE_URL + '/signup', {

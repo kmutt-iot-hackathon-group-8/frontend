@@ -106,7 +106,7 @@ const Home = () => {
                 </div>
               ) : filteredEvents.length > 0 ? (
                 filteredEvents.map(event => (
-                  <EventCard key={event.eventId} event={event} />
+                  <EventCard key={event.eventid} event={event} />
                 ))
               ) : (
                 <div className="text-center py-20 bg-zinc-100 rounded-2xl border border-dashed border-zinc-300 text-zinc-400">

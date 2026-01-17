@@ -4,6 +4,22 @@ import { useNavigate } from 'react-router-dom';
 import EventCard, { type Event } from '../components/EventCard';
 import clickToAddNewEvents from '../assets/icons/clicktoaddnewevents.webp';
 
+interface CreatedEventResponse {
+  eventid: number;
+  eventtitle: string;
+  eventstartdate: string;
+  eventenddate: string;
+  eventstarttime: string;
+  eventendtime: string;
+  eventimg: string;
+  eventowner: string;
+  eventdetail: string;
+  eventlocation: string;
+  contact: string;
+  regisstart: string;
+  regisend: string;
+}
+
 const CreatedEvents = () => {
   const navigate = useNavigate();
   const [isHovered, setIsHovered] = useState(false);
@@ -19,21 +35,25 @@ const CreatedEvents = () => {
 
     const fetchCreatedEvents = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/api/v1/users/${user.uid}/created-events`);
+        const response = await fetch(`http://localhost:3000/api/event/created/${user.uid}`);
         if (response.ok) {
-          const data = await response.json();
+          const result = await response.json();
+          // Handle the { success: true, events } response structure
+          const data: CreatedEventResponse[] = result.events || [];
           // Transform the data to match Event interface
-          const transformedEvents: Event[] = data.map((item: any) => ({
-            eventId: item.eventId,
-            title: item.title,
-            startDate: item.startDate,
-            endDate: item.endDate,
-            startTime: item.startTime, 
-            endTime: item.endTime,
-            image: item.image,
-            location: item.location,
-            attendeeCount: item.attendeeCount || 0
+          const transformedEvents: Event[] = data.map((item) => ({
+            eventid: item.eventid,
+            title: item.eventtitle,
+            startDate: item.eventstartdate,
+            endDate: item.eventenddate,
+            startTime: item.eventstarttime, 
+            endTime: item.eventendtime,
+            image: item.eventimg,
+            location: item.eventlocation,
+            attendeeCount: 0 // Not in this endpoint
           }));
+          console.log(user.uid);
+          console.log('Fetched created events:', transformedEvents);
           setEvents(transformedEvents);
         }
       } catch (error) {
@@ -88,7 +108,7 @@ const CreatedEvents = () => {
             <div className="text-center py-8">Loading events...</div>
           ) : events.length > 0 ? (
             events.map((event) => (
-              <EventCard key={event.eventId} event={event} showActions={true} />
+              <EventCard key={event.eventid} event={event} showActions={true} />
             ))
           ) : (
             <div className="text-center py-8 text-gray-500">No created events found</div>
