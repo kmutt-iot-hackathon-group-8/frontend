@@ -8,15 +8,19 @@ const Home = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [userStatuses, setUserStatuses] = useState<Record<number, string>>({});
 
   useEffect(() => {
-    const fetchEvents = async () => {
+    const fetchEventsAndUserStatus = async () => {
       try {
-        const response = await fetch('http://localhost:3000/api/v1/events');
-        if (response.ok) {
-          const data = await response.json();
+        // Fetch all events
+        const eventsResponse = await fetch('http://localhost:3000/api/v1/events');
+        let transformedEvents: Event[] = [];
+        
+        if (eventsResponse.ok) {
+          const data = await eventsResponse.json();
           // Transform API response (camelCase) to match Event interface (snake_case)
-          const transformedEvents: Event[] = data.map((event: any) => ({
+          transformedEvents = data.map((event: any) => ({
             eventid: event.eventid,
             title: event.title,
             description: event.description,
@@ -34,6 +38,25 @@ const Home = () => {
           }));
           setEvents(transformedEvents);
         }
+
+        // Fetch user's registered events to get status
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        if (user.uid) {
+          try {
+            const userEventsResponse = await fetch(`http://localhost:3000/api/v1/users/${user.uid}/registered-events`);
+            if (userEventsResponse.ok) {
+              const userEvents = await userEventsResponse.json();
+              // Create a map of eventid -> status
+              const statusMap: Record<number, string> = {};
+              userEvents.forEach((event: any) => {
+                statusMap[event.eventid] = event.status;
+              });
+              setUserStatuses(statusMap);
+            }
+          } catch (error) {
+            console.error('Error fetching user events:', error);
+          }
+        }
       } catch (error) {
         console.error('Error fetching events:', error);
       } finally {
@@ -41,7 +64,7 @@ const Home = () => {
       }
     };
 
-    fetchEvents();
+    fetchEventsAndUserStatus();
   }, []);
 
   const filteredEvents = useMemo(() => {
@@ -122,7 +145,11 @@ const Home = () => {
                 </div>
               ) : filteredEvents.length > 0 ? (
                 filteredEvents.map(event => (
-                  <EventCard key={event.eventid} event={event} />
+                  <EventCard 
+                    key={event.eventid} 
+                    event={event} 
+                    userStatus={userStatuses[event.eventid]}
+                  />
                 ))
               ) : (
                 <div className="text-center py-20 bg-zinc-100 rounded-2xl border border-dashed border-zinc-300 text-zinc-400">

@@ -75,9 +75,11 @@ function EventCard({ event, showActions = false, userStatus, onClick }: EventCar
                   ? 'bg-[#2DBE8B] text-white' 
                   : userStatus === 'absent'
                   ? 'bg-[#FF383C] text-white'
+                  : userStatus === 'owner'
+                  ? 'bg-purple-600 text-white'
                   : 'bg-[#FFCC00] text-black'
               }`}>
-                {userStatus === 'present' ? 'Present' : userStatus === 'absent' ? 'Absent' : 'Registered'}
+                {userStatus === 'present' ? 'Present' : userStatus === 'absent' ? 'Absent' : userStatus === 'owner' ? 'Owner' : 'Registered'}
               </div>
             )}
             {isRegistrationEnded && (

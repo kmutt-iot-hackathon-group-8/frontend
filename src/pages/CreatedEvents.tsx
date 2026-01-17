@@ -51,7 +51,8 @@ const CreatedEvents = () => {
             eventendtime: item.eventendtime,
             image: item.eventimg,
             location: item.eventlocation,
-            attendeeCount: item.attendeeCount || 0
+            attendeeCount: item.attendeeCount || 0,
+            userStatus: 'owner' // Creator of the event
           }));
           console.log(user.uid);
           console.log('Fetched created events:', transformedEvents);

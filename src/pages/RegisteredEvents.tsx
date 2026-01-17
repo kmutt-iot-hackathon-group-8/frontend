@@ -19,7 +19,7 @@ const RegisteredEvents = () => {
       try {
         const response = await fetch(`http://localhost:3000/api/v1/users/${user.uid}/registered-events`);
         if (response.ok) {
-          const data: { eventid: number; title: string; startDate: string; endDate: string; startTime: string; endTime: string; image: string; location: string; attendeeCount: number; status: string }[] = await response.json();
+          const data: { eventid: number; title: string; startDate: string; endDate: string; startTime: string; endTime: string; image: string; location: string; attendeeCount: number; status: string; scannedat?: string }[] = await response.json();
           // Transform the data to match Event interface
           const transformedEvents: Event[] = data.map((item) => ({
             eventid: item.eventid,
@@ -31,8 +31,8 @@ const RegisteredEvents = () => {
             image: item.image,
             location: item.location,
             attendeeCount: item.attendeeCount || 0,
-            status: 'upcoming', // Default, will be updated
-            userStatus: item.status
+            status: 'upcoming', // Default status for the event itself
+            userStatus: item.status // User's registration status for this event
           }));
           setEvents(transformedEvents);
         }
