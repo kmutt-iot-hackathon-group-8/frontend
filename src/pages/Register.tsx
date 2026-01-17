@@ -127,7 +127,7 @@ const Register = () => {
 
   const handleGoogleLogin = async () => {
     try {
-      const response = await authClient.signIn.social({ provider: "google", callbackURL: "/"}, );
+      const response = await authClient.signIn.social({ provider: "google", callbackURL: window.location.origin + "/"}, );
       processSocialLogin(response);
     } catch (error) {
       console.error("Google login error:", error);
@@ -136,7 +136,7 @@ const Register = () => {
 
   const handleMicrosoftLogin = async () => {
     try {
-      const response = await authClient.signIn.social({ provider: "microsoft", callbackURL: "/"}, );
+      const response = await authClient.signIn.social({ provider: "microsoft", callbackURL: window.location.origin + "/"}, );
       processSocialLogin(response);
     } catch (error) {
       console.error("Microsoft login error:", error);
