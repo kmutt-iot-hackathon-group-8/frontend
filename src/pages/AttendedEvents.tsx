@@ -29,7 +29,7 @@ const AttendedEvents = () => {
             startTime: item.startTime,
             endTime: item.endTime,
             image: item.image,
-            organizer: '', // Not in this endpoint
+            location: '', // Not in this endpoint
             attendeeCount: 0, // Not in this endpoint
             status: item.status
           }));

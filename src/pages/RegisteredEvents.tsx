@@ -29,7 +29,7 @@ const RegisteredEvents = () => {
             startTime: item.startTime,
             endTime: item.endTime,
             image: item.image,
-            organizer: '', // Not in this endpoint
+            location: item.location,
             attendeeCount: 0, // Not in this endpoint
             status: item.status
           }));

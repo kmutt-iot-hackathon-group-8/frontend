@@ -31,7 +31,7 @@ const CreatedEvents = () => {
             startTime: item.startTime, 
             endTime: item.endTime,
             image: item.image,
-            organizer: 'You', // Since these are created by the user
+            location: item.location,
             attendeeCount: 0 // Not in this endpoint
           }));
           setEvents(transformedEvents);
