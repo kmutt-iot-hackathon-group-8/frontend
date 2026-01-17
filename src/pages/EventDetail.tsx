@@ -2,6 +2,8 @@ import { Calendar, Clock, ArrowRight, User, Info, Timer, ArrowLeft } from 'lucid
 import { useNavigate, useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { Mosaic } from 'react-loading-indicators';
+import type { Event } from '../components/EventCard';
+import { toast } from 'sonner';
 
 // Extended Event Interface for detail view (matches v1 API response)
 interface DetailedEvent {
@@ -90,7 +92,7 @@ const EventDetail = () => {
   const handleRegister = async () => {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     if (!user.uid) {
-      alert('Please login first');
+      toast.error('Please login first');
       return;
     }
 
@@ -102,16 +104,16 @@ const EventDetail = () => {
       });
       const data = await response.json();
       if (data.success) {
-        alert('Registered successfully!');
+        toast.success('Registered successfully!');
         setUserStatus('registered');
         // Update attendee count
         setEvent(prev => prev ? { ...prev, attendeeCount: prev.attendeeCount + 1 } : null);
       } else {
-        alert(data.message || 'Registration failed');
+        toast.error(data.message || 'Registration failed');
       }
     } catch (error) {
       console.error('Registration error:', error);
-      alert('Registration failed');
+      toast.error('Registration failed');
     }
   };
 
