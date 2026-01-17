@@ -37,7 +37,7 @@ const Home = () => {
     });
   }, [selectedDate, events]);
 
-  const upcomingEvent = events.find(e => true) || events[0]; // For now, just take the first event
+  const upcomingEvent = events.find(() => true) || events[0]; // For now, just take the first event
 
   return (
     <div className="min-h-screen text-zinc-900 flex flex-col font-montserrat">

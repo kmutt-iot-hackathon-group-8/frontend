@@ -12,19 +12,24 @@ const Profile = () => {
     email: '',
     password: ''
   });
-  const [loading, setLoading] = useState(true);
+  const [, setLoading] = useState(true);
 
   useEffect(() => {
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    if (!user.uid) {
+      navigate('/login');
+      return;
+    }
+
     const fetchUserData = async () => {
       try {
-        // For now, fetch user with ID 1 (admin)
-        const response = await fetch('http://localhost:3000/api/v1/users/1');
+        const response = await fetch(`http://localhost:3000/api/v1/users/${user.uid}`);
         if (response.ok) {
-          const user = await response.json();
+          const userData = await response.json();
           setFormData({
-            firstName: user.fname,
-            lastName: user.lname,
-            email: user.email,
+            firstName: userData.fname,
+            lastName: userData.lname,
+            email: userData.email,
             password: '' // Don't fetch password for security
           });
         }
@@ -36,7 +41,7 @@ const Profile = () => {
     };
 
     fetchUserData();
-  }, []);
+  }, [navigate]);
 
   const [showPassword, setShowPassword] = useState(false);
   const [showNfcPopup, setShowNfcPopup] = useState(false);
@@ -53,10 +58,43 @@ const Profile = () => {
     setFormData((prev: FormData) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    console.log('Saved Data:', formData);
-    alert('Settings Updated!');
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    if (!user.uid) {
+      alert('Please login first');
+      return;
+    }
+
+    try {
+      const updateData: any = {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+      };
+      if (formData.password) {
+        updateData.password = formData.password;
+      }
+
+      const response = await fetch(`http://localhost:3000/api/v1/users/${user.uid}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updateData),
+      });
+
+      const result = await response.json();
+      if (result.success) {
+        alert('Settings Updated!');
+        // Update localStorage with new data
+        const updatedUser = { ...user, fname: formData.firstName, lname: formData.lastName, email: formData.email };
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+      } else {
+        alert(result.message || 'Update failed');
+      }
+    } catch (error) {
+      console.error('Update error:', error);
+      alert('Update failed');
+    }
   };
 
   const inputStyle = "w-full md:w-72 px-4 py-2 border-2 border-black rounded-2xl bg-[#f0f2f5] focus:outline-none text-zinc-500 font-semibold tracking-tight relative z-20";

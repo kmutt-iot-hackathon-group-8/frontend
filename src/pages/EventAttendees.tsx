@@ -73,14 +73,16 @@ const MOCK_ATTENDEES: Attendee[] = [
 ];
 
 const EVENT_DATA =  {
-    id: 1,
+    eventId: 1,
     title: "System Design Architecture Workshop",
-    date: new Date(2025, 0, 24),
-    time: "10:00 AM",
-    location: "Tech Hub, Room 404",
+    startDate: "2025-01-24",
+    endDate: "2025-01-24",
+    startTime: "10:00:00",
+    endTime: "12:00:00",
+    organizer: "Tech Hub",
+    attendeeCount: 45,
     image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=2070&auto=format&fit=crop",
-    description: "Scalable system design",
-    attendees: 45
+    description: "Scalable system design"
   }
 
 const EventAttendees = () => {
@@ -174,7 +176,7 @@ const EventAttendees = () => {
         </button>
 
         {/* Event Header Component */}
-         <EventCard key={EVENT_DATA.id} event={EVENT_DATA} showActions={true} />
+         <EventCard key={EVENT_DATA.eventId} event={EVENT_DATA} showActions={true} />
 
         {/* Attendees Section */}
         <div className="mb-8 mt-10">

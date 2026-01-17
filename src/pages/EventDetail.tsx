@@ -1,4 +1,4 @@
-import { Calendar, Clock, MapPin, ArrowRight, User, Info, Timer, ArrowLeft } from 'lucide-react';
+import { Calendar, Clock, ArrowRight, User, Info, Timer, ArrowLeft } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import type { Event } from '../components/EventCard';
@@ -20,6 +20,7 @@ const EventDetail = () => {
   const { id } = useParams<{ id: string }>();
   const [event, setEvent] = useState<DetailedEvent | null>(null);
   const [loading, setLoading] = useState(true);
+  const [userStatus, setUserStatus] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchEventDetail = async () => {
@@ -38,8 +39,25 @@ const EventDetail = () => {
       }
     };
 
+    const fetchUserStatus = async () => {
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      if (!user.uid || !id) return;
+
+      try {
+        const response = await fetch(`http://localhost:3000/api/v1/events/${id}/attendees`);
+        if (response.ok) {
+          const attendees = await response.json();
+          const userAttendee = attendees.find((a: any) => a.uid === user.uid);
+          setUserStatus(userAttendee ? userAttendee.status : null);
+        }
+      } catch (error) {
+        console.error('Error fetching user status:', error);
+      }
+    };
+
     if (id) {
       fetchEventDetail();
+      fetchUserStatus();
     }
   }, [id]);
 
@@ -64,21 +82,54 @@ const EventDetail = () => {
   };
 
   const handleRegister = async () => {
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    if (!user.uid) {
+      alert('Please login first');
+      return;
+    }
+
     try {
       const response = await fetch(`http://localhost:3000/api/v1/events/${id}/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ uid: 1 }), // Hardcode uid for demo
+        body: JSON.stringify({ uid: user.uid }),
       });
       const data = await response.json();
       if (data.success) {
         alert('Registered successfully!');
+        setUserStatus('registered');
       } else {
         alert(data.message);
       }
     } catch (error) {
       console.error('Registration error:', error);
       alert('Registration failed');
+    }
+  };
+
+  const handleCheckIn = async () => {
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    if (!user.uid) {
+      alert('Please login first');
+      return;
+    }
+
+    try {
+      const response = await fetch(`http://localhost:3000/api/v1/events/${id}/checkin`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ uid: user.uid }),
+      });
+      const data = await response.json();
+      if (data.success) {
+        alert('Checked in successfully!');
+        setUserStatus('present');
+      } else {
+        alert(data.message);
+      }
+    } catch (error) {
+      console.error('Check-in error:', error);
+      alert('Check-in failed');
     }
   };
 
@@ -109,9 +160,9 @@ const EventDetail = () => {
           </div>
 
           <div className="relative z-10 p-6 sm:p-10 flex flex-col h-full justify-end">
-            {event.status && (
-              <div className={`absolute top-6 right-6 ${event.status === 'present' ? 'bg-[#2DBE8B] text-white' : 'bg-[#FFCC00] text-black'} text-xs font-bold px-3 py-1.5 rounded-lg shadow-md`}>
-                {event.status === 'present' ? 'Present' : 'Registered'}
+            {userStatus && (
+              <div className={`absolute top-6 right-6 ${userStatus === 'present' ? 'bg-[#2DBE8B] text-white' : userStatus === 'absent' ? 'bg-[#FF383C] text-white' : 'bg-[#FFCC00] text-black'} text-xs font-bold px-3 py-1.5 rounded-lg shadow-md`}>
+                {userStatus === 'present' ? 'Present' : userStatus === 'absent' ? 'Absent' : 'Registered'}
               </div>
             )}
 
@@ -255,18 +306,37 @@ const EventDetail = () => {
               </div>
             </div>
             
-            {/* Register Button */}
+            {/* Action Button */}
             <div className="mt-auto pt-8 flex justify-end">
-              <button 
-                onClick={handleRegister}
-                className="flex items-center justify-center gap-2 text-white font-bold text-lg hover:opacity-95 transition-opacity active:scale-95 duration-200 w-50.25 h-14 rounded-2xl shadow-[0px_4px_4px_rgba(0,0,0,0.25)]"
-                style={{
-                  background: 'linear-gradient(90deg, #20D4A4 0%, #1F7CAE 100%)'
-                }}
-              >
-                Register
-                <ArrowRight className="w-5 h-5" />
-              </button>
+              {!userStatus && (
+                <button 
+                  onClick={handleRegister}
+                  className="flex items-center justify-center gap-2 text-white font-bold text-lg hover:opacity-95 transition-opacity active:scale-95 duration-200 w-50.25 h-14 rounded-2xl shadow-[0px_4px_4px_rgba(0,0,0,0.25)]"
+                  style={{
+                    background: 'linear-gradient(90deg, #20D4A4 0%, #1F7CAE 100%)'
+                  }}
+                >
+                  Register
+                  <ArrowRight className="w-5 h-5" />
+                </button>
+              )}
+              {userStatus === 'registered' && (
+                <button 
+                  onClick={handleCheckIn}
+                  className="flex items-center justify-center gap-2 text-white font-bold text-lg hover:opacity-95 transition-opacity active:scale-95 duration-200 w-50.25 h-14 rounded-2xl shadow-[0px_4px_4px_rgba(0,0,0,0.25)]"
+                  style={{
+                    background: 'linear-gradient(90deg, #20D4A4 0%, #1F7CAE 100%)'
+                  }}
+                >
+                  Check-in
+                  <ArrowRight className="w-5 h-5" />
+                </button>
+              )}
+              {userStatus === 'present' && (
+                <div className="flex items-center justify-center gap-2 text-green-600 font-bold text-lg">
+                  ✓ Checked In
+                </div>
+              )}
             </div>
           </div>
         </div>
