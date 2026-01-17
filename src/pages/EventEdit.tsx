@@ -146,7 +146,7 @@ const EditEvent = () => {
   if (!event) {
     return <div className="min-h-screen flex items-center justify-center">Event not found</div>;
   }
-    const userId = localStorage.getItem('userId') || '1';
+    const userId = JSON.parse(localStorage.getItem('user') || '{}');
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];

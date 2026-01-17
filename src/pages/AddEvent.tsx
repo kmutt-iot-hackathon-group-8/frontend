@@ -26,12 +26,11 @@ const AddEvent = () => {
     const [eventlocation, setEventLocation] = useState('');
     const [details, setDetails] = useState('');
     const [contact, setContact] = useState('');
-    const [registerLink, setRegisterLink] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     // Get userId from localStorage (adjust based on your auth implementation)
-    const userId = localStorage.getItem('userId') || '1';
-
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    const userId = user.uid;
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {

@@ -6,12 +6,18 @@ import clickToAddNewEvents from '../assets/icons/clicktoaddnewevents.webp';
 
 interface CreatedEventResponse {
   eventid: number;
-  title: string;
-  startDate: string;
-  endDate: string;
-  startTime: string;
-  endTime: string;
-  image: string;
+  eventtitle: string;
+  eventstartdate: string;
+  eventenddate: string;
+  eventstarttime: string;
+  eventendtime: string;
+  eventimg: string;
+  eventowner: string;
+  eventdetail: string;
+  eventlocation: string;
+  contact: string;
+  regisstart: string;
+  regisend: string;
 }
 
 const CreatedEvents = () => {
@@ -29,21 +35,24 @@ const CreatedEvents = () => {
 
     const fetchCreatedEvents = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/api/v1/users/${user.uid}/created-events`);
+        const response = await fetch(`http://localhost:3000/api/event/created/${user.uid}`);
         if (response.ok) {
-          const data: CreatedEventResponse[] = await response.json();
+          const result = await response.json();
+          // Handle the { success: true, events } response structure
+          const data: CreatedEventResponse[] = result.events || [];
           // Transform the data to match Event interface
           const transformedEvents: Event[] = data.map((item) => ({
             eventid: item.eventid,
-            title: item.title,
-            startDate: item.startDate,
-            endDate: item.endDate,
-            startTime: item.startTime, 
-            endTime: item.endTime,
-            image: item.image,
-            organizer: 'You', // Since these are created by the user
+            title: item.eventtitle,
+            startDate: item.eventstartdate,
+            endDate: item.eventenddate,
+            startTime: item.eventstarttime, 
+            endTime: item.eventendtime,
+            image: item.eventimg,
             attendeeCount: 0 // Not in this endpoint
           }));
+          console.log(user.uid);
+          console.log('Fetched created events:', transformedEvents);
           setEvents(transformedEvents);
         }
       } catch (error) {

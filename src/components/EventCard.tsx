@@ -9,7 +9,6 @@ export interface Event {
   startTime: string;
   endTime: string;
   image: string;
-  organizer: string;
   attendeeCount: number;
   status?: string;
   regisStart?: string;
