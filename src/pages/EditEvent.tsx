@@ -10,17 +10,15 @@ import { useNavigate, useParams } from 'react-router-dom';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 interface DetailedEvent {
-  eventid?: number;
   eventtitle?: string;
-  eventimg?: string;
-  eventdetail?: string;
-  eventstartdate?: string;
-  eventstarttime?: string;
-  eventenddate?: string;
-  eventendtime?: string;
-  regisstart?: string;
-  regisend?: string;
+  eventImg?: string;
+  description?: string;
+  eventStart?: Date;
+  eventEnd?: Date;
+  registrationStart?: Date;
+  registrationEnd?: Date;
   contact?: string;
+  regisURL?: string;
   eventlocation?: string;
 }
 
@@ -43,25 +41,16 @@ const EditEvent = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [event, setEvent] = useState<DetailedEvent | null>(null);
     const [loading, setLoading] = useState(true);
-    const [showDeleteModal, setShowDeleteModal] = useState(false);
 
     useEffect(() => {
     const fetchEventDetail = async () => {
       try {
-        console.log('Fetching event with ID:', eventId);
         const response = await fetch(`http://localhost:3000/api/event/${eventId}`);
-        console.log('Response status:', response.status);
         if (response.ok) {
           const data = await response.json();
-          console.log('Event data received:', data);
-          // Extract the event object from the response
-          if (data.success && data.event) {
-            setEvent(data.event);
-          } else {
-            setEvent(data);
-          }
+          setEvent(data);
         } else {
-          console.error('Failed to fetch event, status:', response.status);
+          console.error('Failed to fetch event');
         }
       } catch (error) {
         console.error('Error fetching event:', error);
@@ -74,70 +63,6 @@ const EditEvent = () => {
       fetchEventDetail();
     }
   }, [eventId]);
-
-  // Populate form fields when event data is loaded
-  useEffect(() => {
-    if (event) {
-      console.log('Populating form with event data:', event);
-      
-      // Set title
-      if (event.eventtitle) setTitle(event.eventtitle);
-      
-      // Set image preview
-      if (event.eventimg) setImagePreview(event.eventimg);
-      
-      // Set description
-      if (event.eventdetail) setDetails(event.eventdetail);
-      
-      // Set contact
-      if (event.contact) setContact(event.contact);
-      
-      // Set location
-      if (event.eventlocation) setEventLocation(event.eventlocation);
-      
-      // Set start date and time
-      if (event.eventstartdate) {
-        const startDate = new Date(event.eventstartdate);
-        console.log('Start date:', startDate);
-        setStartDate(startDate);
-        
-        // Set start time from eventstarttime (format: "HH:MM:SS")
-        if (event.eventstarttime) {
-          const timeStr = event.eventstarttime.substring(0, 5); // Get HH:MM
-          console.log('Start time:', timeStr);
-          setStartTime(timeStr);
-        }
-      }
-      
-      // Set end date and time
-      if (event.eventenddate) {
-        const endDate = new Date(event.eventenddate);
-        console.log('End date:', endDate);
-        setEndDate(endDate);
-        
-        // Set end time from eventendtime (format: "HH:MM:SS")
-        if (event.eventendtime) {
-          const timeStr = event.eventendtime.substring(0, 5); // Get HH:MM
-          console.log('End time:', timeStr);
-          setEndTime(timeStr);
-        }
-      }
-      
-      // Set registration start
-      if (event.regisstart) {
-        console.log('Registration start:', event.regisstart);
-        setRegisStart(new Date(event.regisstart));
-      }
-      
-      // Set registration end
-      if (event.regisend) {
-        console.log('Registration end:', event.regisend);
-        setRegisEnd(new Date(event.regisend));
-      }
-      
-      console.log('Form populated successfully');
-    }
-  }, [event]);
 
   if (loading) {
     return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
@@ -180,20 +105,19 @@ const EditEvent = () => {
             endDateTime.setHours(endHour, endMinute, 0, 0);
 
             // Prepare event data matching backend expectations
-            // Use current values if changed, otherwise keep original values
             const eventData = {
                 eventOwner: userId,
-                eventtitle: title || event.eventtitle || '',
-                eventDetail: details || event.eventdetail || '',
-                eventImg: event.eventimg, // Keep exact original image value (null or URL)
+                eventtitle: title,
+                eventDetail: details,
+                eventImg: '', // Will be updated via image upload
                 eventStartDate: startDateTime.toISOString(),
                 eventEndDate: endDateTime.toISOString(),
                 eventStartTime: startDateTime.toISOString(),
                 eventEndTime: endDateTime.toISOString(),
                 regisStart: regisStart.toISOString(),
                 regisEnd: regisEnd.toISOString(),
-                contact: contact || event.contact || '',
-                eventlocation: eventlocation || event.eventlocation || '',
+                contact: contact,
+                eventlocation: eventlocation,
             };
 
             console.log('Sending event data:', eventData);
@@ -201,7 +125,7 @@ const EditEvent = () => {
             // Step 1: Update the event
             let response;
             try {
-                response = await fetch(`http://localhost:3000/api/event/${event.eventid}`, {
+                response = await fetch('http://localhost:3000/api/event', {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
@@ -228,12 +152,14 @@ const EditEvent = () => {
             }
 
             if (response.ok && data.success) {
-                // Step 2: Upload image ONLY if a new image file was selected
-                if (eventImage && eventId) {
+                const eventid = data.event.eventid; // Get the updated event ID
+                
+                // Step 2: Upload image if one was selected
+                if (eventImage && eventid) {
                     try {
                         const formData = new FormData();
                         formData.append('image', eventImage);
-                        formData.append('eventid', eventId.toString());
+                        formData.append('eventid', eventid.toString());
 
                         const uploadResponse = await fetch('http://localhost:3000/api/upload', {
                             method: 'POST',
@@ -277,31 +203,6 @@ const EditEvent = () => {
             setIsSubmitting(false);
         }
     }
-
-    const handleDelete = async () => {
-        try {
-            setIsSubmitting(true);
-            setShowDeleteModal(false);
-
-            const response = await fetch(`http://localhost:3000/api/event/${event.eventid}`, {
-                method: 'DELETE',
-            });
-
-            if (response.ok) {
-                alert('Event deleted successfully!');
-                navigate('/created-events');
-            } else {
-                const data = await response.json();
-                alert(`Failed to delete event: ${data.error || 'Unknown error'}`);
-            }
-        } catch (error) {
-            console.error('Error deleting event:', error);
-            alert('Error deleting event. Please try again.');
-        } finally {
-            setIsSubmitting(false);
-        }
-    }
-
     return (
         <div className="min-h-screen bg-white px-4 sm:px-8 lg:px-16 py-6 sm:py-12 pb-32 font-sans overflow-x-hidden">
             <style>{`
@@ -425,13 +326,6 @@ const EditEvent = () => {
                                 Cancel
                             </button>
                             <button 
-                                onClick={() => setShowDeleteModal(true)}
-                                disabled={isSubmitting}
-                                className="flex-1 sm:flex-none sm:w-46.75 h-13 bg-red-500 text-white text-lg sm:text-xl font-bold rounded-xl hover:bg-red-600 shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                                Delete
-                            </button>
-                            <button 
                                 onClick={handleSubmit}
                                 disabled={isSubmitting}
                                 className="flex-1 sm:flex-none sm:w-46.75 h-13 bg-linear-to-r from-[#20D4A4] to-[#1F7CAE] text-white text-lg sm:text-xl font-bold rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
@@ -442,34 +336,6 @@ const EditEvent = () => {
                     </div>
                 </div>
             </div>
-
-            {/* Delete Confirmation Modal */}
-            {showDeleteModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
-                    <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full p-8 animate-in zoom-in-95 duration-200">
-                        <h2 className="text-2xl font-bold text-gray-900 mb-3">Delete Event?</h2>
-                        <p className="text-gray-600 text-lg mb-8">
-                            Are you sure you want to delete this event? This action cannot be undone.
-                        </p>
-                        <div className="flex gap-4">
-                            <button
-                                onClick={() => setShowDeleteModal(false)}
-                                disabled={isSubmitting}
-                                className="flex-1 h-12 bg-gray-100 text-gray-700 text-lg font-semibold rounded-xl hover:bg-gray-200 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                onClick={handleDelete}
-                                disabled={isSubmitting}
-                                className="flex-1 h-12 bg-red-500 text-white text-lg font-semibold rounded-xl hover:bg-red-600 shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                                {isSubmitting ? 'Deleting...' : 'Delete'}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
         </div>
     );
 };

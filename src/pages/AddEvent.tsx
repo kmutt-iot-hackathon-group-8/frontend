@@ -23,6 +23,7 @@ const AddEvent = () => {
     const [endTime, setEndTime] = useState('12:00');
     const [regisStart, setRegisStart] = useState<Date | null>(null);
     const [regisEnd, setRegisEnd] = useState<Date | null>(null);
+    const [eventlocation, setEventLocation] = useState('');
     const [details, setDetails] = useState('');
     const [contact, setContact] = useState('');
     const [registerLink, setRegisterLink] = useState('');
@@ -74,7 +75,8 @@ const AddEvent = () => {
                 eventEndTime: endDateTime.toISOString(),
                 regisStart: regisStart.toISOString(),
                 regisEnd: regisEnd.toISOString(),
-                contact: contact
+                contact: contact,
+                eventlocation: eventlocation,
             };
 
             console.log('Sending event data:', eventData);
@@ -263,12 +265,12 @@ const AddEvent = () => {
                                 />
                             </div>
                             <div className="w-full">
-                                <label className="block text-base sm:text-lg font-semibold mb-2 text-gray-700">Register Link</label>
+                                <label className="block text-base sm:text-lg font-semibold mb-2 text-gray-700">Location</label>
                                 <input 
                                     type="text" 
-                                    value={registerLink}
-                                    onChange={(e) => setRegisterLink(e.target.value)}
-                                    placeholder="https://..."
+                                    value={eventlocation}
+                                    onChange={(e) => setEventLocation(e.target.value)}
+                                    placeholder="Training Builiding..."
                                     className="w-full h-13 sm:h-18 bg-white border-2 border-gray-200 rounded-2xl px-5 text-base sm:text-lg text-gray-800 focus:outline-none focus:border-[#54B0A8] focus:ring-4 focus:ring-[#54B0A8]/10 transition-all" 
                                 />
                             </div>
@@ -382,8 +384,8 @@ const InfiniteTimePicker = ({ label, timeValue, setTimeValue }: InfiniteTimePick
 
     // Close on click outside
     useEffect(() => {
-        const handleClickOutside = (event: any) => {
-            if (containerRef.current && !containerRef.current.contains(event.target)) setIsOpen(false);
+        const handleClickOutside = (event: MouseEvent) => {
+            if (containerRef.current && !containerRef.current.contains(event.target as Node)) setIsOpen(false);
         };
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
@@ -466,8 +468,14 @@ interface InputProps {
     onDateChange: (date: Date | null) => void;
 }
 
+interface CustomInputProps {
+    value?: string;
+    onClick?: () => void;
+    icon: React.ReactNode;
+}
+
 // Move CustomInput outside to prevent recreation on every render
-const CustomInput = React.forwardRef(({ value, onClick, icon }: any, ref: any) => (
+const CustomInput = React.forwardRef<HTMLInputElement, CustomInputProps>(({ value, onClick, icon }, ref) => (
     <div className="relative group/input" onClick={onClick}>
         <input ref={ref} value={value} readOnly placeholder="Select Date"
             className="w-full h-13 sm:h-16 bg-white border-2 border-gray-200 rounded-2xl pl-4 pr-12 text-base sm:text-lg text-gray-800 font-medium placeholder-gray-400 cursor-pointer focus:outline-none focus:border-[#54B0A8] focus:ring-4 focus:ring-[#54B0A8]/10 transition-all duration-200"

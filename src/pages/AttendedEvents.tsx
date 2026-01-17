@@ -3,6 +3,17 @@ import { ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import EventCard, { type Event } from '../components/EventCard';
 
+interface AttendedEventResponse {
+  eventid: number;
+  title: string;
+  startDate: string;
+  endDate: string;
+  startTime: string;
+  endTime: string;
+  image: string;
+  status: string;
+}
+
 const AttendedEvents = () => {
   const navigate = useNavigate();
   const [events, setEvents] = useState<Event[]>([]);
@@ -19,9 +30,9 @@ const AttendedEvents = () => {
       try {
         const response = await fetch(`http://localhost:3000/api/v1/users/${user.uid}/attended-events`);
         if (response.ok) {
-          const data = await response.json();
+          const data: AttendedEventResponse[] = await response.json();
           // Transform the data to match Event interface
-          const transformedEvents: Event[] = data.map((item: any) => ({
+          const transformedEvents: Event[] = data.map((item) => ({
             eventid: item.eventid,
             title: item.title,
             startDate: item.startDate,

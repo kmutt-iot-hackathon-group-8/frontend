@@ -4,6 +4,16 @@ import { useNavigate } from 'react-router-dom';
 import EventCard, { type Event } from '../components/EventCard';
 import clickToAddNewEvents from '../assets/icons/clicktoaddnewevents.webp';
 
+interface CreatedEventResponse {
+  eventid: number;
+  title: string;
+  startDate: string;
+  endDate: string;
+  startTime: string;
+  endTime: string;
+  image: string;
+}
+
 const CreatedEvents = () => {
   const navigate = useNavigate();
   const [isHovered, setIsHovered] = useState(false);
@@ -21,9 +31,9 @@ const CreatedEvents = () => {
       try {
         const response = await fetch(`http://localhost:3000/api/v1/users/${user.uid}/created-events`);
         if (response.ok) {
-          const data = await response.json();
+          const data: CreatedEventResponse[] = await response.json();
           // Transform the data to match Event interface
-          const transformedEvents: Event[] = data.map((item: any) => ({
+          const transformedEvents: Event[] = data.map((item) => ({
             eventid: item.eventid,
             title: item.title,
             startDate: item.startDate,
