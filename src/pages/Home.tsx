@@ -15,7 +15,24 @@ const Home = () => {
         const response = await fetch('http://localhost:3000/api/v1/events');
         if (response.ok) {
           const data = await response.json();
-          setEvents(data);
+          // Transform API response (camelCase) to match Event interface (snake_case)
+          const transformedEvents: Event[] = data.map((event: any) => ({
+            eventid: event.eventid,
+            title: event.title,
+            description: event.description,
+            eventstartdate: event.startDate,
+            eventenddate: event.endDate,
+            eventstarttime: event.startTime,
+            eventendtime: event.endTime,
+            image: event.image,
+            location: event.location,
+            attendeeCount: event.attendeeCount,
+            status: event.status,
+            regisstart: event.regisStart,
+            regisend: event.regisEnd,
+            contact: event.contact
+          }));
+          setEvents(transformedEvents);
         }
       } catch (error) {
         console.error('Error fetching events:', error);
