@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Calendar } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import EventCard, { type Event } from '../components/EventCard';
 
@@ -66,15 +66,21 @@ const RegisteredEvents = () => {
         
         </div>
 
-        <div className="space-y-4 sm:space-y-8 max-w-375">
+        <div className="grid grid-cols-1 gap-4">
           {loading ? (
-            <div className="text-center py-8 flex justify-center"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div></div>
+            <div className="text-center py-20 bg-zinc-100 rounded-2xl border border-dashed border-zinc-300 text-zinc-400">
+              <Calendar className="w-12 h-12 mx-auto mb-3 opacity-50" />
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-zinc-400 mx-auto mb-3"></div>
+            </div>
           ) : events.length > 0 ? (
             events.map((event) => (
               <EventCard key={event.eventid} event={event} userStatus={event.userStatus} />
             ))
           ) : (
-            <div className="text-center py-8 text-gray-500">No registered events found</div>
+            <div className="text-center py-20 bg-zinc-100 rounded-2xl border border-dashed border-zinc-300 text-zinc-400">
+              <Calendar className="w-12 h-12 mx-auto mb-3 opacity-50" />
+              <p>No registered events found.</p>
+            </div>
           )}
         </div>
 

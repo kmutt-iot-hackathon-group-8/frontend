@@ -2,7 +2,6 @@ import { Calendar, Clock, ArrowRight, User, Info, Timer, ArrowLeft } from 'lucid
 import { useNavigate, useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { Mosaic } from 'react-loading-indicators';
-import type { Event } from '../components/EventCard';
 import { toast } from 'sonner';
 
 // Extended Event Interface for detail view (matches v1 API response)
