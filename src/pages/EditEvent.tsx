@@ -64,6 +64,23 @@ const EditEvent = () => {
     }
   }, [eventId]);
 
+  // Populate form fields when event data is loaded
+  useEffect(() => {
+    if (event) {
+      setTitle(event.eventtitle || '');
+      setDetails(event.eventdetail || '');
+      setStartDate(event.eventstartdate ? new Date(event.eventstartdate) : null);
+      setEndDate(event.eventenddate ? new Date(event.eventenddate) : null);
+      setStartTime(event.eventstarttime ? event.eventstarttime.substring(0, 5) : '12:00');
+      setEndTime(event.eventendtime ? event.eventendtime.substring(0, 5) : '12:00');
+      setRegisStart(event.regisstart ? new Date(event.regisstart) : null);
+      setRegisEnd(event.regisend ? new Date(event.regisend) : null);
+      setEventLocation(event.eventlocation || '');
+      setContact(event.contact || '');
+      setImagePreview(event.eventimg || '');
+    }
+  }, [event]);
+
   if (loading) {
     return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
   }
@@ -106,16 +123,16 @@ const EditEvent = () => {
 
             // Prepare event data matching backend expectations
             const eventData = {
-                eventOwner: userId,
+                eventowner: userId,
                 eventtitle: title,
-                eventDetail: details,
-                eventImg: '', // Will be updated via image upload
-                eventStartDate: startDateTime.toISOString(),
-                eventEndDate: endDateTime.toISOString(),
-                eventStartTime: startDateTime.toISOString(),
-                eventEndTime: endDateTime.toISOString(),
-                regisStart: regisStart.toISOString(),
-                regisEnd: regisEnd.toISOString(),
+                eventdetail: details,
+                eventimg: '', // Will be updated via image upload
+                eventstartdate: startDate.toISOString().split('T')[0], // YYYY-MM-DD format
+                eventenddate: endDate.toISOString().split('T')[0],     // YYYY-MM-DD format
+                eventstarttime: `${startHour.toString().padStart(2, '0')}:${startMinute.toString().padStart(2, '0')}:00`, // HH:MM:SS format
+                eventendtime: `${endHour.toString().padStart(2, '0')}:${endMinute.toString().padStart(2, '0')}:00`,     // HH:MM:SS format
+                regisstart: regisStart.toISOString().split('T')[0],   // YYYY-MM-DD format
+                regisend: regisEnd.toISOString().split('T')[0],       // YYYY-MM-DD format
                 contact: contact,
                 eventlocation: eventlocation,
             };
@@ -125,7 +142,7 @@ const EditEvent = () => {
             // Step 1: Update the event
             let response;
             try {
-                response = await fetch('http://localhost:3000/api/event', {
+                response = await fetch(`http://localhost:3000/api/event/${eventId}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',

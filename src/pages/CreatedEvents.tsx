@@ -18,6 +18,7 @@ interface CreatedEventResponse {
   contact: string;
   regisstart: string;
   regisend: string;
+  attendeeCount?: number;
 }
 
 const CreatedEvents = () => {

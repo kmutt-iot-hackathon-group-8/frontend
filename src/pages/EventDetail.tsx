@@ -2,19 +2,23 @@ import { Calendar, Clock, ArrowRight, User, Info, Timer, ArrowLeft } from 'lucid
 import { useNavigate, useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { Mosaic } from 'react-loading-indicators';
-import type { Event } from '../components/EventCard';
 
-// Extended Event Interface for detail view
-interface DetailedEvent extends Event {
-  description?: string;
-  fullDescription?: string;
-  eventStart?: Date;
-  eventEnd?: Date;
-  registrationStart?: Date;
-  registrationEnd?: Date;
-  contact?: string;
-  regisURL?: string;
-  status?: string;
+// Extended Event Interface for detail view (matches v1 API response)
+interface DetailedEvent {
+  eventid: number;
+  title: string;
+  description: string;
+  image: string;
+  startDate: string;
+  endDate: string;
+  startTime: string;
+  endTime: string;
+  regisStart: string;
+  regisEnd: string;
+  contact: string;
+  location: string;
+  attendeeCount: number;
+  status: string;
 }
 
 const EventDetail = () => {
@@ -154,11 +158,11 @@ const EventDetail = () => {
             <div className="flex flex-wrap items-center gap-4 sm:gap-8 text-zinc-200 text-sm sm:text-base mb-6">
               <div className="flex items-center gap-2">
                 <Calendar className="w-5 h-5" style={{ color: '#1BB3A0' }} />
-                {formatDate(event.eventstartdate)} - {formatDate(event.eventenddate)}
+                {formatDate(event.startDate)} - {formatDate(event.endDate)}
               </div>
               <div className="flex items-center gap-2">
                 <Clock className="w-5 h-5" style={{ color: '#1BB3A0' }} />
-                {formatTime(event.eventstarttime)} - {formatTime(event.eventendtime)}
+                {formatTime(event.startTime)} - {formatTime(event.endTime)}
               </div>
               <div className="flex items-center gap-2">
                 <User className="w-5 h-5" style={{ color: '#1BB3A0' }} />
@@ -212,16 +216,16 @@ const EventDetail = () => {
                         <div className="w-3 h-3 rounded-full bg-[#1BB3A0] ring-4 ring-white mt-1.5 shrink-0 z-10 shadow-sm" />
                         <div>
                           <span className="text-xs font-bold text-[#1BB3A0] uppercase tracking-wide block mb-0.5">Start</span>
-                          <p className="font-semibold text-zinc-900 leading-tight">{formatDate(event.eventstartdate)}</p>
-                          <p className="text-sm text-zinc-500 mt-0.5">{formatTime(event.eventstarttime)}</p>
+                          <p className="font-semibold text-zinc-900 leading-tight">{formatDate(event.startDate)}</p>
+                          <p className="text-sm text-zinc-500 mt-0.5">{formatTime(event.startTime)}</p>
                         </div>
                       </div>
                       <div className="flex gap-4 group">
                         <div className="w-3 h-3 rounded-full bg-zinc-400 ring-4 ring-white mt-1.5 shrink-0 z-10 shadow-sm" />
                         <div>
                           <span className="text-xs font-bold text-zinc-400 uppercase tracking-wide block mb-0.5">End</span>
-                          <p className="font-semibold text-zinc-900 leading-tight">{formatDate(event.eventenddate)}</p>
-                          <p className="text-sm text-zinc-500 mt-0.5">{formatTime(event.eventendtime)}</p>
+                          <p className="font-semibold text-zinc-900 leading-tight">{formatDate(event.endDate)}</p>
+                          <p className="text-sm text-zinc-500 mt-0.5">{formatTime(event.endTime)}</p>
                         </div>
                       </div>
                     </div>
@@ -241,14 +245,14 @@ const EventDetail = () => {
                         <div className="w-3 h-3 rounded-full bg-[#1BB3A0] ring-4 ring-white mt-1.5 shrink-0 z-10 shadow-sm" />
                         <div>
                           <span className="text-xs font-bold text-[#1BB3A0] uppercase tracking-wide block mb-0.5">Opens</span>
-                          <p className="font-semibold text-zinc-900 leading-tight">{formatDate(event.regisstart)}</p>
+                          <p className="font-semibold text-zinc-900 leading-tight">{formatDate(event.regisStart)}</p>
                         </div>
                       </div>
                       <div className="flex gap-4 group">
                         <div className="w-3 h-3 rounded-full bg-zinc-400 ring-4 ring-white mt-1.5 shrink-0 z-10 shadow-sm" />
                         <div>
                           <span className="text-xs font-bold text-zinc-400 uppercase tracking-wide block mb-0.5">Closes</span>
-                          <p className="font-semibold text-zinc-900 leading-tight">{formatDate(event.regisend)}</p>
+                          <p className="font-semibold text-zinc-900 leading-tight">{formatDate(event.regisEnd)}</p>
                         </div>
                       </div>
                     </div>

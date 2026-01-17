@@ -187,12 +187,12 @@ const EditEvent = () => {
                 eventtitle: title || event.eventtitle || '',
                 eventdetail: details || event.eventdetail || '',
                 eventimg: event.eventimg, // Keep exact original image value (null or URL)
-                eventstartdate: startDateTime.toISOString(),
-                eventenddate: endDateTime.toISOString(),
-                eventstarttime: startDateTime.toISOString(),
-                eventendtime: endDateTime.toISOString(),
-                regisstart: regisStart.toISOString(),
-                regisend: regisEnd.toISOString(),
+                eventstartdate: startDateTime.toISOString().split('T')[0], // YYYY-MM-DD
+                eventenddate: endDateTime.toISOString().split('T')[0], // YYYY-MM-DD
+                eventstarttime: startTime + ':00', // HH:MM:SS
+                eventendtime: endTime + ':00', // HH:MM:SS
+                regisstart: regisStart.toISOString().split('T')[0], // YYYY-MM-DD
+                regisend: regisEnd.toISOString().split('T')[0], // YYYY-MM-DD
                 contact: contact || event.contact || '',
                 eventlocation: eventlocation || event.eventlocation || '',
             };
