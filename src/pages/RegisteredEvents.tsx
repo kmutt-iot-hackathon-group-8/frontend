@@ -3,6 +3,8 @@ import { ArrowLeft, Calendar } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import EventCard, { type Event } from '../components/EventCard';
 
+const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 const RegisteredEvents = () => {
   const navigate = useNavigate();
   const [events, setEvents] = useState<Event[]>([]);
@@ -17,7 +19,7 @@ const RegisteredEvents = () => {
 
     const fetchRegisteredEvents = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/api/v1/users/${user.uid}/registered-events`);
+        const response = await fetch(`${BASE_URL}/api/v1/users/${user.uid}/registered-events`);
         if (response.ok) {
           const data: { eventid: number; title: string; startDate: string; endDate: string; startTime: string; endTime: string; image: string; location: string; attendeeCount: number; status: string; scannedat?: string }[] = await response.json();
           // Transform the data to match Event interface

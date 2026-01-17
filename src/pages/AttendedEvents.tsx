@@ -15,6 +15,8 @@ interface AttendedEventResponse {
   attendeeCount?: number;
 }
 
+const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 const AttendedEvents = () => {
   const navigate = useNavigate();
   const [events, setEvents] = useState<Event[]>([]);
@@ -29,7 +31,7 @@ const AttendedEvents = () => {
 
     const fetchAttendedEvents = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/api/v1/users/${user.uid}/attended-events`);
+        const response = await fetch(`${BASE_URL}/api/v1/users/${user.uid}/attended-events`);
         if (response.ok) {
           const data: AttendedEventResponse[] = await response.json();
           // Transform the data to match Event interface

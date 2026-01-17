@@ -11,6 +11,8 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { toast } from "sonner"
 
+const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 const AddEvent = () => {
     const navigate = useNavigate();
 
@@ -84,7 +86,7 @@ const AddEvent = () => {
             // Step 1: Create the event
             let response;
             try {
-                response = await fetch('http://localhost:3000/api/event', {
+                response = await fetch(`${BASE_URL}/api/event`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -93,7 +95,7 @@ const AddEvent = () => {
                 });
             } catch (error) {
                 console.error('Network error:', error);
-                throw new Error('Cannot connect to server. Please ensure the backend is running at http://localhost:3000');
+                throw new Error('Cannot connect to server. Please check your connection and try again.');
             }
 
             // Get response text first
@@ -120,7 +122,7 @@ const AddEvent = () => {
                         formData.append('image', eventImage);
                         formData.append('eventid', eventid.toString());
 
-                        const uploadResponse = await fetch('http://localhost:3000/api/upload', {
+                        const uploadResponse = await fetch(`${BASE_URL}/api/upload`, {
                             method: 'POST',
                             body: formData, // No Content-Type header - browser sets it automatically with boundary
                         });

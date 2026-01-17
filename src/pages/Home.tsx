@@ -4,6 +4,8 @@ import CalendarWidget from '../components/CalendarWidget';
 import EventCard, { type Event } from '../components/EventCard';
 import FeaturedEvent from '../components/FeaturedEvent';
 
+const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 const Home = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
@@ -14,7 +16,7 @@ const Home = () => {
     const fetchEventsAndUserStatus = async () => {
       try {
         // Fetch all events
-        const eventsResponse = await fetch('http://localhost:3000/api/v1/events');
+        const eventsResponse = await fetch(`${BASE_URL}/api/v1/events`);
         let transformedEvents: Event[] = [];
         
         if (eventsResponse.ok) {
@@ -43,7 +45,7 @@ const Home = () => {
         const user = JSON.parse(localStorage.getItem('user') || '{}');
         if (user.uid) {
           try {
-            const userEventsResponse = await fetch(`http://localhost:3000/api/v1/users/${user.uid}/registered-events`);
+            const userEventsResponse = await fetch(`${BASE_URL}/api/v1/users/${user.uid}/registered-events`);
             if (userEventsResponse.ok) {
               const userEvents = await userEventsResponse.json();
               // Create a map of eventid -> status

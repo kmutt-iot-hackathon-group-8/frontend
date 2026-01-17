@@ -21,6 +21,8 @@ interface CreatedEventResponse {
   attendeeCount?: number;
 }
 
+const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 const CreatedEvents = () => {
   const navigate = useNavigate();
   const [isHovered, setIsHovered] = useState(false);
@@ -36,7 +38,7 @@ const CreatedEvents = () => {
 
     const fetchCreatedEvents = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/api/event/created/${user.uid}`);
+        const response = await fetch(`${BASE_URL}/api/event/created/${user.uid}`);
         if (response.ok) {
           const result = await response.json();
           // Handle the { success: true, events } response structure

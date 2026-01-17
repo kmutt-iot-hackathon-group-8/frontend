@@ -18,6 +18,8 @@ interface Attendee {
   bgColor: string;
 }
 
+const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 const EventAttendees = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
@@ -36,7 +38,7 @@ const EventAttendees = () => {
       
       try {
         // Fetch event data
-        const eventResponse = await fetch(`http://localhost:3000/api/v1/events/${id}`);
+        const eventResponse = await fetch(`${BASE_URL}/api/v1/events/${id}`);
         if (eventResponse.ok) {
           const eventData = await eventResponse.json();
           // Transform the API response to match Event interface
@@ -61,7 +63,7 @@ const EventAttendees = () => {
         }
 
         // Fetch attendees data
-        const attendeesResponse = await fetch(`http://localhost:3000/api/v1/events/${id}/attendees`);
+        const attendeesResponse = await fetch(`${BASE_URL}/api/v1/events/${id}/attendees`);
         if (attendeesResponse.ok) {
           const attendeesData = await attendeesResponse.json();
           // Transform API response to match Attendee interface

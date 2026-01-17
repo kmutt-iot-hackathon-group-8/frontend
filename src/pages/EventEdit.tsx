@@ -25,6 +25,8 @@ interface DetailedEvent {
   eventlocation?: string;
 }
 
+const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 const EditEvent = () => {
     const navigate = useNavigate();
     const { eventId } = useParams();
@@ -50,7 +52,7 @@ const EditEvent = () => {
     const fetchEventDetail = async () => {
       try {
         console.log('Fetching event with ID:', eventId);
-        const response = await fetch(`http://localhost:3000/api/event/${eventId}`);
+        const response = await fetch(`${BASE_URL}/api/event/${eventId}`);
         console.log('Response status:', response.status);
         if (response.ok) {
           const data = await response.json();
@@ -203,7 +205,7 @@ const EditEvent = () => {
             // Step 1: Update the event
             let response;
             try {
-                response = await fetch(`http://localhost:3000/api/event/${event.eventid}`, {
+                response = await fetch(`${BASE_URL}/api/event/${event.eventid}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
@@ -212,7 +214,7 @@ const EditEvent = () => {
                 });
             } catch (error) {
                 console.error('Network error:', error);
-                throw new Error('Cannot connect to server. Please ensure the backend is running at http://localhost:3000');
+                throw new Error('Cannot connect to server. Please check your connection and try again.');
             }
 
             // Get response text first
@@ -237,7 +239,7 @@ const EditEvent = () => {
                         formData.append('image', eventImage);
                         formData.append('eventid', eventId.toString());
 
-                        const uploadResponse = await fetch('http://localhost:3000/api/upload', {
+                        const uploadResponse = await fetch(`${BASE_URL}/api/upload`, {
                             method: 'POST',
                             body: formData, // No Content-Type header - browser sets it automatically with boundary
                         });
@@ -285,7 +287,7 @@ const EditEvent = () => {
             setIsSubmitting(true);
             setShowDeleteModal(false);
 
-            const response = await fetch(`http://localhost:3000/api/event/${event.eventid}`, {
+            const response = await fetch(`${BASE_URL}/api/event/${event.eventid}`, {
                 method: 'DELETE',
             });
 

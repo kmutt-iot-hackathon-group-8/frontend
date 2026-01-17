@@ -22,6 +22,8 @@ interface DetailedEvent {
   status: string;
 }
 
+const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 const EventDetail = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
@@ -32,7 +34,7 @@ const EventDetail = () => {
   useEffect(() => {
     const fetchEventDetail = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/api/v1/events/${id}`);
+        const response = await fetch(`${BASE_URL}/api/v1/events/${id}`);
         if (response.ok) {
           const data = await response.json();
           setEvent(data);
@@ -51,7 +53,7 @@ const EventDetail = () => {
       if (!user.uid || !id) return;
 
       try {
-        const response = await fetch(`http://localhost:3000/api/v1/events/${id}/attendees`);
+        const response = await fetch(`${BASE_URL}/api/v1/events/${id}/attendees`);
         if (response.ok) {
           const attendees: { uid: number; status: string }[] = await response.json();
           const userAttendee = attendees.find((a) => a.uid === user.uid);
@@ -96,7 +98,7 @@ const EventDetail = () => {
     }
 
     try {
-      const response = await fetch(`http://localhost:3000/api/v1/events/${id}/register`, {
+      const response = await fetch(`${BASE_URL}/api/v1/events/${id}/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ uid: user.uid }),

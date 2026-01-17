@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import NFC from '../assets/icons/NFCIcon.png';
 import NfcPopup from '../components/NfcPopup';
 
+const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 const Profile = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -23,7 +25,7 @@ const Profile = () => {
 
     const fetchUserData = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/api/v1/users/${user.uid}`);
+        const response = await fetch(`${BASE_URL}/api/v1/users/${user.uid}`);
         if (response.ok) {
           const userData = await response.json();
           setFormData({
@@ -76,7 +78,7 @@ const Profile = () => {
         updateData.password = formData.password;
       }
 
-      const response = await fetch(`http://localhost:3000/api/v1/users/${user.uid}`, {
+      const response = await fetch(`${BASE_URL}/api/v1/users/${user.uid}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updateData),
