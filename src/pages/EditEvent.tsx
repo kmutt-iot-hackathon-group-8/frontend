@@ -9,6 +9,7 @@ import {
 import { useNavigate, useParams } from 'react-router-dom';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { toast } from 'sonner';
 interface DetailedEvent {
   eventtitle?: string;
   eventImg?: string;
@@ -91,7 +92,7 @@ const EditEvent = () => {
 
             // Validate required fields
             if (!title || !startDate || !endDate || !regisStart || !regisEnd) {
-                alert('Please fill in all required fields');
+                toast.error('Please fill in all required fields');
                 return;
             }
 
@@ -181,24 +182,24 @@ const EditEvent = () => {
                         
                         if (!uploadResponse.ok || !uploadData.success) {
                             console.error('Image upload failed:', uploadData);
-                            alert('Event updated but image upload failed. You can edit the event to add an image later.');
+                            toast.error('Event updated but image upload failed. You can edit the event to add an image later.');
                         } else {
                             console.log('Image uploaded successfully:', uploadData.image?.eventIMG);
                         }
                     } catch (uploadError) {
                         console.error('Error uploading image:', uploadError);
-                        alert('Event updated but image upload failed. You can edit the event to add an image later.');
+                        toast.error('Event updated but image upload failed. You can edit the event to add an image later.');
                     }
                 }
 
-                alert('Event updated successfully!');
+                toast.success('Event updated successfully!');
                 navigate('/created-events');
             } else {
-                alert(`Failed to update event: ${data.error || 'Unknown error'}`);
+                toast.error(`Failed to update event: ${data.error || 'Unknown error'}`);
             }
         } catch (error) {
             console.error('Error updating event:', error);
-            alert('Error updating event. Please try again.');
+            toast.error('Error updating event. Please try again.');
         } finally {
             setIsSubmitting(false);
         }
