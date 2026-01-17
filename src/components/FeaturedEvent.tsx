@@ -54,7 +54,7 @@ const FeaturedEvent = ({ event }: FeaturedEventProps) => {
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-2 text-zinc-400 text-sm">
             <MapPin className="w-4 h-4" style={{ color: '#1BB3A0' }} />
-            {event.organizer}
+            {event.location}
           </div>
           <button className="p-2 rounded-full bg-white text-zinc-900 hover:bg-zinc-200 transition-colors">
             <ArrowRight className="w-4 h-4" />

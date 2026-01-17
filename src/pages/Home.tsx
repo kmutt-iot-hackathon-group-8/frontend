@@ -28,8 +28,9 @@ const Home = () => {
   }, []);
 
   const filteredEvents = useMemo(() => {
-    if (!selectedDate) return events;
-    return events.filter(e => {
+    let sortedEvents = [...events].sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime());
+    if (!selectedDate) return sortedEvents;
+    return sortedEvents.filter(e => {
       const eventDate = new Date(e.startDate);
       return eventDate.getDate() === selectedDate.getDate() &&
         eventDate.getMonth() === selectedDate.getMonth() &&
@@ -37,7 +38,12 @@ const Home = () => {
     });
   }, [selectedDate, events]);
 
-  const upcomingEvent = events.find(e => true) || events[0]; // For now, just take the first event
+  const upcomingEvent = useMemo(() => {
+    const now = new Date();
+    return events
+      .filter(e => new Date(e.endDate) > now)
+      .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime())[0];
+  }, [events]);
 
   return (
     <div className="min-h-screen text-zinc-900 flex flex-col font-montserrat">
@@ -56,7 +62,7 @@ const Home = () => {
               <div className="flex-1">
                 {loading ? (
                   <div className="bg-white rounded-2xl shadow-lg p-8 flex items-center justify-center">
-                    <div className="text-zinc-500">Loading...</div>
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-zinc-500"></div>
                   </div>
                 ) : upcomingEvent ? (
                   <FeaturedEvent event={upcomingEvent} />
@@ -84,7 +90,7 @@ const Home = () => {
                 )}
               </h2>
               <span className="text-zinc-400 text-xs sm:text-sm font-medium">
-                {loading ? 'Loading...' : `${filteredEvents.length} result${filteredEvents.length !== 1 ? 's' : ''}`}
+                {loading ? <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-zinc-400 inline-block mr-1"></div> : `${filteredEvents.length} result${filteredEvents.length !== 1 ? 's' : ''}`}
               </span>
             </div>
           </div>
@@ -96,7 +102,7 @@ const Home = () => {
               {loading ? (
                 <div className="text-center py-20 bg-zinc-100 rounded-2xl border border-dashed border-zinc-300 text-zinc-400">
                   <Calendar className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                  <p>Loading events...</p>
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-zinc-400 mx-auto mb-3"></div>
                 </div>
               ) : filteredEvents.length > 0 ? (
                 filteredEvents.map(event => (

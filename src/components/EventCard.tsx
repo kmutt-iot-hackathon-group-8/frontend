@@ -9,25 +9,35 @@ export interface Event {
   startTime: string;
   endTime: string;
   image: string;
+  location: string;
   attendeeCount: number;
   status?: string;
   regisStart?: string;
   regisEnd?: string;
   contact?: string;
   regisURL?: string;
+  userStatus?: string;
 }
 
 interface EventCardProps {
   event: Event;
   showActions?: boolean;
+  userStatus?: string;
 }
 
-function EventCard({ event, showActions = false }: EventCardProps) {
+function EventCard({ event, showActions = false, userStatus }: EventCardProps) {
   const navigate = useNavigate();
   const formattedDate = event.startDate 
     ? new Date(event.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
     : 'Date TBD';
-  const eventid = event.eventid;
+  const eventId = event.eventId;
+
+  // Check if registration has ended
+  const isRegistrationEnded = event.regisEnd ? (() => {
+    const regisEnd = new Date(event.regisEnd);
+    regisEnd.setHours(23, 59, 59, 999);
+    return new Date() > regisEnd;
+  })() : false;
   return (
     <div className="bg-white rounded-2xl sm:rounded-[26px] shadow-lg p-4 sm:p-8 flex flex-col sm:flex-row gap-4 sm:gap-8 relative cursor-pointer" onClick={() => navigate(`/event/${eventid}`)}>
       <div className="w-full h-40 sm:w-72 sm:h-48 bg-linear-to-r from-[#AFEEDD] to-[#6CB2D7] rounded-lg shrink-0 relative overflow-hidden">
@@ -46,21 +56,35 @@ function EventCard({ event, showActions = false }: EventCardProps) {
           <h3 className="font-bold text-zinc-900 text-lg sm:text-2xl leading-tight flex-1">
             {event.title}
           </h3>
-          {event.status && (
-            <div className={`w-25 h-7 sm:w-45.5 sm:h-12 ${
-              event.status === 'present' 
-                ? 'bg-[#2DBE8B]' 
-                : event.status === 'absent'
-                ? 'bg-[#FF383C]'
-                : 'bg-[#FFCC00]'
-            } rounded-[9px] shadow-[0px_4px_4px_rgba(0,0,0,0.25)] flex items-center justify-center shrink-0`}>
-              <span className={`font-montserrat font-bold text-[10px] sm:text-[18px] leading-4.5 ${
-                event.status === 'registered' ? 'text-black' : 'text-white'
+          <div className="flex gap-2">
+            {event.status && (
+              <div className={`px-2 py-1 rounded text-xs font-bold ${
+                event.status === 'ended' 
+                  ? 'bg-gray-600 text-white' 
+                  : event.status === 'ongoing'
+                  ? 'bg-green-600 text-white'
+                  : 'bg-blue-600 text-white'
               }`}>
-                {event.status === 'present' ? 'Present' : event.status === 'absent' ? 'Absent' : 'Registered'}
-              </span>
-            </div>
-          )}
+                {event.status === 'ended' ? 'Ended' : event.status === 'ongoing' ? 'Ongoing' : 'Upcoming'}
+              </div>
+            )}
+            {userStatus && (
+              <div className={`px-2 py-1 rounded text-xs font-bold ${
+                userStatus === 'present' 
+                  ? 'bg-[#2DBE8B] text-white' 
+                  : userStatus === 'absent'
+                  ? 'bg-[#FF383C] text-white'
+                  : 'bg-[#FFCC00] text-black'
+              }`}>
+                {userStatus === 'present' ? 'Present' : userStatus === 'absent' ? 'Absent' : 'Registered'}
+              </div>
+            )}
+            {isRegistrationEnded && (
+              <div className="px-2 py-1 rounded text-xs font-bold bg-red-600 text-white">
+                Registration Ended
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="flex items-center gap-2 sm:gap-3 text-base sm:text-lg lg:text-xl font-bold">
@@ -69,7 +93,7 @@ function EventCard({ event, showActions = false }: EventCardProps) {
         </div>
         <div className="flex items-center gap-2 sm:gap-3 text-base sm:text-lg lg:text-xl font-bold">
           <MapPin className="w-4 h-4" style={{ color: '#1BB3A0' }} />
-          <span className="truncate max-w-62.5">{event.organizer}</span>
+          <span className="truncate max-w-62.5">{event.location}</span>
         </div>
         <div className="flex items-center gap-2 sm:gap-3 text-base sm:text-lg lg:text-xl font-bold">
           <User className="w-4 h-4" style={{ color: '#1BB3A9' }} />

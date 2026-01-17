@@ -1,6 +1,7 @@
-import { Calendar, Clock, MapPin, ArrowRight, User, Info, Timer, ArrowLeft } from 'lucide-react';
+import { Calendar, Clock, ArrowRight, User, Info, Timer, ArrowLeft } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import { Mosaic } from 'react-loading-indicators';
 import type { Event } from '../components/EventCard';
 
 // Extended Event Interface for detail view
@@ -13,6 +14,7 @@ interface DetailedEvent extends Event {
   registrationEnd?: Date;
   contact?: string;
   regisURL?: string;
+  status?: string;
 }
 
 const EventDetail = () => {
@@ -20,6 +22,7 @@ const EventDetail = () => {
   const { id } = useParams<{ id: string }>();
   const [event, setEvent] = useState<DetailedEvent | null>(null);
   const [loading, setLoading] = useState(true);
+  const [userStatus, setUserStatus] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchEventDetail = async () => {
@@ -38,13 +41,30 @@ const EventDetail = () => {
       }
     };
 
+    const fetchUserStatus = async () => {
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      if (!user.uid || !id) return;
+
+      try {
+        const response = await fetch(`http://localhost:3000/api/v1/events/${id}/attendees`);
+        if (response.ok) {
+          const attendees = await response.json();
+          const userAttendee = attendees.find((a: any) => a.uid === user.uid);
+          setUserStatus(userAttendee ? userAttendee.status : null);
+        }
+      } catch (error) {
+        console.error('Error fetching user status:', error);
+      }
+    };
+
     if (id) {
       fetchEventDetail();
+      fetchUserStatus();
     }
   }, [id]);
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+    return <div className="min-h-screen flex items-center justify-center"><Mosaic color={["#2dbe8b", "#422dbe", "#be2d60", "#a8be2d"]} /></div>;
   }
 
   if (!event) {
@@ -64,17 +84,24 @@ const EventDetail = () => {
   };
 
   const handleRegister = async () => {
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    if (!user.uid) {
+      alert('Please login first');
+      return;
+    }
+
     try {
       const response = await fetch(`http://localhost:3000/api/v1/events/${id}/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ uid: 1 }), // Hardcode uid for demo
+        body: JSON.stringify({ uid: user.uid }),
       });
       const data = await response.json();
       if (data.success) {
         alert('Registered successfully!');
+        setUserStatus('registered');
       } else {
-        alert(data.message);
+        alert(data.message || 'Registration failed');
       }
     } catch (error) {
       console.error('Registration error:', error);
@@ -109,11 +136,16 @@ const EventDetail = () => {
           </div>
 
           <div className="relative z-10 p-6 sm:p-10 flex flex-col h-full justify-end">
-            {event.status && (
-              <div className={`absolute top-6 right-6 ${event.status === 'present' ? 'bg-[#2DBE8B] text-white' : 'bg-[#FFCC00] text-black'} text-xs font-bold px-3 py-1.5 rounded-lg shadow-md`}>
-                {event.status === 'present' ? 'Present' : 'Registered'}
+            <div className="flex gap-4 mb-4">
+              {userStatus && (
+                <div className={`text-xs font-bold px-3 py-1.5 rounded-lg shadow-md ${userStatus === 'present' ? 'bg-[#2DBE8B] text-white' : userStatus === 'absent' ? 'bg-[#FF383C] text-white' : 'bg-[#FFCC00] text-black'}`}>
+                  {userStatus === 'present' ? 'Present' : userStatus === 'absent' ? 'Absent' : 'Registered'}
+                </div>
+              )}
+              <div className={`text-xs font-bold px-3 py-1.5 rounded-lg shadow-md ${event.status === 'ended' ? 'bg-gray-600 text-white' : event.status === 'ongoing' ? 'bg-green-600 text-white' : 'bg-blue-600 text-white'}`}>
+                {event.status === 'ended' ? 'Ended' : event.status === 'ongoing' ? 'Ongoing' : 'Upcoming'}
               </div>
-            )}
+            </div>
 
             <h1 className="text-3xl sm:text-5xl font-bold mb-4 leading-tight max-w-3xl">{event.title}</h1>
 
@@ -128,7 +160,7 @@ const EventDetail = () => {
               </div>
               <div className="flex items-center gap-2">
                 <User className="w-5 h-5" style={{ color: '#1BB3A0' }} />
-                {event.organizer}
+                {event.location}
               </div>
             </div>
             
@@ -239,8 +271,8 @@ const EventDetail = () => {
                   <User className="w-5 h-5 text-zinc-400" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider mb-1">Organizer</h3>
-                  <p className="text-lg font-medium text-zinc-900">{event.organizer}</p>
+                  <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider mb-1">Location</h3>
+                  <p className="text-zinc-700 leading-relaxed">{event.location}</p>
                 </div>
               </div>
 
@@ -255,18 +287,35 @@ const EventDetail = () => {
               </div>
             </div>
             
-            {/* Register Button */}
+            {/* Action Button */}
             <div className="mt-auto pt-8 flex justify-end">
-              <button 
-                onClick={handleRegister}
-                className="flex items-center justify-center gap-2 text-white font-bold text-lg hover:opacity-95 transition-opacity active:scale-95 duration-200 w-50.25 h-14 rounded-2xl shadow-[0px_4px_4px_rgba(0,0,0,0.25)]"
-                style={{
-                  background: 'linear-gradient(90deg, #20D4A4 0%, #1F7CAE 100%)'
-                }}
-              >
-                Register
-                <ArrowRight className="w-5 h-5" />
-              </button>
+              {!userStatus && event.status !== 'ended' && (
+                <button 
+                  onClick={handleRegister}
+                  className="flex items-center justify-center gap-2 text-white font-bold text-lg hover:opacity-95 transition-opacity active:scale-95 duration-200 w-50.25 h-14 rounded-2xl shadow-[0px_4px_4px_rgba(0,0,0,0.25)]"
+                  style={{
+                    background: 'linear-gradient(90deg, #20D4A4 0%, #1F7CAE 100%)'
+                  }}
+                >
+                  Register
+                  <ArrowRight className="w-5 h-5" />
+                </button>
+              )}
+              {event.status === 'ended' && !userStatus && (
+                <div className="flex items-center justify-center gap-2 text-gray-500 font-medium text-lg">
+                  Event has ended
+                </div>
+              )}
+              {userStatus === 'registered' && (
+                <div className="flex items-center justify-center gap-2 text-gray-600 font-medium text-lg">
+                  Check in using your registered card at the event
+                </div>
+              )}
+              {userStatus === 'present' && (
+                <div className="flex items-center justify-center gap-2 text-green-600 font-bold text-lg">
+                  ✓ Checked In
+                </div>
+              )}
             </div>
           </div>
         </div>

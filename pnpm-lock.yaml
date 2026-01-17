@@ -44,6 +44,9 @@ importers:
       react-dom:
         specifier: ^19.2.0
         version: 19.2.3(react@19.2.3)
+      react-loading-indicators:
+        specifier: ^1.0.1
+        version: 1.0.1(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       react-router-dom:
         specifier: ^7.12.0
         version: 7.12.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
@@ -1498,6 +1501,13 @@ packages:
 
   react-is@19.2.3:
     resolution: {integrity: sha512-qJNJfu81ByyabuG7hPFEbXqNcWSU3+eVus+KJs+0ncpGfMyYdvSmxiJxbWR65lYi1I+/0HBcliO029gc4F+PnA==}
+
+  react-loading-indicators@1.0.1:
+    resolution: {integrity: sha512-tmGHdzw4arI83y8VYirck1n7suvdh1LAkeLk2v2pYMAWhPesQWcexqWKh9x6jDz/XAaIX/wFKS9MdDV8sSdoVw==}
+    engines: {node: '>=12.0.0'}
+    peerDependencies:
+      react: '>=16.8.0'
+      react-dom: '>=16.8.0'
 
   react-refresh@0.18.0:
     resolution: {integrity: sha512-QgT5//D3jfjJb6Gsjxv0Slpj23ip+HtOpnNgnb2S5zU3CB26G/IDPGoy4RJB42wzFE46DRsstbW6tKHoKbhAxw==}
@@ -3034,6 +3044,11 @@ snapshots:
   react-is@16.13.1: {}
 
   react-is@19.2.3: {}
+
+  react-loading-indicators@1.0.1(react-dom@19.2.3(react@19.2.3))(react@19.2.3):
+    dependencies:
+      react: 19.2.3
+      react-dom: 19.2.3(react@19.2.3)
 
   react-refresh@0.18.0: {}
 

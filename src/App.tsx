@@ -13,7 +13,7 @@ import EventDetail from './pages/EventDetail';
 import NavBar from './components/NavBar';
 import Profile from './pages/Profile';
 import AddEvent from './pages/AddEvent';
-import AttendedEvents from './pages/AttendedEvents';
+import RegisteredEvents from './pages/RegisteredEvents';
 import SetUpNFC from "./pages/setUpNFC";
 import RegisterWithCard from "./pages/RegisCardU";
 import EventAttendees from "./pages/EventAttendees";
@@ -62,8 +62,8 @@ function AppContent() {
             element={<CreatedEvents />}
           />
           <Route 
-            path="/attended-events"
-            element={<AttendedEvents />}
+            path="/registered-events"
+            element={<RegisteredEvents />}
           />
           <Route 
             path="/event/:id"

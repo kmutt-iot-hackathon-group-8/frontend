@@ -12,8 +12,11 @@ const Register = () => {
   
   const firstName = q.get("firstName");
   const lastName = q.get("lastName");
+  const cardId = q.get("cardId");
+  const eventId = q.get("eventId");
 
-  const [regStatus, setRegStatus] = useState("idle");
+  // Fixed: Added explicit string union type to prevent TypeScript narrowing to just "idle"
+  const [regStatus, setRegStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [showPassword, setShowPassword] = useState(false);
   const [passwordsMatch, setPasswordsMatch] = useState(true);
 
@@ -27,15 +30,17 @@ const Register = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
+    
     setFormData((prevState) => {
-      const newFormData = {
+      const updatedState = {
         ...prevState,
         [name]: value,
       };
- 
+
+      // Password matching logic
       if (name === 'password' || name === 'confirmPassword') {
-        const passwordValue = name === 'password' ? value : newFormData.password;
-        const confirmPasswordValue = name === 'confirmPassword' ? value : newFormData.confirmPassword;
+        const passwordValue = name === 'password' ? value : updatedState.password;
+        const confirmPasswordValue = name === 'confirmPassword' ? value : updatedState.confirmPassword;
         
         if (confirmPasswordValue) {
           setPasswordsMatch(passwordValue === confirmPasswordValue);
@@ -44,7 +49,7 @@ const Register = () => {
         }
       }
       
-      return newFormData;
+      return updatedState;
     });
   };
 
@@ -59,20 +64,30 @@ const Register = () => {
     setRegStatus("loading");
 
     try {
-      console.log("Submitting:", formData);
+      const requestData = {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        password: formData.password,
+        ...(cardId && { cardId }),
+        ...(eventId && { eventId }),
+      };
+
       const response = await fetch(BASE_URL + '/signup', {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(requestData),
       });
 
       if (!response.ok) throw new Error("Registration failed");
       
       const data = await response.json();
-      console.log("Success:", data);
       localStorage.setItem('user', JSON.stringify(data.user));
       setRegStatus("success");
-      navigate('/');
+      
+      if (!cardId) {
+        navigate('/');
+      }
       
     } catch (error) {
       console.error("Error:", error);
@@ -102,11 +117,34 @@ const Register = () => {
           </h2>
         </div>
 
-        {/* Card */}
-        <div 
-          className='bg-white w-full rounded-3xl md:rounded-[40px] shadow-2xl p-6 sm:p-8 md:p-12'
-          style={{ boxShadow: '0px 10px 40px rgba(0, 0, 0, 0.15)' }}
-        >
+        {/* Success Message for QR Code Registration */}
+        {regStatus === "success" && cardId ? (
+          <div 
+            className='bg-white w-full max-w-md rounded-3xl md:rounded-[40px] shadow-2xl p-6 sm:p-8 md:p-12 text-center'
+            style={{ boxShadow: '0px 10px 40px rgba(0, 0, 0, 0.15)' }}
+          >
+            <div className="mb-6">
+              <div className="w-16 h-16 md:w-20 md:h-20 bg-[#2DBE8B] rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 md:w-10 md:h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <h3 className="font-bold text-2xl md:text-3xl text-[#1F2D3D] mb-2">
+                Account Created Successfully!
+              </h3>
+              <p className="font-semibold text-lg md:text-xl text-[#1BB3A9] mb-4">
+                Your card is now linked to your account.
+              </p>
+              <p className="text-base md:text-lg text-gray-600">
+                You're registered for the event and can check in by tapping your card at the NFC reader.
+              </p>
+            </div>
+          </div>
+        ) : (
+          <div 
+            className='bg-white w-full rounded-3xl md:rounded-[40px] shadow-2xl p-6 sm:p-8 md:p-12'
+            style={{ boxShadow: '0px 10px 40px rgba(0, 0, 0, 0.15)' }}
+          >
             <div className="text-center mb-6 md:mb-8">
                 <p className="font-bold text-2xl md:text-3xl lg:text-4xl text-[#1F2D3D] mb-1">
                   Welcome!
@@ -283,6 +321,7 @@ const Register = () => {
             </div>
           </div>
         </div>
+        )}
       </div>
     </div>
   );
