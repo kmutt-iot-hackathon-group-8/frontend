@@ -109,7 +109,12 @@ const CreatedEvents = () => {
             <div className="text-center py-8">Loading events...</div>
           ) : events.length > 0 ? (
             events.map((event) => (
-              <EventCard key={event.eventid} event={event} showActions={true} />
+              <EventCard 
+                key={event.eventid} 
+                event={event} 
+                showActions={true}
+                onClick={() => navigate(`/event/${event.eventid}/attendees`)}
+              />
             ))
           ) : (
             <div className="text-center py-8 text-gray-500">No created events found</div>

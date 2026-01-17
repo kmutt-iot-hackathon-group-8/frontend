@@ -23,9 +23,10 @@ interface EventCardProps {
   event: Event;
   showActions?: boolean;
   userStatus?: string;
+  onClick?: () => void;
 }
 
-function EventCard({ event, showActions = false, userStatus }: EventCardProps) {
+function EventCard({ event, showActions = false, userStatus, onClick }: EventCardProps) {
   const navigate = useNavigate();
   const formattedDate = event.eventstartdate 
     ? new Date(event.eventstartdate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
@@ -35,8 +36,11 @@ function EventCard({ event, showActions = false, userStatus }: EventCardProps) {
     regisEnd.setHours(23, 59, 59, 999);
     return new Date() > regisEnd;
   })() : false;
+  
+  const handleClick = onClick || (() => navigate(`/event/${event.eventid}`));
+  
   return (
-    <div className="bg-white rounded-2xl sm:rounded-[26px] shadow-lg p-4 sm:p-8 flex flex-col sm:flex-row gap-4 sm:gap-8 relative cursor-pointer" onClick={() => navigate(`/event/${event.eventid}`)}>
+    <div className="bg-white rounded-2xl sm:rounded-[26px] shadow-lg p-4 sm:p-8 flex flex-col sm:flex-row gap-4 sm:gap-8 relative cursor-pointer" onClick={handleClick}>
       <div className="w-full h-40 sm:w-72 sm:h-48 bg-linear-to-r from-[#AFEEDD] to-[#6CB2D7] rounded-lg shrink-0 relative overflow-hidden">
         <img
           src={event.image}

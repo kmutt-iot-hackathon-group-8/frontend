@@ -48,7 +48,20 @@ const EditEvent = () => {
         const response = await fetch(`http://localhost:3000/api/event/${eventId}`);
         if (response.ok) {
           const data = await response.json();
-          setEvent(data);
+          // Transform API response (snake_case) to match DetailedEvent interface (camelCase)
+          const transformedEvent: DetailedEvent = {
+            eventtitle: data.eventtitle,
+            eventImg: data.eventimg,
+            description: data.eventdetail,
+            eventStart: data.eventstartdate ? new Date(data.eventstartdate) : undefined,
+            eventEnd: data.eventenddate ? new Date(data.eventenddate) : undefined,
+            registrationStart: data.regisstart ? new Date(data.regisstart) : undefined,
+            registrationEnd: data.regisend ? new Date(data.regisend) : undefined,
+            contact: data.contact,
+            regisURL: data.regisurl,
+            eventlocation: data.eventlocation
+          };
+          setEvent(transformedEvent);
         } else {
           console.error('Failed to fetch event');
         }
@@ -68,16 +81,16 @@ const EditEvent = () => {
   useEffect(() => {
     if (event) {
       setTitle(event.eventtitle || '');
-      setDetails(event.eventdetail || '');
-      setStartDate(event.eventstartdate ? new Date(event.eventstartdate) : null);
-      setEndDate(event.eventenddate ? new Date(event.eventenddate) : null);
-      setStartTime(event.eventstarttime ? event.eventstarttime.substring(0, 5) : '12:00');
-      setEndTime(event.eventendtime ? event.eventendtime.substring(0, 5) : '12:00');
-      setRegisStart(event.regisstart ? new Date(event.regisstart) : null);
-      setRegisEnd(event.regisend ? new Date(event.regisend) : null);
+      setDetails(event.description || '');
+      setStartDate(event.eventStart || null);
+      setEndDate(event.eventEnd || null);
+      setStartTime(event.eventStart ? event.eventStart.toTimeString().substring(0, 5) : '12:00');
+      setEndTime(event.eventEnd ? event.eventEnd.toTimeString().substring(0, 5) : '12:00');
+      setRegisStart(event.registrationStart || null);
+      setRegisEnd(event.registrationEnd || null);
       setEventLocation(event.eventlocation || '');
       setContact(event.contact || '');
-      setImagePreview(event.eventimg || '');
+      setImagePreview(event.eventImg || '');
     }
   }, [event]);
 

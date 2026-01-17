@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Plus, ArrowLeft } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import EventCard from '../components/EventCard';
 import SearchAndFilter from "../components/SearchAndFilter";
 import AttendeeCard from "../components/AttendeeCard";
 import AddMemberModal from "../components/AddMemberModal";
+import { Mosaic } from 'react-loading-indicators';
+import type { Event } from '../components/EventCard';
 
 interface Attendee {
   id: number;
@@ -15,84 +17,109 @@ interface Attendee {
   initials: string;
   bgColor: string;
 }
-const MOCK_ATTENDEES: Attendee[] = [
-  {
-    id: 1,
-    name: "Sarah Connor",
-    email: "sarah.c@skynet.com",
-    status: "Present",
-    initials: "SC",
-    avatar: "",
-    bgColor: "bg-blue-400",
-  },
-  {
-    id: 2,
-    name: "John Doe",
-    email: "john.doe@example.com",
-    status: "Absent",
-    initials: "JD",
-    avatar: "",
-    bgColor: "bg-purple-400",
-  },
-  {
-    id: 3,
-    name: "Emily Blunt",
-    email: "emily.b@hollywood.com",
-    status: "No Status",
-    initials: "EB",
-    avatar: "",
-    bgColor: "bg-pink-400",
-  },
-  {
-    id: 4,
-    name: "Michael Scott",
-    email: "m.scott@dunder.com",
-    status: "Present",
-    initials: "MS",
-    avatar: "",
-    bgColor: "bg-orange-400",
-  },
-  {
-    id: 5,
-    name: "Dwight Schrute",
-    email: "beets@farms.com",
-    status: "Present",
-    initials: "DS",
-    avatar: "",
-    bgColor: "bg-green-400",
-  },
-  {
-    id: 6,
-    name: "Jim Halpert",
-    email: "jim.h@dunder.com",
-    status: "Absent",
-    initials: "JH",
-    avatar: "",
-    bgColor: "bg-red-400",
-  },
-];
-
-const EVENT_DATA =  {
-    eventid: 1,
-    title: "System Design Architecture Workshop",
-    eventstartdate: "2025-01-24",
-    eventenddate: "2025-01-24",
-    eventstarttime: "10:00:00",
-    eventendtime: "12:00:00",
-    image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=2070&auto=format&fit=crop",
-    location: "Tech Hub",
-    attendeeCount: 45,
-    description: "Scalable system design"
-  }
 
 const EventAttendees = () => {
   const navigate = useNavigate();
-  const [attendees, setAttendees] = useState<Attendee[]>(MOCK_ATTENDEES);
+  const { id } = useParams<{ id: string }>();
+  const [attendees, setAttendees] = useState<Attendee[]>([]);
+  const [event, setEvent] = useState<Event | null>(null);
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState("All Statuses");
   const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [formData, setFormData] = useState({ name: "", email: "" });
+
+  useEffect(() => {
+    const fetchEventAndAttendeesData = async () => {
+      if (!id) return;
+      
+      try {
+        // Fetch event data
+        const eventResponse = await fetch(`http://localhost:3000/api/v1/events/${id}`);
+        if (eventResponse.ok) {
+          const eventData = await eventResponse.json();
+          // Transform the API response to match Event interface
+          const transformedEvent: Event = {
+            eventid: eventData.eventid,
+            title: eventData.title,
+            eventstartdate: eventData.startDate,
+            eventenddate: eventData.endDate,
+            eventstarttime: eventData.startTime,
+            eventendtime: eventData.endTime,
+            image: eventData.image,
+            location: eventData.location,
+            attendeeCount: eventData.attendeeCount,
+            description: eventData.description,
+            regisstart: eventData.regisStart,
+            regisend: eventData.regisEnd,
+            contact: eventData.contact
+          };
+          setEvent(transformedEvent);
+        } else {
+          console.error('Failed to fetch event');
+        }
+
+        // Fetch attendees data
+        const attendeesResponse = await fetch(`http://localhost:3000/api/v1/events/${id}/attendees`);
+        if (attendeesResponse.ok) {
+          const attendeesData = await attendeesResponse.json();
+          // Transform API response to match Attendee interface
+          const transformedAttendees: Attendee[] = attendeesData.map((attendee: any, index: number) => {
+            const fullName = `${attendee.fname} ${attendee.lname}`;
+            const initials = fullName
+              .split(" ")
+              .map((n: string) => n[0])
+              .join("")
+              .toUpperCase()
+              .slice(0, 2);
+            
+            // Map status from API to component format
+            let status: "Present" | "Absent" | "No Status";
+            switch (attendee.status) {
+              case "present":
+                status = "Present";
+                break;
+              case "absent":
+                status = "Absent";
+                break;
+              default:
+                status = "No Status";
+            }
+
+            const colors = [
+              "bg-blue-400",
+              "bg-purple-400",
+              "bg-pink-400",
+              "bg-orange-400",
+              "bg-green-400",
+              "bg-red-400",
+            ];
+            const bgColor = colors[index % colors.length];
+
+            return {
+              id: attendee.uid,
+              name: fullName,
+              email: attendee.email,
+              status,
+              avatar: "",
+              initials,
+              bgColor,
+            };
+          });
+          setAttendees(transformedAttendees);
+        } else {
+          console.error('Failed to fetch attendees');
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEventAndAttendeesData();
+  }, [id]);
 
   const filteredAttendees = attendees.filter((attendee) => {
     const matchesSearch =
@@ -163,6 +190,14 @@ const EventAttendees = () => {
     }
   };
 
+  if (loading) {
+    return <div className="min-h-screen flex items-center justify-center"><Mosaic color={["#2dbe8b", "#422dbe", "#be2d60", "#a8be2d"]} /></div>;
+  }
+
+  if (!event) {
+    return <div className="min-h-screen flex items-center justify-center">Event not found</div>;
+  }
+
   return (
     <div className="min-h-screen bg-white font-montserrat">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-12 pb-20">
@@ -176,7 +211,7 @@ const EventAttendees = () => {
         </button>
 
         {/* Event Header Component */}
-         <EventCard key={EVENT_DATA.eventid} event={EVENT_DATA} showActions={true} />
+         <EventCard key={event.eventid} event={event} showActions={true} />
 
         {/* Attendees Section */}
         <div className="mb-8 mt-10">
