@@ -71,7 +71,10 @@ const NavBar = () => {
                                 <span className="font-bold text-[14px] leading-4.25 text-[#1E1E1E]">Registered Events</span>
                             </button>
 
-                            <button onClick={() => alert('Logout')} className="flex items-center gap-3 pl-6 pr-4 h-11.5 bg-[#F4F7F8] rounded-b-md hover:bg-[#A8BFC6] transition-colors cursor-pointer">
+                            <button onClick={() => {
+                                localStorage.removeItem('user');
+                                navigate('/login');
+                            }} className="flex items-center gap-3 pl-6 pr-4 h-11.5 bg-[#F4F7F8] rounded-b-md hover:bg-[#A8BFC6] transition-colors cursor-pointer">
                                 <div className="w-6 h-6 flex items-center justify-center shrink-0">
                                     <LogOut className="w-full h-full text-black" strokeWidth={2} />
                                 </div>

@@ -30,8 +30,9 @@ const AttendedEvents = () => {
             endTime: item.endTime,
             image: item.image,
             location: '', // Not in this endpoint
-            attendeeCount: 0, // Not in this endpoint
-            status: item.status
+            attendeeCount: item.attendeeCount || 0,
+            status: 'upcoming', // Default
+            userStatus: item.status
           }));
           setEvents(transformedEvents);
         }
@@ -70,7 +71,7 @@ const AttendedEvents = () => {
             <div className="text-center py-8">Loading events...</div>
           ) : events.length > 0 ? (
             events.map((event) => (
-              <EventCard key={event.eventId} event={event} />
+              <EventCard key={event.eventId} event={event} userStatus={event.userStatus} />
             ))
           ) : (
             <div className="text-center py-8 text-gray-500">No attended events found</div>

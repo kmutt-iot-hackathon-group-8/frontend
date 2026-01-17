@@ -32,7 +32,7 @@ const CreatedEvents = () => {
             endTime: item.endTime,
             image: item.image,
             location: item.location,
-            attendeeCount: 0 // Not in this endpoint
+            attendeeCount: item.attendeeCount || 0
           }));
           setEvents(transformedEvents);
         }

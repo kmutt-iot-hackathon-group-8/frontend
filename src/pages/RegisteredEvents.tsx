@@ -30,8 +30,9 @@ const RegisteredEvents = () => {
             endTime: item.endTime,
             image: item.image,
             location: item.location,
-            attendeeCount: 0, // Not in this endpoint
-            status: item.status
+            attendeeCount: item.attendeeCount || 0,
+            status: 'upcoming', // Default, will be updated
+            userStatus: item.status
           }));
           setEvents(transformedEvents);
         }
@@ -60,17 +61,17 @@ const RegisteredEvents = () => {
 
         <div className="flex flex-row justify-between items-center gap-2 sm:gap-0 mb-6 sm:mb-8">
           <p className="text-xl sm:text-2xl font-bold text-[#6B7C85]">
-            {loading ? 'Loading...' : `${events.length} events`}
+            {loading ? <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-[#6B7C85] inline-block mr-2"></div> : `${events.length} events`}
           </p>
         
         </div>
 
         <div className="space-y-4 sm:space-y-8 max-w-375">
           {loading ? (
-            <div className="text-center py-8">Loading events...</div>
+            <div className="text-center py-8 flex justify-center"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div></div>
           ) : events.length > 0 ? (
             events.map((event) => (
-              <EventCard key={event.eventId} event={event} />
+              <EventCard key={event.eventId} event={event} userStatus={event.userStatus} />
             ))
           ) : (
             <div className="text-center py-8 text-gray-500">No registered events found</div>
