@@ -126,11 +126,11 @@ const Register = () => {
   };
 
   const handleGoogleLogin = () => {
-    authClient.signIn.social({ provider: "google", callbackURL: window.location.origin + "/" });
+    authClient.signIn.social({ provider: "google" });
   };
 
   const handleMicrosoftLogin = () => {
-    authClient.signIn.social({ provider: "microsoft", callbackURL: window.location.origin + "/" });
+    authClient.signIn.social({ provider: "microsoft" });
   };
 
 
