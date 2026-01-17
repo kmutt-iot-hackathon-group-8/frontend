@@ -4,16 +4,16 @@ export interface Event {
   eventid: number;
   title: string;
   description?: string;
-  startDate: string;
-  endDate: string;
-  startTime: string;
-  endTime: string;
+  eventstartdate: string;
+  eventenddate: string;
+  eventstarttime: string;
+  eventendtime: string;
   image: string;
   location: string;
   attendeeCount: number;
   status?: string;
-  regisStart?: string;
-  regisEnd?: string;
+  regisstart?: string;
+  regisend?: string;
   contact?: string;
   regisURL?: string;
   userStatus?: string;
@@ -27,11 +27,11 @@ interface EventCardProps {
 
 function EventCard({ event, showActions = false, userStatus }: EventCardProps) {
   const navigate = useNavigate();
-  const formattedDate = event.startDate 
-    ? new Date(event.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+  const formattedDate = event.eventstartdate 
+    ? new Date(event.eventstartdate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
     : 'Date TBD';
-  const isRegistrationEnded = event.regisEnd ? (() => {
-    const regisEnd = new Date(event.regisEnd);
+  const isRegistrationEnded = event.regisend ? (() => {
+    const regisEnd = new Date(event.regisend);
     regisEnd.setHours(23, 59, 59, 999);
     return new Date() > regisEnd;
   })() : false;

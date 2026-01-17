@@ -6,10 +6,10 @@ import EventCard, { type Event } from '../components/EventCard';
 interface AttendedEventResponse {
   eventid: number;
   title: string;
-  startDate: string;
-  endDate: string;
-  startTime: string;
-  endTime: string;
+  eventstartdate: string;
+  eventenddate: string;
+  eventstarttime: string;
+  eventendtime: string;
   image: string;
   status: string;
   attendeeCount?: number;
@@ -36,10 +36,10 @@ const AttendedEvents = () => {
           const transformedEvents: Event[] = data.map((item) => ({
             eventid: item.eventid,
             title: item.title,
-            startDate: item.startDate,
-            endDate: item.endDate,
-            startTime: item.startTime,
-            endTime: item.endTime,
+            eventstartdate: item.eventstartdate,
+            eventenddate: item.eventenddate,
+            eventstarttime: item.eventstarttime,
+            eventendtime: item.eventendtime,
             image: item.image,
             location: '', // Not in this endpoint
             attendeeCount: item.attendeeCount || 0,
@@ -56,7 +56,7 @@ const AttendedEvents = () => {
     };
 
     fetchAttendedEvents();
-  }, []);
+  }, [navigate]);
 
   return (
     <div className="min-h-screen bg-white px-4 sm:px-8 lg:px-16 py-6 sm:py-12">

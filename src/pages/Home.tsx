@@ -28,10 +28,9 @@ const Home = () => {
   }, []);
 
   const filteredEvents = useMemo(() => {
-    let sortedEvents = [...events].sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime());
-    if (!selectedDate) return sortedEvents;
-    return sortedEvents.filter(e => {
-      const eventDate = new Date(e.startDate);
+    if (!selectedDate) return events;
+    return events.filter(e => {
+      const eventDate = new Date(e.eventstartdate);
       return eventDate.getDate() === selectedDate.getDate() &&
         eventDate.getMonth() === selectedDate.getMonth() &&
         eventDate.getFullYear() === selectedDate.getFullYear();
@@ -41,8 +40,8 @@ const Home = () => {
   const upcomingEvent = useMemo(() => {
     const now = new Date();
     return events
-      .filter(e => new Date(e.endDate) > now)
-      .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime())[0];
+      .filter(e => new Date(e.eventenddate) > now)
+      .sort((a, b) => new Date(a.eventstartdate).getTime() - new Date(b.eventstartdate).getTime())[0];
   }, [events]);
 
   return (

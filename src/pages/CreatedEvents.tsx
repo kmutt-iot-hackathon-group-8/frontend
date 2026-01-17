@@ -44,10 +44,10 @@ const CreatedEvents = () => {
           const transformedEvents: Event[] = data.map((item) => ({
             eventid: item.eventid,
             title: item.eventtitle,
-            startDate: item.eventstartdate,
-            endDate: item.eventenddate,
-            startTime: item.eventstarttime, 
-            endTime: item.eventendtime,
+            eventstartdate: item.eventstartdate,
+            eventenddate: item.eventenddate,
+            eventstarttime: item.eventstarttime, 
+            eventendtime: item.eventendtime,
             image: item.eventimg,
             location: item.eventlocation,
             attendeeCount: 0 // Not in this endpoint
@@ -64,7 +64,7 @@ const CreatedEvents = () => {
     };
 
     fetchCreatedEvents();
-  }, []);
+  }, [navigate]);
 
   return (
     <div className="min-h-screen bg-white px-4 sm:px-8 lg:px-16 py-6 sm:py-12">

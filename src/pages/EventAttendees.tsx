@@ -75,13 +75,10 @@ const MOCK_ATTENDEES: Attendee[] = [
 const EVENT_DATA =  {
     eventid: 1,
     title: "System Design Architecture Workshop",
-    startDate: "2025-01-24",
-    endDate: "2025-01-24",
-    startTime: "10:00:00",
-    endTime: "12:00:00",
-    location: "Tech Hub",
-    attendeeCount: 45,
-    image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=2070&auto=format&fit=crop",
+    eventstartdate: "2025-01-24",
+    eventenddate: "2025-01-24",
+    eventstarttime: "10:00:00",
+    eventendtime: "12:00:00",
     description: "Scalable system design"
   }
 

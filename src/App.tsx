@@ -73,12 +73,8 @@ function AppContent() {
             path="/add-event/"
             element={<AddEvent />}
           />
-          <Route 
-            path="/edit-event/:eventId"
-            element={<EventEdit />}
-          />
           <Route path="/event/:id/attendees" element={<EventAttendees />} />
-          <Route path="/event/edit/:id" element={<EventEdit />} />
+          <Route path="/event/edit/:eventId" element={<EventEdit />} />
         </Routes>
       </div>
     </div>
