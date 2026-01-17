@@ -28,7 +28,7 @@ const CreatedEvents = () => {
             title: item.title,
             startDate: item.startDate,
             endDate: item.endDate,
-            startTime: item.startTime,
+            startTime: item.startTime, 
             endTime: item.endTime,
             image: item.image,
             organizer: 'You', // Since these are created by the user

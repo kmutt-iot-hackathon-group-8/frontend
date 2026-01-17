@@ -1,48 +1,66 @@
 import { Calendar, Clock, MapPin, ArrowRight, User, Info, Timer, ArrowLeft } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import type { Event } from '../components/EventCard';
+
 // Extended Event Interface for detail view
 interface DetailedEvent extends Event {
-  fullDescription: string;
-  eventStart: Date;
-  eventEnd: Date;
-  registrationStart: Date;
-  registrationEnd: Date;
-  contact: {
-    name: string;
-    contactInformation: string;
-    role: string;
-  };
+  fullDescription?: string;
+  eventStart?: Date;
+  eventEnd?: Date;
+  registrationStart?: Date;
+  registrationEnd?: Date;
+  contact?: string;
+  regisURL?: string;
 }
-
-// Mock Data - In production, this would come from API/props
-const MOCK_DETAIL_EVENT: DetailedEvent = {
-  id: 1,
-  title: "System Design Architecture Workshop",
-  date: new Date(2025, 0, 24),
-  time: "10:00 AM",
-  location: "Tech Hub, Room 404",
-  image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=2070&auto=format&fit=crop",
-  status: "registered",
-  description: "Scalable system design",
-  fullDescription: "Join us for an intensive workshop on building scalable, reliable, and maintainable systems. We will cover distributed patterns, database partitioning, and microservices trade-offs. This session is designed for intermediate to senior engineers looking to level up their architectural decision-making skills.",
-  eventStart: new Date(2025, 0, 24, 10, 0),
-  eventEnd: new Date(2025, 0, 24, 16, 0),
-  registrationStart: new Date(2024, 11, 1, 9, 0),
-  registrationEnd: new Date(2025, 0, 20, 17, 0),
-  contact: {
-    name: "Sarah Jenkins",
-    role: "Workshop Coordinator",
-    contactInformation: "For any questions about the workshop, please reach out to Sarah Jenkins at events@techhub.com or call +1 (555) 123-4567. Additional information can be found on our website."
-  }
-};
 
 const EventDetail = () => {
   const navigate = useNavigate();
-  const event = MOCK_DETAIL_EVENT;
+  const { id } = useParams<{ id: string }>();
+  const [event, setEvent] = useState<DetailedEvent | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const formatDate = (date: Date) => date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-  const formatTime = (date: Date) => date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+  useEffect(() => {
+    const fetchEventDetail = async () => {
+      try {
+        const response = await fetch(`http://localhost:3000/api/v1/events/${id}`);
+        if (response.ok) {
+          const data = await response.json();
+          setEvent(data);
+        } else {
+          console.error('Failed to fetch event');
+        }
+      } catch (error) {
+        console.error('Error fetching event:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id) {
+      fetchEventDetail();
+    }
+  }, [id]);
+
+  if (loading) {
+    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+  }
+
+  if (!event) {
+    return <div className="min-h-screen flex items-center justify-center">Event not found</div>;
+  }
+
+  const formatDate = (dateString: string | null | undefined) => {
+    if (!dateString) return 'Date TBD';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+  };
+
+  const formatTime = (timeString: string | null | undefined) => {
+    if (!timeString) return '';
+    const date = new Date(timeString);
+    return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+  };
 
   return (
     <div className="min-h-screen bg-white text-zinc-900 font-montserrat pb-20 relative">
@@ -82,15 +100,15 @@ const EventDetail = () => {
             <div className="flex flex-wrap items-center gap-4 sm:gap-8 text-zinc-200 text-sm sm:text-base mb-6">
               <div className="flex items-center gap-2">
                 <Calendar className="w-5 h-5" style={{ color: '#1BB3A0' }} />
-                {typeof event.date === 'string' ? event.date : event.date.toLocaleDateString('en-US', { weekday: 'short', month: 'long', day: 'numeric' })}
+                {formatDate(event.startDate)} - {formatDate(event.endDate)}
               </div>
               <div className="flex items-center gap-2">
                 <Clock className="w-5 h-5" style={{ color: '#1BB3A0' }} />
-                {event.time}
+                {formatTime(event.startTime)} - {formatTime(event.endTime)}
               </div>
               <div className="flex items-center gap-2">
-                <MapPin className="w-5 h-5" style={{ color: '#1BB3A0' }} />
-                {event.location}
+                <User className="w-5 h-5" style={{ color: '#1BB3A0' }} />
+                {event.organizer}
               </div>
             </div>
             
@@ -114,7 +132,14 @@ const EventDetail = () => {
               <div>
                 <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider mb-2">Description</h3>
                 <p className="text-zinc-700 leading-relaxed">
-                  {event.fullDescription}
+                  {event.title}
+                </p>
+              </div>
+
+              <div>
+                <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider mb-2">Attendees</h3>
+                <p className="text-zinc-700 leading-relaxed">
+                  {event.attendeeCount} registered attendees
                 </p>
               </div>
 
@@ -133,16 +158,16 @@ const EventDetail = () => {
                         <div className="w-3 h-3 rounded-full bg-[#1BB3A0] ring-4 ring-white mt-1.5 shrink-0 z-10 shadow-sm" />
                         <div>
                           <span className="text-xs font-bold text-[#1BB3A0] uppercase tracking-wide block mb-0.5">Start</span>
-                          <p className="font-semibold text-zinc-900 leading-tight">{formatDate(event.eventStart)}</p>
-                          <p className="text-sm text-zinc-500 mt-0.5">{formatTime(event.eventStart)}</p>
+                          <p className="font-semibold text-zinc-900 leading-tight">{formatDate(event.startDate)}</p>
+                          <p className="text-sm text-zinc-500 mt-0.5">{formatTime(event.startTime)}</p>
                         </div>
                       </div>
                       <div className="flex gap-4 group">
                         <div className="w-3 h-3 rounded-full bg-zinc-400 ring-4 ring-white mt-1.5 shrink-0 z-10 shadow-sm" />
                         <div>
                           <span className="text-xs font-bold text-zinc-400 uppercase tracking-wide block mb-0.5">End</span>
-                          <p className="font-semibold text-zinc-900 leading-tight">{formatDate(event.eventEnd)}</p>
-                          <p className="text-sm text-zinc-500 mt-0.5">{formatTime(event.eventEnd)}</p>
+                          <p className="font-semibold text-zinc-900 leading-tight">{formatDate(event.endDate)}</p>
+                          <p className="text-sm text-zinc-500 mt-0.5">{formatTime(event.endTime)}</p>
                         </div>
                       </div>
                     </div>
@@ -162,16 +187,14 @@ const EventDetail = () => {
                         <div className="w-3 h-3 rounded-full bg-[#1BB3A0] ring-4 ring-white mt-1.5 shrink-0 z-10 shadow-sm" />
                         <div>
                           <span className="text-xs font-bold text-[#1BB3A0] uppercase tracking-wide block mb-0.5">Opens</span>
-                          <p className="font-semibold text-zinc-900 leading-tight">{formatDate(event.registrationStart)}</p>
-                          <p className="text-sm text-zinc-500 mt-0.5">{formatTime(event.registrationStart)}</p>
+                          <p className="font-semibold text-zinc-900 leading-tight">{formatDate(event.regisStart)}</p>
                         </div>
                       </div>
                       <div className="flex gap-4 group">
                         <div className="w-3 h-3 rounded-full bg-zinc-400 ring-4 ring-white mt-1.5 shrink-0 z-10 shadow-sm" />
                         <div>
                           <span className="text-xs font-bold text-zinc-400 uppercase tracking-wide block mb-0.5">Closes</span>
-                          <p className="font-semibold text-zinc-900 leading-tight">{formatDate(event.registrationEnd)}</p>
-                          <p className="text-sm text-zinc-500 mt-0.5">{formatTime(event.registrationEnd)}</p>
+                          <p className="font-semibold text-zinc-900 leading-tight">{formatDate(event.regisEnd)}</p>
                         </div>
                       </div>
                     </div>
@@ -197,7 +220,7 @@ const EventDetail = () => {
                 </div>
                 <div>
                   <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider mb-1">Organizer</h3>
-                  <p className="text-lg font-medium text-zinc-900">{event.contact.name}</p>
+                  <p className="text-lg font-medium text-zinc-900">{event.organizer}</p>
                 </div>
               </div>
 
@@ -207,7 +230,7 @@ const EventDetail = () => {
                 </div>
                 <div>
                   <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider mb-1">Contact Information</h3>
-                  <p className="text-zinc-700 leading-relaxed">{event.contact.contactInformation}</p>
+                  <p className="text-zinc-700 leading-relaxed">{event.contact}</p>
                 </div>
               </div>
             </div>
