@@ -50,7 +50,7 @@ const CreatedEvents = () => {
             eventendtime: item.eventendtime,
             image: item.eventimg,
             location: item.eventlocation,
-            attendeeCount: 0 // Not in this endpoint
+            attendeeCount: item.attendeeCount || 0
           }));
           console.log(user.uid);
           console.log('Fetched created events:', transformedEvents);

@@ -60,9 +60,9 @@ const RegisteredEvents = () => {
         </div>
 
         <div className="flex flex-row justify-between items-center gap-2 sm:gap-0 mb-6 sm:mb-8">
-          <p className="text-xl sm:text-2xl font-bold text-[#6B7C85]">
+          <div className="text-xl sm:text-2xl font-bold text-[#6B7C85]">
             {loading ? <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-[#6B7C85] inline-block mr-2"></div> : `${events.length} events`}
-          </p>
+          </div>
         
         </div>
 

@@ -65,16 +65,16 @@ const AddEvent = () => {
 
             // Prepare event data matching backend expectations
             const eventData = {
-                eventowner: userId,
+                eventOwner: userId,
                 eventtitle: title,
-                eventdetail: details,
-                eventimg: '', // Will be updated via image upload
-                eventstartdate: startDateTime.toISOString(),
-                eventenddate: endDateTime.toISOString(),
-                eventstarttime: startDateTime.toISOString(),
-                eventendtime: endDateTime.toISOString(),
-                regisstart: regisStart.toISOString(),
-                regisend: regisEnd.toISOString(),
+                eventDetail: details,
+                eventIMG: '', // Will be updated via image upload
+                eventStartDate: startDate.toISOString().split('T')[0],
+                eventEndDate: endDate.toISOString().split('T')[0],
+                eventStartTime: startTime + ':00',
+                eventEndTime: endTime + ':00',
+                regisStart: regisStart.toISOString().split('T')[0],
+                regisEnd: regisEnd.toISOString().split('T')[0],
                 contact: contact,
                 eventlocation: eventlocation,
             };

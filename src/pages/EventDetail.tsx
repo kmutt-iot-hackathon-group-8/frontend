@@ -100,6 +100,8 @@ const EventDetail = () => {
       if (data.success) {
         alert('Registered successfully!');
         setUserStatus('registered');
+        // Update attendee count
+        setEvent(prev => prev ? { ...prev, attendeeCount: prev.attendeeCount + 1 } : null);
       } else {
         alert(data.message || 'Registration failed');
       }
