@@ -107,32 +107,6 @@ const EventDetail = () => {
     }
   };
 
-  const handleCheckIn = async () => {
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
-    if (!user.uid) {
-      alert('Please login first');
-      return;
-    }
-
-    try {
-      const response = await fetch(`http://localhost:3000/api/v1/events/${id}/checkin`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ uid: user.uid }),
-      });
-      const data = await response.json();
-      if (data.success) {
-        alert('Checked in successfully!');
-        setUserStatus('present');
-      } else {
-        alert(data.message);
-      }
-    } catch (error) {
-      console.error('Check-in error:', error);
-      alert('Check-in failed');
-    }
-  };
-
   return (
     <div className="min-h-screen bg-white text-zinc-900 font-montserrat pb-20 relative">
       
@@ -179,7 +153,7 @@ const EventDetail = () => {
               </div>
               <div className="flex items-center gap-2">
                 <User className="w-5 h-5" style={{ color: '#1BB3A0' }} />
-                {event.organizer}
+                {event.location}
               </div>
             </div>
             
@@ -290,8 +264,8 @@ const EventDetail = () => {
                   <User className="w-5 h-5 text-zinc-400" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider mb-1">Organizer</h3>
-                  <p className="text-lg font-medium text-zinc-900">{event.organizer}</p>
+                  <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider mb-1">Location</h3>
+                  <p className="text-lg font-medium text-zinc-900">{event.location}</p>
                 </div>
               </div>
 
@@ -321,16 +295,9 @@ const EventDetail = () => {
                 </button>
               )}
               {userStatus === 'registered' && (
-                <button 
-                  onClick={handleCheckIn}
-                  className="flex items-center justify-center gap-2 text-white font-bold text-lg hover:opacity-95 transition-opacity active:scale-95 duration-200 w-50.25 h-14 rounded-2xl shadow-[0px_4px_4px_rgba(0,0,0,0.25)]"
-                  style={{
-                    background: 'linear-gradient(90deg, #20D4A4 0%, #1F7CAE 100%)'
-                  }}
-                >
-                  Check-in
-                  <ArrowRight className="w-5 h-5" />
-                </button>
+                <div className="flex items-center justify-center gap-2 text-gray-600 font-medium text-lg">
+                  Check in using your registered card at the event
+                </div>
               )}
               {userStatus === 'present' && (
                 <div className="flex items-center justify-center gap-2 text-green-600 font-bold text-lg">
