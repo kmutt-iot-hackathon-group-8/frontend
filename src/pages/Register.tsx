@@ -125,38 +125,15 @@ const Register = () => {
     }
   };
 
-  const handleGoogleLogin = async () => {
-    try {
-      const response = await authClient.signIn.social({ provider: "google", callbackURL: window.location.origin + "/"}, );
-      processSocialLogin(response);
-    } catch (error) {
-      console.error("Google login error:", error);
-    }
+  const handleGoogleLogin = () => {
+    authClient.signIn.social({ provider: "google", callbackURL: window.location.origin + "/" });
   };
 
-  const handleMicrosoftLogin = async () => {
-    try {
-      const response = await authClient.signIn.social({ provider: "microsoft", callbackURL: window.location.origin + "/"}, );
-      processSocialLogin(response);
-    } catch (error) {
-      console.error("Microsoft login error:", error);
-    }
+  const handleMicrosoftLogin = () => {
+    authClient.signIn.social({ provider: "microsoft", callbackURL: window.location.origin + "/" });
   };
 
-  // Helper to handle user state after social login
-  const processSocialLogin = (response: any) => {
-    if (response.data && "user" in response.data) {
-      const user = response.data.user;
-      const nameparts = (user.name || "").split(" ");
-      setUser({
-        id: user.id,
-        fname: nameparts[0] || "",
-        lname: nameparts[1] || "",
-        email: user.email,
-      });
-      navigate("/");
-    }
-  };
+
 
   const inputClasses =
     "appearance-none block w-full h-12 md:h-14 px-4 border-2 md:border-[3px] border-black rounded-xl md:rounded-2xl bg-[#F4F7F8] placeholder-gray-400 font-semibold focus:outline-none focus:ring-2 focus:ring-[#1BB3A9] focus:border-transparent transition-all duration-200 text-base md:text-lg";
