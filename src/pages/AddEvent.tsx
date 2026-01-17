@@ -9,6 +9,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { toast } from "sonner"
 
 const AddEvent = () => {
     const navigate = useNavigate();
@@ -49,7 +50,7 @@ const AddEvent = () => {
 
             // Validate required fields
             if (!title || !startDate || !endDate || !regisStart || !regisEnd) {
-                alert('Please fill in all required fields');
+                toast.error('Please fill in all required fields');
                 return;
             }
 
@@ -139,24 +140,24 @@ const AddEvent = () => {
                         
                         if (!uploadResponse.ok || !uploadData.success) {
                             console.error('Image upload failed:', uploadData);
-                            alert('Event created but image upload failed. You can edit the event to add an image later.');
+                            toast.warning('Event created but image upload failed. You can edit the event to add an image later.');
                         } else {
                             console.log('Image uploaded successfully:', uploadData.image?.eventIMG);
                         }
                     } catch (uploadError) {
                         console.error('Error uploading image:', uploadError);
-                        alert('Event created but image upload failed. You can edit the event to add an image later.');
+                        toast.warning('Event created but image upload failed. You can edit the event to add an image later.');
                     }
                 }
 
-                alert('Event created successfully!');
+                toast.success('Event created successfully!');
                 navigate('/created-events');
             } else {
-                alert(`Failed to create event: ${data.error || 'Unknown error'}`);
+                toast.error(`Failed to create event: ${data.error || 'Unknown error'}`);
             }
         } catch (error) {
             console.error('Error creating event:', error);
-            alert('Error creating event. Please try again.');
+            toast.error('Error creating event. Please try again.');
         } finally {
             setIsSubmitting(false);
         }
