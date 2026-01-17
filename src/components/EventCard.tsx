@@ -1,7 +1,7 @@
 import { Calendar, MapPin, User, Edit, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 export interface Event {
-  eventId: number;
+  eventid: number;
   title: string;
   description?: string;
   startDate: string;
@@ -28,9 +28,9 @@ function EventCard({ event, showActions = false }: EventCardProps) {
   const formattedDate = event.startDate 
     ? new Date(event.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
     : 'Date TBD';
-  const eventId = event.eventId;
+  const eventid = event.eventid;
   return (
-    <div className="bg-white rounded-2xl sm:rounded-[26px] shadow-lg p-4 sm:p-8 flex flex-col sm:flex-row gap-4 sm:gap-8 relative cursor-pointer" onClick={() => navigate(`/event/${eventId}`)}>
+    <div className="bg-white rounded-2xl sm:rounded-[26px] shadow-lg p-4 sm:p-8 flex flex-col sm:flex-row gap-4 sm:gap-8 relative cursor-pointer" onClick={() => navigate(`/event/${eventid}`)}>
       <div className="w-full h-40 sm:w-72 sm:h-48 bg-linear-to-r from-[#AFEEDD] to-[#6CB2D7] rounded-lg shrink-0 relative overflow-hidden">
         <img
           src={event.image}
@@ -80,7 +80,7 @@ function EventCard({ event, showActions = false }: EventCardProps) {
       
       {showActions && (
         <div className="absolute top-4 right-4 flex gap-2">
-          <button onClick={(e) => { e.stopPropagation(); navigate(`/event/edit/${eventId}`); }} className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+          <button onClick={(e) => { e.stopPropagation(); navigate(`/event/edit/${eventid}`); }} className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
             <Edit className="w-7 h-7 text-gray-600 hover:text-blue-600" />
           </button>
           <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">

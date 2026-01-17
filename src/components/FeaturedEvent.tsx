@@ -18,7 +18,7 @@ const FeaturedEvent = ({ event }: FeaturedEventProps) => {
   }
 
   const handleClick = () => {
-    navigate(`/event/${event.eventId}`);
+    navigate(`/event/${event.eventid}`);
   };
 
   const formattedDate = new Date(event.startDate).toLocaleDateString('en-US', { weekday: 'short', month: 'long', day: 'numeric' });

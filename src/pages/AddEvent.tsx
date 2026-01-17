@@ -13,6 +13,153 @@ import "react-datepicker/dist/react-datepicker.css";
 const AddEvent = () => {
     const navigate = useNavigate();
 
+    // State for all form fields
+    const [title, setTitle] = useState('');
+    const [eventImage, setEventImage] = useState<File | null>(null);
+    const [imagePreview, setImagePreview] = useState('');
+    const [startDate, setStartDate] = useState<Date | null>(null);
+    const [endDate, setEndDate] = useState<Date | null>(null);
+    const [startTime, setStartTime] = useState('12:00');
+    const [endTime, setEndTime] = useState('12:00');
+    const [regisStart, setRegisStart] = useState<Date | null>(null);
+    const [regisEnd, setRegisEnd] = useState<Date | null>(null);
+    const [details, setDetails] = useState('');
+    const [contact, setContact] = useState('');
+    const [registerLink, setRegisterLink] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    // Get userId from localStorage (adjust based on your auth implementation)
+    const userId = localStorage.getItem('userId') || '1';
+
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setEventImage(file);
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImagePreview(reader.result as string);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+    
+    const handleSubmit = async () => {
+        try {
+            setIsSubmitting(true);
+
+            // Validate required fields
+            if (!title || !startDate || !endDate || !regisStart || !regisEnd) {
+                alert('Please fill in all required fields');
+                return;
+            }
+
+            // Combine date and time into single datetime values
+            const startDateTime = new Date(startDate);
+            const [startHour, startMinute] = startTime.split(':').map(Number);
+            startDateTime.setHours(startHour, startMinute, 0, 0);
+            
+            const endDateTime = new Date(endDate);
+            const [endHour, endMinute] = endTime.split(':').map(Number);
+            endDateTime.setHours(endHour, endMinute, 0, 0);
+
+            // Prepare event data matching backend expectations
+            const eventData = {
+                eventOwner: userId,
+                eventtitle: title,
+                eventDetail: details,
+                eventImg: '', // Will be updated via image upload
+                eventStartDate: startDateTime.toISOString(),
+                eventEndDate: endDateTime.toISOString(),
+                eventStartTime: startDateTime.toISOString(),
+                eventEndTime: endDateTime.toISOString(),
+                regisStart: regisStart.toISOString(),
+                regisEnd: regisEnd.toISOString(),
+                contact: contact
+            };
+
+            console.log('Sending event data:', eventData);
+
+            // Step 1: Create the event
+            let response;
+            try {
+                response = await fetch('http://localhost:3000/api/event', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(eventData),
+                });
+            } catch (error) {
+                console.error('Network error:', error);
+                throw new Error('Cannot connect to server. Please ensure the backend is running at http://localhost:3000');
+            }
+
+            // Get response text first
+            const responseText = await response.text();
+            console.log('Raw response:', { status: response.status, text: responseText.substring(0, 500) });
+
+            // Try to parse as JSON
+            let data;
+            try {
+                data = JSON.parse(responseText);
+                console.log('Parsed response:', data);
+            } catch (error) {
+                console.error('Failed to parse JSON:', error);
+                throw new Error(`Server returned invalid JSON (${response.status}): ${responseText.substring(0, 200)}`);
+            }
+
+            if (response.ok && data.success) {
+                const eventid = data.event.eventid; // Get the created event ID
+                
+                // Step 2: Upload image if one was selected
+                if (eventImage && eventid) {
+                    try {
+                        const formData = new FormData();
+                        formData.append('image', eventImage);
+                        formData.append('eventid', eventid.toString());
+
+                        const uploadResponse = await fetch('http://localhost:3000/api/upload', {
+                            method: 'POST',
+                            body: formData, // No Content-Type header - browser sets it automatically with boundary
+                        });
+
+                        // Get response text first
+                        const uploadText = await uploadResponse.text();
+                        console.log('Image upload response:', { status: uploadResponse.status, text: uploadText });
+                        
+                        let uploadData;
+                        try {
+                            uploadData = JSON.parse(uploadText);
+                            console.log('Parsed upload response:', uploadData);
+                        } catch (e) {
+                            console.error('Failed to parse upload response:', uploadText.substring(0, 200));
+                            throw new Error('Invalid JSON response from image upload');
+                        }
+                        
+                        if (!uploadResponse.ok || !uploadData.success) {
+                            console.error('Image upload failed:', uploadData);
+                            alert('Event created but image upload failed. You can edit the event to add an image later.');
+                        } else {
+                            console.log('Image uploaded successfully:', uploadData.image?.eventIMG);
+                        }
+                    } catch (uploadError) {
+                        console.error('Error uploading image:', uploadError);
+                        alert('Event created but image upload failed. You can edit the event to add an image later.');
+                    }
+                }
+
+                alert('Event created successfully!');
+                navigate('/created-events');
+            } else {
+                alert(`Failed to create event: ${data.error || 'Unknown error'}`);
+            }
+        } catch (error) {
+            console.error('Error creating event:', error);
+            alert('Error creating event. Please try again.');
+        } finally {
+            setIsSubmitting(false);
+        }
+    }
     return (
         <div className="min-h-screen bg-white px-4 sm:px-8 lg:px-16 py-6 sm:py-12 pb-32 font-sans overflow-x-hidden">
             <style>{`
@@ -37,42 +184,57 @@ const AddEvent = () => {
                 {/* --- Main Content --- */}
                 <div className="flex flex-col xl:flex-row gap-12 lg:gap-20">
                     <div className="shrink-0">
-                        <div className="relative w-4/5 aspect-[1.18] sm:w-115 sm:h-97.5 rounded-3xl shadow-lg bg-linear-to-b from-[#AFEEDD] to-[#6CB2D7] flex items-center justify-center group cursor-pointer hover:shadow-xl transition-all mx-auto xl:mx-0">
-                            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                                <CirclePlus className="text-[#10726F] w-20 h-20 sm:w-26.5 sm:h-26.5 drop-shadow-sm transition-transform group-hover:scale-110" strokeWidth={1.5} />
-                            </div>
-                            <input type="file" className="opacity-0 absolute inset-0 cursor-pointer" />
+                        <div className="relative w-4/5 aspect-[1.18] sm:w-115 sm:h-97.5 rounded-3xl shadow-lg bg-linear-to-b from-[#AFEEDD] to-[#6CB2D7] flex items-center justify-center group cursor-pointer hover:shadow-xl transition-all mx-auto xl:mx-0 overflow-hidden">
+                            {imagePreview ? (
+                                <img src={imagePreview} alt="Event preview" className="absolute inset-0 w-full h-full object-cover" />
+                            ) : (
+                                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                    <CirclePlus className="text-[#10726F] w-20 h-20 sm:w-26.5 sm:h-26.5 drop-shadow-sm transition-transform group-hover:scale-110" strokeWidth={1.5} />
+                                </div>
+                            )}
+                            <input 
+                                type="file" 
+                                accept="image/*"
+                                onChange={handleImageChange}
+                                className="opacity-0 absolute inset-0 cursor-pointer" 
+                            />
                         </div>
                     </div>
 
                     <div className="grow flex flex-col gap-6 sm:gap-8 w-full">
                         <div className="w-full">
                             <label className="block text-base sm:text-lg font-semibold mb-2 text-gray-700">Title</label>
-                            <input type="text" placeholder="Event Name" className="w-full h-13 sm:h-16 bg-white border-2 border-gray-200 rounded-2xl px-5 text-base sm:text-lg text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[#54B0A8] focus:ring-4 focus:ring-[#54B0A8]/10 transition-all" />
+                            <input 
+                                type="text" 
+                                placeholder="Event Name" 
+                                value={title}
+                                onChange={(e) => setTitle(e.target.value)}
+                                className="w-full h-13 sm:h-16 bg-white border-2 border-gray-200 rounded-2xl px-5 text-base sm:text-lg text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[#54B0A8] focus:ring-4 focus:ring-[#54B0A8]/10 transition-all" 
+                            />
                         </div>
 
                         <div className="w-full">
                             <h2 className="text-xl sm:text-2xl font-bold text-[#6B7C85] mb-4 sm:mb-6">On-Site Event</h2>
                             <div className="grid grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6">
                                 <div className="order-1">
-                                    <InputWithIcon label="Start Date" icon={<CalendarDays className="w-5 h-5 text-[#1BB3A9]" />} type="date" />
+                                    <InputWithIcon label="Start Date" icon={<CalendarDays className="w-5 h-5 text-[#1BB3A9]" />} selectedDate={startDate} onDateChange={setStartDate} />
                                 </div>
                                 <div className="order-2">
-                                    <InputWithIcon label="End Date" icon={<CalendarDays className="w-5 h-5 text-[#1BB3A9]" />} type="date" />
+                                    <InputWithIcon label="End Date" icon={<CalendarDays className="w-5 h-5 text-[#1BB3A9]" />} selectedDate={endDate} onDateChange={setEndDate} />
                                 </div>
                                 {/* NEW INFINITE CYCLING TIME PICKERS */}
                                 <div className="order-3">
-                                    <InfiniteTimePicker label="Start Time" />
+                                    <InfiniteTimePicker label="Start Time" timeValue={startTime} setTimeValue={setStartTime} />
                                 </div>
                                 <div className="order-4">
-                                    <InfiniteTimePicker label="End Time" />
+                                    <InfiniteTimePicker label="End Time" timeValue={endTime} setTimeValue={setEndTime} />
                                 </div>
                             </div>
                         </div>
 
                         <div className="grid grid-cols-2 xl:grid-cols-2 gap-4 sm:gap-6 w-full xl:w-1/2">
-                            <InputWithIcon label="Register Open" icon={<CalendarDays className="w-5 h-5 text-[#1BB3A9]" />} type="date" />
-                            <InputWithIcon label="Register Close" icon={<CalendarDays className="w-5 h-5 text-[#1BB3A9]" />} type="date" />
+                            <InputWithIcon label="Register Open" icon={<CalendarDays className="w-5 h-5 text-[#1BB3A9]" />} selectedDate={regisStart} onDateChange={setRegisStart} />
+                            <InputWithIcon label="Register Close" icon={<CalendarDays className="w-5 h-5 text-[#1BB3A9]" />} selectedDate={regisEnd} onDateChange={setRegisEnd} />
                         </div>
                     </div>
                 </div>
@@ -80,24 +242,53 @@ const AddEvent = () => {
                 <div className="mt-8 sm:mt-12 flex flex-col xl:flex-row gap-8 sm:gap-12 lg:gap-20">
                     <div className="w-full xl:w-136 shrink-0">
                         <label className="block text-base sm:text-lg font-semibold mb-2 text-gray-700">Brief Details</label>
-                        <textarea className="w-full h-31.25 sm:h-49 bg-white border-2 border-gray-200 rounded-2xl p-5 text-base sm:text-lg text-gray-800 placeholder-gray-400 resize-none focus:outline-none focus:border-[#54B0A8] focus:ring-4 focus:ring-[#54B0A8]/10 transition-all"></textarea>
+                        <textarea 
+                            value={details}
+                            onChange={(e) => setDetails(e.target.value)}
+                            placeholder="Describe your event..."
+                            className="w-full h-31.25 sm:h-49 bg-white border-2 border-gray-200 rounded-2xl p-5 text-base sm:text-lg text-gray-800 placeholder-gray-400 resize-none focus:outline-none focus:border-[#54B0A8] focus:ring-4 focus:ring-[#54B0A8]/10 transition-all"
+                        />
                     </div>
 
                     <div className="grow flex flex-col justify-between gap-8">
                         <div className="flex flex-col gap-6">
                             <div className="w-full">
                                 <label className="block text-base sm:text-lg font-semibold mb-2 text-gray-700">Contact Information</label>
-                                <input type="text" className="w-full h-13 sm:h-15 bg-white border-2 border-gray-200 rounded-2xl px-5 text-base sm:text-lg text-gray-800 focus:outline-none focus:border-[#54B0A8] focus:ring-4 focus:ring-[#54B0A8]/10 transition-all" />
+                                <input 
+                                    type="text" 
+                                    value={contact}
+                                    onChange={(e) => setContact(e.target.value)}
+                                    placeholder="Email or phone number"
+                                    className="w-full h-13 sm:h-15 bg-white border-2 border-gray-200 rounded-2xl px-5 text-base sm:text-lg text-gray-800 focus:outline-none focus:border-[#54B0A8] focus:ring-4 focus:ring-[#54B0A8]/10 transition-all" 
+                                />
                             </div>
                             <div className="w-full">
                                 <label className="block text-base sm:text-lg font-semibold mb-2 text-gray-700">Register Link</label>
-                                <input type="text" className="w-full h-13 sm:h-18 bg-white border-2 border-gray-200 rounded-2xl px-5 text-base sm:text-lg text-gray-800 focus:outline-none focus:border-[#54B0A8] focus:ring-4 focus:ring-[#54B0A8]/10 transition-all" />
+                                <input 
+                                    type="text" 
+                                    value={registerLink}
+                                    onChange={(e) => setRegisterLink(e.target.value)}
+                                    placeholder="https://..."
+                                    className="w-full h-13 sm:h-18 bg-white border-2 border-gray-200 rounded-2xl px-5 text-base sm:text-lg text-gray-800 focus:outline-none focus:border-[#54B0A8] focus:ring-4 focus:ring-[#54B0A8]/10 transition-all" 
+                                />
                             </div>
                         </div>
 
                         <div className="flex justify-start sm:justify-end gap-4 sm:gap-6 mt-4 sm:mt-12">
-                            <button className="flex-1 sm:flex-none sm:w-46.75 h-13 bg-gray-100 text-gray-500 hover:text-gray-700 text-lg sm:text-xl font-bold rounded-xl hover:bg-gray-200 transition-all">Cancel</button>
-                            <button className="flex-1 sm:flex-none sm:w-46.75 h-13 bg-linear-to-r from-[#20D4A4] to-[#1F7CAE] text-white text-lg sm:text-xl font-bold rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all">Done</button>
+                            <button 
+                                onClick={() => navigate('/')}
+                                disabled={isSubmitting}
+                                className="flex-1 sm:flex-none sm:w-46.75 h-13 bg-gray-100 text-gray-500 hover:text-gray-700 text-lg sm:text-xl font-bold rounded-xl hover:bg-gray-200 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                Cancel
+                            </button>
+                            <button 
+                                onClick={handleSubmit}
+                                disabled={isSubmitting}
+                                className="flex-1 sm:flex-none sm:w-46.75 h-13 bg-linear-to-r from-[#20D4A4] to-[#1F7CAE] text-white text-lg sm:text-xl font-bold rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                {isSubmitting ? 'Creating...' : 'Done'}
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -108,9 +299,14 @@ const AddEvent = () => {
 
 
 // --- COMPONENT: INFINITE CYCLING TIME PICKER ---
-const InfiniteTimePicker = ({ label }: { label: string }) => {
+interface InfiniteTimePickerProps {
+    label: string;
+    timeValue: string;
+    setTimeValue: (value: string) => void;
+}
+
+const InfiniteTimePicker = ({ label, timeValue, setTimeValue }: InfiniteTimePickerProps) => {
     const [isOpen, setIsOpen] = useState(false);
-    const [timeValue, setTimeValue] = useState("12:00");
     
     const hourRef = useRef<HTMLDivElement>(null);
     const minuteRef = useRef<HTMLDivElement>(null);
@@ -263,7 +459,12 @@ const InfiniteTimePicker = ({ label }: { label: string }) => {
 
 
 // --- STANDARD DATE INPUT ---
-interface InputProps { label: string; icon: React.ReactNode; type?: 'text' | 'date'; }
+interface InputProps { 
+    label: string; 
+    icon: React.ReactNode; 
+    selectedDate: Date | null;
+    onDateChange: (date: Date | null) => void;
+}
 
 // Move CustomInput outside to prevent recreation on every render
 const CustomInput = React.forwardRef(({ value, onClick, icon }: any, ref: any) => (
@@ -275,19 +476,18 @@ const CustomInput = React.forwardRef(({ value, onClick, icon }: any, ref: any) =
     </div>
 ));
 
-const InputWithIcon = ({ label, icon }: InputProps) => {
-    const [startDate, setStartDate] = useState<Date | null>(null);
+const InputWithIcon = ({ label, icon, selectedDate, onDateChange }: InputProps) => {
 
     return (
         <div className="w-full">
             <label className="block text-sm sm:text-base font-semibold mb-1.5 text-gray-600 truncate transition-colors">{label}</label>
             <DatePicker 
-                selected={startDate} 
-                onChange={(date: Date | null) => setStartDate(date)}
+                selected={selectedDate} 
+                onChange={(date: Date | null) => onDateChange(date)}
                 dateFormat="MMMM d, yyyy"
                 customInput={<CustomInput icon={icon} />}
                 calendarClassName="bg-white border-0 shadow-2xl rounded-2xl font-sans overflow-hidden"
-                dayClassName={(date) => startDate && date.getDate() === startDate.getDate() && date.getMonth() === startDate.getMonth() ? "bg-[#54B0A8] text-white font-bold rounded-lg hover:bg-[#4a9b94]" : "text-gray-700 hover:bg-[#AFEEDD] hover:text-[#10726F] rounded-lg transition-colors"}
+                dayClassName={(date) => selectedDate && date.getDate() === selectedDate.getDate() && date.getMonth() === selectedDate.getMonth() ? "bg-[#54B0A8] text-white font-bold rounded-lg hover:bg-[#4a9b94]" : "text-gray-700 hover:bg-[#AFEEDD] hover:text-[#10726F] rounded-lg transition-colors"}
             />
         </div>
     );

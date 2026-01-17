@@ -24,7 +24,7 @@ const CreatedEvents = () => {
           const data = await response.json();
           // Transform the data to match Event interface
           const transformedEvents: Event[] = data.map((item: any) => ({
-            eventId: item.eventId,
+            eventid: item.eventid,
             title: item.title,
             startDate: item.startDate,
             endDate: item.endDate,
@@ -88,7 +88,7 @@ const CreatedEvents = () => {
             <div className="text-center py-8">Loading events...</div>
           ) : events.length > 0 ? (
             events.map((event) => (
-              <EventCard key={event.eventId} event={event} showActions={true} />
+              <EventCard key={event.eventid} event={event} showActions={true} />
             ))
           ) : (
             <div className="text-center py-8 text-gray-500">No created events found</div>
