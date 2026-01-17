@@ -26,7 +26,7 @@ const Login = () => {
     e.preventDefault();
     setRegStatus("loading");
     try {
-      const response = await fetch(`${BASE_URL}/login`, {
+      const response = await fetch(BASE_URL + '/login', {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -34,7 +34,9 @@ const Login = () => {
       if (!response.ok) throw new Error("Login failed");
       const data = await response.json();
       console.log("Success:", data);
+      localStorage.setItem('user', JSON.stringify(data.user));
       setRegStatus("success");
+      navigate('/');
     } catch (error) {
       console.error("Error:", error);
       setRegStatus("error");

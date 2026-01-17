@@ -1,24 +1,42 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { EyeOff, Eye, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import NFC from '../assets/icons/NFCIcon.png';
 import NfcPopup from '../components/NfcPopup';
 
-const mockUserData = {
-  firstName: 'Jane',
-  lastName: 'Doe',
-  email: 'jane@gmail.com',
-  password: 'password123'
-};
-
 const Profile = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    firstName: mockUserData.firstName,
-    lastName: mockUserData.lastName,
-    email: mockUserData.email,
-    password: mockUserData.password
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: ''
   });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        // For now, fetch user with ID 1 (admin)
+        const response = await fetch('http://localhost:3000/api/v1/users/1');
+        if (response.ok) {
+          const user = await response.json();
+          setFormData({
+            firstName: user.fname,
+            lastName: user.lname,
+            email: user.email,
+            password: '' // Don't fetch password for security
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, []);
 
   const [showPassword, setShowPassword] = useState(false);
   const [showNfcPopup, setShowNfcPopup] = useState(false);

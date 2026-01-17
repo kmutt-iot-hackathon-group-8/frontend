@@ -18,8 +18,11 @@ const FeaturedEvent = ({ event }: FeaturedEventProps) => {
   }
 
   const handleClick = () => {
-    navigate(`/event/${event.id}`);
+    navigate(`/event/${event.eventId}`);
   };
+
+  const formattedDate = new Date(event.startDate).toLocaleDateString('en-US', { weekday: 'short', month: 'long', day: 'numeric' });
+  const formattedTime = new Date(event.startTime).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
 
   return (
     <div className="h-full rounded-xl overflow-hidden relative group cursor-pointer text-white flex flex-col" style={{ backgroundColor: '#0D5958' }} onClick={handleClick}>
@@ -38,11 +41,11 @@ const FeaturedEvent = ({ event }: FeaturedEventProps) => {
         <div className="flex items-center gap-4 text-zinc-300 text-sm mb-4">
           <div className="flex items-center gap-1.5">
             <Calendar className="w-4 h-4" style={{ color: '#1BB3A0' }} />
-            {typeof event.date === 'string' ? event.date : event.date.toLocaleDateString('en-US', { weekday: 'short', month: 'long', day: 'numeric' })}
+            {formattedDate}
           </div>
           <div className="flex items-center gap-1.5">
             <Clock className="w-4 h-4" style={{ color: '#1BB3A0' }} />
-            {event.time}
+            {formattedTime}
           </div>
         </div>
 
@@ -51,7 +54,7 @@ const FeaturedEvent = ({ event }: FeaturedEventProps) => {
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-2 text-zinc-400 text-sm">
             <MapPin className="w-4 h-4" style={{ color: '#1BB3A0' }} />
-            {event.location}
+            {event.organizer}
           </div>
           <button className="p-2 rounded-full bg-white text-zinc-900 hover:bg-zinc-200 transition-colors">
             <ArrowRight className="w-4 h-4" />

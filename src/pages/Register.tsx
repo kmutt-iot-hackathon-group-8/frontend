@@ -60,7 +60,7 @@ const Register = () => {
 
     try {
       console.log("Submitting:", formData);
-      const response = await fetch(`${BASE_URL}/register`, {
+      const response = await fetch(BASE_URL + '/signup', {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -70,7 +70,9 @@ const Register = () => {
       
       const data = await response.json();
       console.log("Success:", data);
+      localStorage.setItem('user', JSON.stringify(data.user));
       setRegStatus("success");
+      navigate('/');
       
     } catch (error) {
       console.error("Error:", error);

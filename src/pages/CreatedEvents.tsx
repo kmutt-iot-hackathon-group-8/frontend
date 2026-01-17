@@ -1,57 +1,50 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ArrowLeft, CirclePlus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import EventCard, { type Event } from '../components/EventCard';
 import clickToAddNewEvents from '../assets/icons/clicktoaddnewevents.webp';
-const MOCK_CREATED_EVENTS: Event[] = [
-   {
-    id: 1,
-    title: "System Design Architecture Workshop",
-    date: new Date(2025, 0, 24),
-    time: "10:00 AM",
-    location: "Tech Hub, Room 404",
-    image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=2070&auto=format&fit=crop",
-    status: "registered",
-    description: "Scalable system design",
-    attendees: 45
-  },  
-  {
-    id: 2,
-    title: "Hack my butt",
-    date: "5 FEB 2026",
-    location: "Male dormitory",
-    attendees: 3,
-    image: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?q=80&w=2070&auto=format&fit=crop"  
-  },
-  {
-    id: 3,
-    title: "Hack my butt",
-    date: "5 FEB 2026",
-    location: "Male dormitory",
-    attendees: 3,
-    image: "https://images.unsplash.com/photo-1561070791-2526d30994b5?q=80&w=2000&auto=format&fit=crop"  
-  },
-  {
-    id: 4,
-    title: "Hack my butt",
-    date: "5 FEB 2026",
-    location: "Male dormitory",
-    attendees: 3,
-    image: "https://images.unsplash.com/photo-1555099962-4199c345e5dd?q=80&w=2070&auto=format&fit=crop"  
-  },
-  {
-    id: 5,
-    title: "Hack my butt",
-    date: "5 FEB 2026",
-    location: "Male dormitory",
-    attendees: 3,
-    image: "https://images.unsplash.com/photo-1579468118864-1b9ea3c0db4a?q=80&w=1997&auto=format&fit=crop"  
-  }
-];
 
 const CreatedEvents = () => {
   const navigate = useNavigate();
   const [isHovered, setIsHovered] = useState(false);
+  const [events, setEvents] = useState<Event[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    if (!user.uid) {
+      navigate('/login');
+      return;
+    }
+
+    const fetchCreatedEvents = async () => {
+      try {
+        const response = await fetch(`http://localhost:3000/api/v1/users/${user.uid}/created-events`);
+        if (response.ok) {
+          const data = await response.json();
+          // Transform the data to match Event interface
+          const transformedEvents: Event[] = data.map((item: any) => ({
+            eventId: item.eventId,
+            title: item.title,
+            startDate: item.startDate,
+            endDate: item.endDate,
+            startTime: item.startTime,
+            endTime: item.endTime,
+            image: item.image,
+            organizer: 'You', // Since these are created by the user
+            attendeeCount: 0 // Not in this endpoint
+          }));
+          setEvents(transformedEvents);
+        }
+      } catch (error) {
+        console.error('Error fetching created events:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCreatedEvents();
+  }, []);
 
   return (
     <div className="min-h-screen bg-white px-4 sm:px-8 lg:px-16 py-6 sm:py-12">
@@ -68,7 +61,7 @@ const CreatedEvents = () => {
 
         <div className="flex flex-row justify-between items-center gap-2 sm:gap-0 mb-6 sm:mb-8">
           <p className="text-xl sm:text-2xl font-bold text-[#6B7C85]">
-            {MOCK_CREATED_EVENTS.length} events
+            {loading ? 'Loading...' : `${events.length} events`}
           </p>
           <div className="relative flex flex-col items-center">
             <img 
@@ -91,9 +84,15 @@ const CreatedEvents = () => {
         </div>
 
         <div className="space-y-4 sm:space-y-8 max-w-375">
-          {MOCK_CREATED_EVENTS.map((event) => (
-            <EventCard key={event.id} event={event} />
-          ))}
+          {loading ? (
+            <div className="text-center py-8">Loading events...</div>
+          ) : events.length > 0 ? (
+            events.map((event) => (
+              <EventCard key={event.eventId} event={event} showActions={true} />
+            ))
+          ) : (
+            <div className="text-center py-8 text-gray-500">No created events found</div>
+          )}
         </div>
 
       </div>

@@ -1,15 +1,19 @@
 import { Calendar, MapPin, User, Edit, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 export interface Event {
-  id: number;
+  eventId: number;
   title: string;
-  date: string | Date;
-  time?: string;
-  location: string;
+  startDate: string;
+  endDate: string;
+  startTime: string;
+  endTime: string;
   image: string;
-  status?: "present" | "registered" | "absent";
-  description?: string;
-  attendees?: number;
+  organizer: string;
+  attendeeCount: number;
+  regisStart?: string;
+  regisEnd?: string;
+  contact?: string;
+  regisURL?: string;
 }
 
 interface EventCardProps {
@@ -19,8 +23,8 @@ interface EventCardProps {
 
 function EventCard({ event, showActions = false }: EventCardProps) {
   const navigate = useNavigate();
-  const formattedDate = typeof event.date === 'string' ? event.date : event.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-  const eventId = event.id || 1;
+  const formattedDate = new Date(event.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  const eventId = event.eventId;
   return (
     <div className="bg-white rounded-2xl sm:rounded-[26px] shadow-lg p-4 sm:p-8 flex flex-col sm:flex-row gap-4 sm:gap-8 relative">
       <div className="w-full h-40 sm:w-72 sm:h-48 bg-linear-to-r from-[#AFEEDD] to-[#6CB2D7] rounded-lg shrink-0 relative overflow-hidden">
@@ -62,14 +66,12 @@ function EventCard({ event, showActions = false }: EventCardProps) {
         </div>
         <div className="flex items-center gap-2 sm:gap-3 text-base sm:text-lg lg:text-xl font-bold">
           <MapPin className="w-4 h-4" style={{ color: '#1BB3A0' }} />
-          <span className="truncate max-w-62.5">{event.location}</span>
+          <span className="truncate max-w-62.5">{event.organizer}</span>
         </div>
-        {event.attendees && (
-          <div className="flex items-center gap-2 sm:gap-3 text-base sm:text-lg lg:text-xl font-bold">
-            <User className="w-4 h-4" style={{ color: '#1BB3A9' }} />
-            <span>{event.attendees} attendees</span>
-          </div>
-        )}
+        <div className="flex items-center gap-2 sm:gap-3 text-base sm:text-lg lg:text-xl font-bold">
+          <User className="w-4 h-4" style={{ color: '#1BB3A9' }} />
+          <span>{event.attendeeCount} attendees</span>
+        </div>
       </div>
       
       {showActions && (
