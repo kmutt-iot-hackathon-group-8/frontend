@@ -5,6 +5,7 @@ import type { Event } from '../components/EventCard';
 
 // Extended Event Interface for detail view
 interface DetailedEvent extends Event {
+  description?: string;
   fullDescription?: string;
   eventStart?: Date;
   eventEnd?: Date;
@@ -60,6 +61,25 @@ const EventDetail = () => {
     if (!timeString) return '';
     const date = new Date(timeString);
     return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+  };
+
+  const handleRegister = async () => {
+    try {
+      const response = await fetch(`http://localhost:3000/api/v1/events/${id}/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ uid: 1 }), // Hardcode uid for demo
+      });
+      const data = await response.json();
+      if (data.success) {
+        alert('Registered successfully!');
+      } else {
+        alert(data.message);
+      }
+    } catch (error) {
+      console.error('Registration error:', error);
+      alert('Registration failed');
+    }
   };
 
   return (
@@ -132,14 +152,14 @@ const EventDetail = () => {
               <div>
                 <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider mb-2">Description</h3>
                 <p className="text-zinc-700 leading-relaxed">
-                  {event.title}
+                  {event.description}
                 </p>
               </div>
 
               <div>
                 <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider mb-2">Attendees</h3>
                 <p className="text-zinc-700 leading-relaxed">
-                  {event.attendeeCount} registered attendees
+                  {event.attendeeCount} registered {event.attendeeCount === 1 ? 'attendee' : 'attendees'}
                 </p>
               </div>
 
@@ -238,6 +258,7 @@ const EventDetail = () => {
             {/* Register Button */}
             <div className="mt-auto pt-8 flex justify-end">
               <button 
+                onClick={handleRegister}
                 className="flex items-center justify-center gap-2 text-white font-bold text-lg hover:opacity-95 transition-opacity active:scale-95 duration-200 w-50.25 h-14 rounded-2xl shadow-[0px_4px_4px_rgba(0,0,0,0.25)]"
                 style={{
                   background: 'linear-gradient(90deg, #20D4A4 0%, #1F7CAE 100%)'

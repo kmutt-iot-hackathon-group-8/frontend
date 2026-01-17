@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 export interface Event {
   eventId: number;
   title: string;
+  description?: string;
   startDate: string;
   endDate: string;
   startTime: string;
@@ -10,6 +11,7 @@ export interface Event {
   image: string;
   organizer: string;
   attendeeCount: number;
+  status?: string;
   regisStart?: string;
   regisEnd?: string;
   contact?: string;
@@ -72,7 +74,7 @@ function EventCard({ event, showActions = false }: EventCardProps) {
         </div>
         <div className="flex items-center gap-2 sm:gap-3 text-base sm:text-lg lg:text-xl font-bold">
           <User className="w-4 h-4" style={{ color: '#1BB3A9' }} />
-          <span>{event.attendeeCount} attendees</span>
+          <span>{event.attendeeCount} {event.attendeeCount === 1 ? 'attendee' : 'attendees'}</span>
         </div>
       </div>
       
@@ -81,7 +83,7 @@ function EventCard({ event, showActions = false }: EventCardProps) {
           <button onClick={(e) => { e.stopPropagation(); navigate(`/event/edit/${eventId}`); }} className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
             <Edit className="w-7 h-7 text-gray-600 hover:text-blue-600" />
           </button>
-          <button className="p-2 hover:bg-gray-100 rounded-lg transit ion-colors">
+          <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
             <Trash2 className="w-7 h-7 text-gray-600 hover:text-red-600" />
           </button>
         </div>
