@@ -79,6 +79,9 @@ const EVENT_DATA =  {
     eventenddate: "2025-01-24",
     eventstarttime: "10:00:00",
     eventendtime: "12:00:00",
+    image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=2070&auto=format&fit=crop",
+    location: "Tech Hub",
+    attendeeCount: 45,
     description: "Scalable system design"
   }
 
