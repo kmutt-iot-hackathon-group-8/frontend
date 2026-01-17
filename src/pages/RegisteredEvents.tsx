@@ -19,10 +19,10 @@ const RegisteredEvents = () => {
       try {
         const response = await fetch(`http://localhost:3000/api/v1/users/${user.uid}/registered-events`);
         if (response.ok) {
-          const data = await response.json();
+          const data: { eventid: number; title: string; startDate: string; endDate: string; startTime: string; endTime: string; image: string; location: string; attendeeCount: number; status: string }[] = await response.json();
           // Transform the data to match Event interface
-          const transformedEvents: Event[] = data.map((item: any) => ({
-            eventId: item.eventId,
+          const transformedEvents: Event[] = data.map((item) => ({
+            eventid: item.eventid,
             title: item.title,
             startDate: item.startDate,
             endDate: item.endDate,
@@ -44,7 +44,7 @@ const RegisteredEvents = () => {
     };
 
     fetchRegisteredEvents();
-  }, []);
+  }, [navigate]);
 
   return (
     <div className="min-h-screen bg-white px-4 sm:px-8 lg:px-16 py-6 sm:py-12">
@@ -71,7 +71,7 @@ const RegisteredEvents = () => {
             <div className="text-center py-8 flex justify-center"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div></div>
           ) : events.length > 0 ? (
             events.map((event) => (
-              <EventCard key={event.eventId} event={event} userStatus={event.userStatus} />
+              <EventCard key={event.eventid} event={event} userStatus={event.userStatus} />
             ))
           ) : (
             <div className="text-center py-8 text-gray-500">No registered events found</div>

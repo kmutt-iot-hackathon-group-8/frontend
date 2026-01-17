@@ -544,16 +544,14 @@ const InfiniteTimePicker = ({ label, timeValue, setTimeValue }: InfiniteTimePick
         if (type === 'hour') {
             const h = hoursOriginal[normalizedIndex];
             // Only update state if it changed to avoid excessive re-renders
-            setTimeValue(prev => {
-                const currentH = prev.split(':')[0];
-                return currentH === h ? prev : `${h}:${prev.split(':')[1]}`;
-            });
+            const currentH = timeValue.split(':')[0];
+            const newValue = currentH === h ? timeValue : `${h}:${timeValue.split(':')[1]}`;
+            setTimeValue(newValue);
         } else {
             const m = minutesOriginal[normalizedIndex];
-            setTimeValue(prev => {
-                const currentM = prev.split(':')[1];
-                return currentM === m ? prev : `${prev.split(':')[0]}:${m}`;
-            });
+            const currentM = timeValue.split(':')[1];
+            const newValue = currentM === m ? timeValue : `${timeValue.split(':')[0]}:${m}`;
+            setTimeValue(newValue);
         }
     };
 

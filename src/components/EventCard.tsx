@@ -30,16 +30,13 @@ function EventCard({ event, showActions = false, userStatus }: EventCardProps) {
   const formattedDate = event.startDate 
     ? new Date(event.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
     : 'Date TBD';
-  const eventId = event.eventId;
-
-  // Check if registration has ended
   const isRegistrationEnded = event.regisEnd ? (() => {
     const regisEnd = new Date(event.regisEnd);
     regisEnd.setHours(23, 59, 59, 999);
     return new Date() > regisEnd;
   })() : false;
   return (
-    <div className="bg-white rounded-2xl sm:rounded-[26px] shadow-lg p-4 sm:p-8 flex flex-col sm:flex-row gap-4 sm:gap-8 relative cursor-pointer" onClick={() => navigate(`/event/${eventid}`)}>
+    <div className="bg-white rounded-2xl sm:rounded-[26px] shadow-lg p-4 sm:p-8 flex flex-col sm:flex-row gap-4 sm:gap-8 relative cursor-pointer" onClick={() => navigate(`/event/${event.eventid}`)}>
       <div className="w-full h-40 sm:w-72 sm:h-48 bg-linear-to-r from-[#AFEEDD] to-[#6CB2D7] rounded-lg shrink-0 relative overflow-hidden">
         <img
           src={event.image}
@@ -103,7 +100,7 @@ function EventCard({ event, showActions = false, userStatus }: EventCardProps) {
       
       {showActions && (
         <div className="absolute top-4 right-4 flex gap-2">
-          <button onClick={(e) => { e.stopPropagation(); navigate(`/event/edit/${eventid}`); }} className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+          <button onClick={(e) => { e.stopPropagation(); navigate(`/event/edit/${event.eventid}`); }} className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
             <Edit className="w-7 h-7 text-gray-600 hover:text-blue-600" />
           </button>
           <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">

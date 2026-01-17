@@ -49,6 +49,7 @@ const CreatedEvents = () => {
             startTime: item.eventstarttime, 
             endTime: item.eventendtime,
             image: item.eventimg,
+            location: item.eventlocation,
             attendeeCount: 0 // Not in this endpoint
           }));
           console.log(user.uid);

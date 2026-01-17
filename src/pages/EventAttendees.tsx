@@ -73,7 +73,7 @@ const MOCK_ATTENDEES: Attendee[] = [
 ];
 
 const EVENT_DATA =  {
-    eventId: 1,
+    eventid: 1,
     title: "System Design Architecture Workshop",
     startDate: "2025-01-24",
     endDate: "2025-01-24",
@@ -176,7 +176,7 @@ const EventAttendees = () => {
         </button>
 
         {/* Event Header Component */}
-         <EventCard key={EVENT_DATA.eventId} event={EVENT_DATA} showActions={true} />
+         <EventCard key={EVENT_DATA.eventid} event={EVENT_DATA} showActions={true} />
 
         {/* Attendees Section */}
         <div className="mb-8 mt-10">

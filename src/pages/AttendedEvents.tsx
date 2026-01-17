@@ -12,6 +12,7 @@ interface AttendedEventResponse {
   endTime: string;
   image: string;
   status: string;
+  attendeeCount?: number;
 }
 
 const AttendedEvents = () => {
@@ -82,7 +83,7 @@ const AttendedEvents = () => {
             <div className="text-center py-8">Loading events...</div>
           ) : events.length > 0 ? (
             events.map((event) => (
-              <EventCard key={event.eventId} event={event} userStatus={event.userStatus} />
+              <EventCard key={event.eventid} event={event} userStatus={event.userStatus} />
             ))
           ) : (
             <div className="text-center py-8 text-gray-500">No attended events found</div>
