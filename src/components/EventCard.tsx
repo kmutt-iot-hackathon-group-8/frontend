@@ -9,7 +9,7 @@ export interface Event {
   startTime: string;
   endTime: string;
   image: string;
-  organizer: string;
+  location: string;
   attendeeCount: number;
   status?: string;
   regisStart?: string;
@@ -70,7 +70,7 @@ function EventCard({ event, showActions = false }: EventCardProps) {
         </div>
         <div className="flex items-center gap-2 sm:gap-3 text-base sm:text-lg lg:text-xl font-bold">
           <MapPin className="w-4 h-4" style={{ color: '#1BB3A0' }} />
-          <span className="truncate max-w-62.5">{event.organizer}</span>
+          <span className="truncate max-w-62.5">{event.location}</span>
         </div>
         <div className="flex items-center gap-2 sm:gap-3 text-base sm:text-lg lg:text-xl font-bold">
           <User className="w-4 h-4" style={{ color: '#1BB3A9' }} />
