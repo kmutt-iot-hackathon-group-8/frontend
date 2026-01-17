@@ -12,6 +12,7 @@ const RegisterWithCard = () => {
   const cardId = q.get("cardId");
   const firstName = q.get("firstName");
   const lastName = q.get("lastName");
+  const eventId = q.get("eventId");
 
   const [regStatus, setRegStatus] = useState("idle");
   const [showPassword, setShowPassword] = useState(false);
@@ -22,6 +23,7 @@ const RegisterWithCard = () => {
     lastName: lastName || "",
     email: "",
     cardId: cardId || "",
+    eventId: eventId || "",
     password: "",
     confirmPassword: "",
   });
@@ -61,7 +63,7 @@ const RegisterWithCard = () => {
 
     try {
       console.log("Submitting:", formData);
-      const response = await fetch(`${BASE_URL}/register`, {
+      const response = await fetch(`${BASE_URL}/api/v1/register-user`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
