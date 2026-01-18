@@ -136,7 +136,7 @@ const Register = () => {
                 Your card is now linked to your account.
               </p>
               <p className="text-base md:text-lg text-gray-600">
-                You're registered for the event and can check in by tapping your card at the NFC reader.
+                You have checked in to the event. Enjoy your event!
               </p>
             </div>
           </div>
