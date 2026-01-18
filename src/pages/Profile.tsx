@@ -16,6 +16,7 @@ const Profile = () => {
     password: "",
   });
   const [, setLoading] = useState(true);
+  const [cardId, setCardId] = useState<string | null>(null);
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user") || "{}");
@@ -35,6 +36,7 @@ const Profile = () => {
             email: userData.email,
             password: "", // Don't fetch password for security
           });
+          setCardId(userData.cardid || null);
         }
       } catch (error) {
         console.error("Error fetching user data:", error);
@@ -225,15 +227,19 @@ const Profile = () => {
         {/* Original Cyan/Blue Gradient NFC Card */}
         <button
           onClick={() => setShowNfcPopup(true)}
-          className="group relative w-full max-w-112.5 aspect-2/1 md:h-50 flex flex-col items-center justify-center gap-4
-            rounded-[40px] border-2 border-dashed border-zinc-600 overflow-hidden 
-            transition-transform hover:brightness-105 active:scale-[0.98] bg-linear-to-br from-[#7dffdc] to-[#69cafe] cursor-pointer shadow-lg"
+          className={`group relative w-full max-w-112.5 aspect-2/1 md:h-50 flex flex-col items-center justify-center gap-4
+            rounded-[40px] border-2 border-dashed overflow-hidden 
+            transition-transform hover:brightness-105 active:scale-[0.98] cursor-pointer shadow-lg ${
+              cardId 
+                ? 'border-zinc-600 bg-linear-to-br from-[#7dffdc] to-[#69cafe]' 
+                : 'border-gray-400 bg-gray-200'
+            }`}
         >
           <div className="text-black">
             <img src={NFC} alt="NFC Icon" className="w-20 md:w-25 h-auto" />
           </div>
           <span className="text-xl md:text-2xl font-bold text-black tracking-tight">
-            Add NFC Card
+            {cardId ? `Card ID: ${cardId}` : "Add NFC Card"}
           </span>
         </button>
       </div>
