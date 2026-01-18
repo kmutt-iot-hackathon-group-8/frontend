@@ -78,6 +78,8 @@ const EventDetail = () => {
     return <div className="min-h-screen flex items-center justify-center">Event not found</div>;
   }
 
+  console.log('userStatus:', userStatus, 'event.status:', event.status, 'regisStart:', event.regisStart, 'regisEnd:', event.regisEnd, 'now:', new Date(), 'now < regisStart:', new Date() < new Date(event.regisStart), 'now > regisEnd:', new Date() > new Date(event.regisEnd));
+
   const formatDate = (dateString: string | null | undefined) => {
     if (!dateString) return 'Date TBD';
     const date = new Date(dateString);
