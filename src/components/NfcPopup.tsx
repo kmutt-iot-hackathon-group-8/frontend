@@ -54,6 +54,7 @@ const NfcPopup = ({ onClose }: NfcPopupProps) => {
   };
 
   // --- DESKTOP: Socket Connection ---
+  // Join the user's specific room and start linking session
   useEffect(() => {
     if (!userId) return;
 
@@ -62,9 +63,15 @@ const NfcPopup = ({ onClose }: NfcPopupProps) => {
     socketRef.current.emit("join_room", `user_${userId}`);
     console.log(`Joined room: user_${userId}`);
 
+    fetch(`${BASE_URL}/api/v1/users/${userId}/link-card`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "start" }),
+    });
+
     socketRef.current.on("card_added", (data: CardAddedData) => {
       console.log("Card added event received:", data);
-      setScannedId(data.cardId);
+      setScannedId(data.cardId.toUpperCase());
       setStatus("success");
       setTimeout(() => {
         handleClose();
@@ -85,7 +92,19 @@ const NfcPopup = ({ onClose }: NfcPopupProps) => {
     }
 
     setStatus("processing");
-    setScannedId(cardId);
+
+    const isFormatted = /^[A-F0-9]{2}(:[A-F0-9]{2})*$/.test(
+      cardId.toUpperCase(),
+    );
+    const formattedId = isFormatted
+      ? cardId.toUpperCase()
+      : cardId
+          .toUpperCase()
+          .replace(/[^A-F0-9]/g, "")
+          .match(/.{1,2}/g)
+          ?.join(":") || cardId;
+
+    setScannedId(formattedId);
 
     try {
       const response = await fetch(
@@ -93,7 +112,7 @@ const NfcPopup = ({ onClose }: NfcPopupProps) => {
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ cardId }),
+          body: JSON.stringify({ cardId: formattedId }),
         },
       );
 
@@ -138,10 +157,9 @@ const NfcPopup = ({ onClose }: NfcPopupProps) => {
         setErrorMessage("NFC permission denied or error.");
       }
     } else {
-      console.log("Web NFC not supported. Using simulation.");
-      setTimeout(() => {
-        handleScan(`SIM-${Math.floor(Math.random() * 10000)}`);
-      }, 1000);
+      console.warn("Web NFC not supported.");
+      setStatus("error");
+      setErrorMessage("NFC not supported on this device.");
     }
   };
 
@@ -182,7 +200,7 @@ const NfcPopup = ({ onClose }: NfcPopupProps) => {
         </button>
 
         {/* ----------------- MOBILE LAYOUT ----------------- */}
-        <div className="flex flex-col items-center justify-center h-full w-full md:hidden relative">
+        <div className="flex flex-col items-center justify-center h-full w-full md:hidden relative px-4">
           {status === "success" ? (
             <div className="flex flex-col items-center animate-in fade-in zoom-in duration-300">
               <CheckCircle className="w-32 h-32 text-green-600 mb-6" />
@@ -193,20 +211,19 @@ const NfcPopup = ({ onClose }: NfcPopupProps) => {
               </p>
             </div>
           ) : (
-            <>
+            <div className="w-full flex flex-col items-center">
               {/* Centered NFC Icon or Scanner Animation */}
               <div
-                className={`mb-8 sm:mb-12 relative ${status === "scanning" ? "animate-pulse" : ""}`}
+                className={`mb-6 sm:mb-10 relative ${status === "scanning" ? "animate-pulse" : ""}`}
               >
-                <img src={NFC} alt="NFC Icon" className="w-32 sm:w-40 h-auto" />
+                <img src={NFC} alt="NFC Icon" className="w-28 sm:w-36 h-auto" />
                 {status === "scanning" && (
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <ScanLine className="w-20 h-20 text-blue-600 animate-ping" />
+                    <ScanLine className="w-16 h-16 text-blue-600 animate-ping" />
                   </div>
                 )}
               </div>
 
-              {/* Feedback Text */}
               <div className="text-center px-4 flex flex-col gap-4 mb-8">
                 {status === "error" ? (
                   <p className="font-bold text-red-600 text-lg">
@@ -217,21 +234,27 @@ const NfcPopup = ({ onClose }: NfcPopupProps) => {
                     Scanning... Hold card near device
                   </p>
                 ) : (
-                  <p className="font-bold text-[18px] sm:text-[22px] leading-6 sm:leading-7 text-black">
-                    Approach an NFC Card
+                  <p className="font-bold text-[18px] sm:text-[22px] leading-6 sm:leading-7 text-black px-2">
+                    {window.NDEFReader
+                      ? "Tap card on Phone or IoT Device"
+                      : "Tap card on IoT Device"}
                   </p>
                 )}
               </div>
 
-              {/* Scan Button (Trigger) */}
-              <button
-                onClick={startNfcScan}
-                disabled={status === "scanning" || status === "processing"}
-                className="px-8 py-3 bg-white text-black font-bold rounded-xl shadow-md active:scale-95 transition-transform"
-              >
-                {status === "scanning" ? "Scanning..." : "Start Scan"}
-              </button>
-            </>
+              {/* Actions */}
+              <div className="flex flex-col gap-3 w-full max-w-72">
+                {window.NDEFReader && (
+                  <button
+                    onClick={startNfcScan}
+                    disabled={status === "scanning" || status === "processing"}
+                    className="w-full py-4 bg-white text-black font-bold rounded-xl shadow-md active:scale-95 transition-transform"
+                  >
+                    {status === "scanning" ? "Scanning..." : "Start NFC Scan"}
+                  </button>
+                )}
+              </div>
+            </div>
           )}
         </div>
 
@@ -294,7 +317,7 @@ const NfcPopup = ({ onClose }: NfcPopupProps) => {
               {/* Desktop Bottom Text */}
               <div className="absolute bottom-5 lg:bottom-7.25 left-1/2 -translate-x-1/2 text-center w-full px-4">
                 <p className="font-bold text-[16px] lg:text-[20px] xl:text-[24px] leading-5 lg:leading-6 xl:leading-7.25 text-black">
-                  Scan with your phone to add a card
+                  Scan with Phone OR tap card on IoT Device to link
                 </p>
               </div>
             </>
