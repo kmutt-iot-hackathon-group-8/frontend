@@ -37,6 +37,8 @@ const Profile = () => {
             password: "", // Don't fetch password for security
           });
           setCardId(userData.cardid || null);
+          console.log('Fetched userData:', userData);
+          console.log('cardId set to:', userData.cardid);
         }
       } catch (error) {
         console.error("Error fetching user data:", error);
