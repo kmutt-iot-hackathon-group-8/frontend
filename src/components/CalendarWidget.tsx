@@ -13,7 +13,7 @@ const MONTH_NAMES = [
 const YEARS = Array.from({ length: 10 }, (_, i) => 2025 + i);
 
 const CalendarWidget = ({ selectedDate, onSelectDate }: CalendarWidgetProps) => {
-  const [currentDate, setCurrentDate] = useState(new Date(2025, 0, 1));
+  const [currentDate, setCurrentDate] = useState(new Date());
 
   const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
   const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).getDay();

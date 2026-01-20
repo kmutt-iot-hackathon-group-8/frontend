@@ -78,6 +78,8 @@ const EventDetail = () => {
     return <div className="min-h-screen flex items-center justify-center">Event not found</div>;
   }
 
+  console.log('userStatus:', userStatus, 'event.status:', event.status, 'regisStart:', event.regisStart, 'regisEnd:', event.regisEnd, 'now:', new Date(), 'now < regisStart:', new Date() < new Date(event.regisStart), 'now > regisEnd:', new Date() > new Date(event.regisEnd));
+
   const formatDate = (dateString: string | null | undefined) => {
     if (!dateString) return 'Date TBD';
     const date = new Date(dateString);
@@ -298,7 +300,27 @@ const EventDetail = () => {
             
             {/* Action Button */}
             <div className="mt-auto pt-8 flex justify-end">
-              {!userStatus && event.status !== 'ended' && (
+              {userStatus === 'present' ? (
+                <div className="flex items-center justify-center gap-2 text-green-600 font-bold text-lg">
+                  ✓ Checked In
+                </div>
+              ) : userStatus === 'registered' ? (
+                <div className="flex items-center justify-center gap-2 text-gray-600 font-medium text-lg">
+                  Check in using your registered card at the event
+                </div>
+              ) : event.status === 'ended' ? (
+                <div className="flex items-center justify-center gap-2 text-gray-500 font-medium text-lg">
+                  Event has ended
+                </div>
+              ) : new Date() < new Date(event.regisStart) ? (
+                <div className="flex items-center justify-center gap-2 text-gray-500 font-medium text-lg">
+                  Registration opens on {formatDate(event.regisStart)}
+                </div>
+              ) : new Date() > new Date(event.regisEnd) ? (
+                <div className="flex items-center justify-center gap-2 text-gray-500 font-medium text-lg">
+                  Registration closed
+                </div>
+              ) : (
                 <button 
                   onClick={handleRegister}
                   className="flex items-center justify-center gap-2 text-white font-bold text-lg hover:opacity-95 transition-opacity active:scale-95 duration-200 w-50.25 h-14 rounded-2xl shadow-[0px_4px_4px_rgba(0,0,0,0.25)]"
@@ -309,21 +331,6 @@ const EventDetail = () => {
                   Register
                   <ArrowRight className="w-5 h-5" />
                 </button>
-              )}
-              {event.status === 'ended' && !userStatus && (
-                <div className="flex items-center justify-center gap-2 text-gray-500 font-medium text-lg">
-                  Event has ended
-                </div>
-              )}
-              {userStatus === 'registered' && (
-                <div className="flex items-center justify-center gap-2 text-gray-600 font-medium text-lg">
-                  Check in using your registered card at the event
-                </div>
-              )}
-              {userStatus === 'present' && (
-                <div className="flex items-center justify-center gap-2 text-green-600 font-bold text-lg">
-                  ✓ Checked In
-                </div>
               )}
             </div>
           </div>

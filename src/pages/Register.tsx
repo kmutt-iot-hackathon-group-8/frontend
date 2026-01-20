@@ -1,9 +1,18 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { EyeOff, Eye, Loader2 } from 'lucide-react';
+import { useForm } from 'react-hook-form';
 import WaveBackground from '../components/WaveBackground';
 
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
+interface RegisterFormData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
 
 const Register = () => {
   const location = useLocation();
@@ -15,60 +24,28 @@ const Register = () => {
   const cardId = q.get("cardId");
   const eventId = q.get("eventId");
 
-  // Fixed: Added explicit string union type to prevent TypeScript narrowing to just "idle"
   const [regStatus, setRegStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [showPassword, setShowPassword] = useState(false);
-  const [passwordsMatch, setPasswordsMatch] = useState(true);
 
-  const [formData, setFormData] = useState({
-    firstName: firstName || "",
-    lastName: lastName || "",
-    email: "",
-    password: "",
-    confirmPassword: "",
+  const { register, handleSubmit, formState: { errors }, setError } = useForm({
+    defaultValues: {
+      firstName: firstName || "",
+      lastName: lastName || "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+    }
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    
-    setFormData((prevState) => {
-      const updatedState = {
-        ...prevState,
-        [name]: value,
-      };
-
-      // Password matching logic
-      if (name === 'password' || name === 'confirmPassword') {
-        const passwordValue = name === 'password' ? value : updatedState.password;
-        const confirmPasswordValue = name === 'confirmPassword' ? value : updatedState.confirmPassword;
-        
-        if (confirmPasswordValue) {
-          setPasswordsMatch(passwordValue === confirmPasswordValue);
-        } else {
-          setPasswordsMatch(true);
-        }
-      }
-      
-      return updatedState;
-    });
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (formData.password !== formData.confirmPassword) {
-      setPasswordsMatch(false);
-      return;
-    }
-    
+  const onSubmit = async (data: RegisterFormData) => {
     setRegStatus("loading");
 
     try {
       const requestData = {
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        email: formData.email,
-        password: formData.password,
+        firstName: data.firstName,
+        lastName: data.lastName,
+        email: data.email,
+        password: data.password,
         ...(cardId && { cardid: cardId }),
         ...(eventId && { eventid: eventId }),
       };
@@ -79,10 +56,19 @@ const Register = () => {
         body: JSON.stringify(requestData),
       });
 
-      if (!response.ok) throw new Error("Registration failed");
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        if (errorData.message?.toLowerCase().includes('email')) {
+          setError('email', { message: 'Email already exists' });
+        } else {
+          setError('root', { message: 'Registration failed' });
+        }
+        setRegStatus("error");
+        return;
+      }
       
-      const data = await response.json();
-      localStorage.setItem('user', JSON.stringify(data.user));
+      const dataRes = await response.json();
+      localStorage.setItem('user', JSON.stringify(dataRes.user));
       setRegStatus("success");
       
       if (!cardId) {
@@ -91,6 +77,7 @@ const Register = () => {
       
     } catch (error) {
       console.error("Error:", error);
+      setError('root', { message: 'An error occurred' });
       setRegStatus("error");
     }
   };
@@ -136,7 +123,7 @@ const Register = () => {
                 Your card is now linked to your account.
               </p>
               <p className="text-base md:text-lg text-gray-600">
-                You're registered for the event and can check in by tapping your card at the NFC reader.
+                You have checked in to the event. Enjoy your event!
               </p>
             </div>
           </div>
@@ -154,7 +141,7 @@ const Register = () => {
                 </p>
             </div>
 
-          <form onSubmit={handleSubmit} className="space-y-5 md:space-y-6">
+          <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-5 md:space-y-6">
             
             {/* First Name */}
             <div>
@@ -163,14 +150,12 @@ const Register = () => {
               </label>
               <input
                 id='firstName'
-                name='firstName'
                 type='text'
                 autoComplete='given-name'
-                required
-                value={formData.firstName}
-                onChange={handleChange}
+                {...register('firstName', { required: 'First name is required' })}
                 className={inputClasses}
               />
+              {errors.firstName && <p className="mt-1 text-sm text-red-500 ml-1">{errors.firstName.message}</p>}
             </div>
 
             {/* Last Name */}
@@ -180,14 +165,12 @@ const Register = () => {
               </label>
               <input
                 id='lastName'
-                name='lastName'
                 type='text'
                 autoComplete='family-name'
-                required
-                value={formData.lastName}
-                onChange={handleChange}
+                {...register('lastName', { required: 'Last name is required' })}
                 className={inputClasses}
               />
+              {errors.lastName && <p className="mt-1 text-sm text-red-500 ml-1">{errors.lastName.message}</p>}
             </div>
 
             {/* Email */}
@@ -197,14 +180,15 @@ const Register = () => {
               </label>
               <input
                 id='email'
-                name='email'
                 type='email'
                 autoComplete='email'
-                required
-                value={formData.email}
-                onChange={handleChange}
+                {...register('email', { 
+                  required: 'Email is required', 
+                  pattern: { value: /^\S+@\S+$/i, message: 'Invalid email format' }
+                })}
                 className={inputClasses}
               />
+              {errors.email && <p className="mt-1 text-sm text-red-500 ml-1">{errors.email.message}</p>}
             </div>
 
             {/* Password */}
@@ -215,12 +199,12 @@ const Register = () => {
               <div className="relative">
                 <input
                   id='password'
-                  name='password'
                   type={showPassword ? 'text' : 'password'}
                   autoComplete='new-password'
-                  required
-                  value={formData.password}
-                  onChange={handleChange}
+                  {...register('password', { 
+                    required: 'Password is required', 
+                    minLength: { value: 6, message: 'Password must be at least 6 characters' }
+                  })}
                   className={`${inputClasses} pr-12`}
                 />
                 <button 
@@ -231,6 +215,7 @@ const Register = () => {
                   {showPassword ? <Eye className="w-5 h-5 md:w-6 md:h-6" /> : <EyeOff className="w-5 h-5 md:w-6 md:h-6" />}
                 </button>
               </div>
+              {errors.password && <p className="mt-1 text-sm text-red-500 ml-1">{errors.password.message}</p>}
             </div>
 
             {/* Confirm Password */}
@@ -241,14 +226,14 @@ const Register = () => {
               <div className="relative">
                 <input
                   id='confirmPassword'
-                  name='confirmPassword'
                   type={showPassword ? 'text' : 'password'}
                   autoComplete='new-password'
-                  required
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
+                  {...register('confirmPassword', { 
+                    required: 'Please confirm your password',
+                    validate: (value, formValues) => value === formValues.password || 'Passwords do not match'
+                  })}
                   className={`appearance-none block w-full h-12 md:h-14 px-4 border-2 md:border-[3px] rounded-xl md:rounded-2xl bg-[#F4F7F8] font-semibold focus:outline-none focus:ring-2 transition-all duration-200 text-base md:text-lg pr-12 ${
-                    !passwordsMatch && formData.confirmPassword 
+                    errors.confirmPassword 
                     ? 'border-red-500 focus:border-red-500 focus:ring-red-200' 
                     : 'border-black focus:ring-[#1BB3A9] focus:border-transparent'
                   }`}
@@ -261,18 +246,14 @@ const Register = () => {
                   {showPassword ? <Eye className="w-5 h-5 md:w-6 md:h-6" /> : <EyeOff className="w-5 h-5 md:w-6 md:h-6" />}
                 </button>
               </div>
-              {!passwordsMatch && formData.confirmPassword && (
-                <p className="mt-2 text-sm md:text-base font-semibold text-red-500 ml-1">
-                  Passwords do not match
-                </p>
-              )}
+              {errors.confirmPassword && <p className="mt-1 text-sm text-red-500 ml-1">{errors.confirmPassword.message}</p>}
             </div>
 
             {/* Submit Button */}
             <div className="pt-2">
               <button
                 type='submit'
-                disabled={regStatus === 'loading' || !passwordsMatch}
+                disabled={regStatus === 'loading'}
                 className='w-full h-12 md:h-14 flex justify-center items-center font-bold text-lg md:text-xl text-white rounded-lg md:rounded-xl 
                 transform transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed shadow-md hover:shadow-lg'
                 style={{ 
@@ -288,6 +269,8 @@ const Register = () => {
               </button>
             </div>
           </form>
+
+          {errors.root && <p className="mt-4 text-sm text-red-500 text-center">{errors.root.message}</p>}
 
           {/* Social Login Divider */}
           <div className='mt-6 md:mt-8'>

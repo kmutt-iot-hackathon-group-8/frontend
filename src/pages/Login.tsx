@@ -1,44 +1,55 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { EyeOff, Eye, Loader2 } from 'lucide-react';
+import { useForm } from 'react-hook-form';
 import WaveBackground from '../components/WaveBackground';
 
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
+interface LoginFormData {
+  email: string;
+  password: string;
+}
+
 const Login = () => {
   const navigate = useNavigate();
   const [regStatus, setRegStatus] = useState("idle");
   const [showPassword, setShowPassword] = useState(false);
 
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
+  const { register, handleSubmit, setError, formState: { errors } } = useForm({
+    defaultValues: {
+      email: "",
+      password: "",
+    }
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const onSubmit = async (data: LoginFormData) => {
     setRegStatus("loading");
     try {
       const response = await fetch(BASE_URL + '/login', {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(data),
       });
-      if (!response.ok) throw new Error("Login failed");
-      const data = await response.json();
-      console.log("Success:", data);
-      localStorage.setItem('user', JSON.stringify(data.user));
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        if (errorData.message?.toLowerCase().includes('email')) {
+          setError('email', { message: 'Email not found or incorrect' });
+        } else if (errorData.message?.toLowerCase().includes('password')) {
+          setError('password', { message: 'Incorrect password' });
+        } else {
+          setError('root', { message: 'Login failed' });
+        }
+        setRegStatus("error");
+        return;
+      }
+      const dataRes = await response.json();
+      localStorage.setItem('user', JSON.stringify(dataRes.user));
       setRegStatus("success");
       navigate('/');
     } catch (error) {
       console.error("Error:", error);
+      setError('root', { message: 'An error occurred' });
       setRegStatus("error");
     }
   };
@@ -49,21 +60,16 @@ const Login = () => {
 
   return (
     <div className='relative min-h-screen flex flex-col justify-center items-center p-4 sm:p-6 lg:p-8 overflow-hidden bg-white font-montserrat'>
-      
       {/* --- WAVE BACKGROUND --- */}
       <WaveBackground />
-
       {/* --- CONTENT AREA --- */}
-
       <div className="relative z-10 w-full max-w-md md:max-w-lg lg:max-w-2xl flex flex-col items-center">
-        
         {/* Header */}
         <div className="mb-6 md:mb-10 text-center">
           <h2 className="font-bold text-4xl md:text-5xl lg:text-7xl leading-tight text-[#1F2D3D] tracking-tight">
             ModTap
           </h2>
         </div>
-
         {/* Card */}
         <div 
           className='bg-white w-full rounded-3xl md:rounded-[40px] shadow-2xl p-6 sm:p-8 md:p-12'
@@ -77,9 +83,7 @@ const Login = () => {
                   Login to your account
                 </p>
             </div>
-
-          <form onSubmit={handleSubmit} className="space-y-5 md:space-y-7">
-            
+          <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-5 md:space-y-7">
             {/* Email Field */}
             <div> 
               <label htmlFor='email' className='block font-bold text-sm md:text-lg text-black mb-2 ml-1'>
@@ -87,17 +91,16 @@ const Login = () => {
               </label>
               <input
                 id='email'
-                name='email'
                 type='email'
                 autoComplete='email'
-                required
-                value={formData.email}
-                onChange={handleChange}
-                // Updated Inputs: Removed fixed padding, used h-12/h-14 for touch targets. Reduced border to 2px on mobile.
+                {...register('email', {
+                  required: 'Email is required',
+                  pattern: { value: /^\S+@\S+$/i, message: 'Invalid email format' }
+                })}
                 className='appearance-none block w-full h-12 md:h-14 px-4 border-2 md:border-[3px] border-black rounded-xl md:rounded-2xl bg-[#F4F7F8] placeholder-gray-400 font-semibold focus:outline-none focus:ring-2 focus:ring-[#1BB3A9] focus:border-transparent transition-all duration-200 text-base md:text-lg'
               />
+              {errors.email && <p className="mt-1 text-sm text-red-500 ml-1">{errors.email.message}</p>}
             </div>
-
             {/* Password Field */}
             <div>
               <label htmlFor='password' className='block font-bold text-sm md:text-lg text-black mb-2 ml-1'>
@@ -106,12 +109,12 @@ const Login = () => {
               <div className="relative">
                 <input
                   id='password'
-                  name='password'
                   type={showPassword ? 'text' : 'password'}
                   autoComplete='current-password'
-                  required
-                  value={formData.password}
-                  onChange={handleChange}
+                  {...register('password', {
+                    required: 'Password is required',
+                    minLength: { value: 6, message: 'Password must be at least 6 characters' }
+                  })}
                   className='appearance-none block w-full h-12 md:h-14 px-4 border-2 md:border-[3px] border-black rounded-xl md:rounded-2xl bg-[#F4F7F8] font-semibold focus:outline-none focus:ring-2 focus:ring-[#1BB3A9] focus:border-transparent transition-all duration-200 text-base md:text-lg pr-12'
                 />
                 <button 
@@ -122,8 +125,8 @@ const Login = () => {
                   {showPassword ? <Eye className="w-5 h-5 md:w-6 md:h-6" /> : <EyeOff className="w-5 h-5 md:w-6 md:h-6" />}
                 </button>
               </div>
+              {errors.password && <p className="mt-1 text-sm text-red-500 ml-1">{errors.password.message}</p>}
             </div>
-
             {/* Submit Button */}
             <div className="pt-2">
               <button
@@ -144,7 +147,7 @@ const Login = () => {
               </button>
             </div>
           </form>
-
+          {errors.root && <p className="mt-4 text-sm text-red-500 text-center">{errors.root.message}</p>}
           {/* Social Login Divider */}
           <div className='mt-6 md:mt-8'>
             <p className="text-center font-medium text-sm md:text-base text-[#9AA9AF] mb-4">
@@ -153,13 +156,11 @@ const Login = () => {
                 <span className="font-bold text-[#1BB3A9] hover:underline hover:text-[#179a91]">Signup</span>
               </button>
             </p>
-            
             <div className='relative flex py-2 items-center'>
               <div className='grow border-t border-gray-300'></div>
               <span className='shrink-0 mx-4 text-gray-400 font-medium'>or</span>
               <div className='grow border-t border-gray-300'></div>
             </div>
-
             {/* Google Button */}
             <div className="mt-4">
               <button 
